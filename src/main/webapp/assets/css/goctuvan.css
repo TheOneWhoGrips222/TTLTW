@@ -1,0 +1,75 @@
+:root {
+    --primary-color: #007bff; /* Màu chủ đạo */
+    --dark-color: #333;
+    --light-color: #f4f4f4;
+    --text-color: #555;
+    --container-width: 1200px;
+}
+main{
+    max-width: 1200px;
+    margin: auto;
+}
+main .content{
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+main .bar{
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: lightgray;
+    border-radius: 10px;
+
+}
+main .bar span{
+margin-left: 60px;
+}
+main .bar select{
+    margin-right: 30px;
+    height: 30px;
+    width: 400px;
+}
+main .container_grid{
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+main h1 {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+
+}
+main .container_grid .left .item{
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-right: lightgray solid 5px;
+}
+main .container_grid .left img{
+    width: 140px;
+
+
+}
+main .container_grid .left .item{
+border-bottom: lightgray solid 2px;
+}
+main .container_grid .right{
+    margin-left: 20px;
+   padding-top: 10px;
+    padding-left: 30px;
+    margin-bottom: 20px;
+
+
+}
+main .container_grid .right .list{
+    margin-bottom: 10px;
+}
+main .container_grid .right ul{
+    margin-left: 50px;
+}

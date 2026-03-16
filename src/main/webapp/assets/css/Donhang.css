@@ -1,0 +1,253 @@
+.order-container {
+    width: 100%;
+    background: #f5f5f5;
+    padding: 30px 0;
+}
+
+.order-container .order-wrapper {
+    width: 100%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 30px;
+}
+
+
+/* SIDEBAR */
+.order-sidebar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.sidebar-user {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-user .avatar {
+    width: 60px;
+    height: 60px;
+    background: #007bff;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    font-size: 20px;
+}
+
+.sidebar-user .username {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    padding: 10px 0;
+    cursor: pointer;
+    color: #333;
+}
+
+
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 15px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.menu-item.active {
+    color: #007bff;
+    font-weight: 600;
+}
+
+.menu-item.active i {
+    color: #007bff;
+}
+
+.menu-item:hover {
+    color: #007bff;
+}
+
+.menu-item i {
+    width: 20px;
+}
+.order-content{
+    width: 100%;
+}
+
+/* ===== TABS ===== */
+.order-tabs {
+    width: 100%;
+    display: flex;
+    gap: 25px;
+    border-bottom: 1px solid #eee;
+    padding: 12px 0;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+}
+
+.order-tabs a {
+    cursor: pointer;
+    color: #555;
+    font-size: 15px;
+    padding-bottom: 10px;
+}
+
+.order-tabs a.active {
+    color: #333;
+    border-bottom: 2px solid #333;
+    font-weight: 600;
+}
+
+/* ========== SEARCH BOX =========== */
+.order-search input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* ========== ITEM CARD =========== */
+.order-item {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 25px;
+}
+
+/* Header shop */
+.item-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+.item-header .shop-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.item-header .order-status {
+    color: #2dc258;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Row sản phẩm */
+.product-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.product-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.product-info {
+    flex: 1;
+}
+
+.product-info .name {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.product-info .variant,
+.product-info .qty {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Giá */
+.price {
+    text-align: right;
+}
+
+.price .old {
+    font-size: 13px;
+    color: #999;
+    text-decoration: line-through;
+    display: block;
+}
+
+.price .new {
+    font-size: 16px;
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Thành tiền */
+.total-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px 0;
+    border-top: 1px solid #eee;
+}
+
+.total-price {
+    font-size: 20px;
+    color: #007bff;
+    font-weight: 700;
+}
+
+/* Nút */
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn {
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 14px;
+    color: #333;
+}
+
+.btn.repeat {
+    background: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+main{
+    max-width: 1200px;
+    margin: auto;
+}
+main .content{
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 50px;
+}

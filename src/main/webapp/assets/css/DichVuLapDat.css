@@ -1,0 +1,83 @@
+:root {
+    --primary-color: #007bff; /* Màu chủ đạo */
+    --dark-color: #333;
+    --light-color: #f4f4f4;
+    --text-color: #555;
+    --container-width: 1200px;
+}
+html {
+    scroll-behavior: smooth;
+}
+main{
+    max-width: 1200px;
+    margin: auto;
+
+}
+.main_container{
+    width: 100%;
+    margin-top: 20px;
+    padding: 40px;
+    margin-bottom: 50px;
+    border-radius: 12px ;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+
+}
+.content_block{
+    margin-top: 20px;
+    margin-bottom:20px;
+}
+.main_container img{
+    width:400px;
+    height:300px;
+    box-shadow: 2px 2px 4px lightgray;
+
+}
+.main_container .img{
+    text-align: center;
+    margin-top:50px;
+    margin-bottom: 50px;
+}
+.main_container .title{
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 50px;
+
+}
+.main_container h2{
+    margin-top: 30px;
+    margin-bottom:20px;
+}
+.main_container h3{
+    font-weight: bold;
+}
+.main_container li{
+    margin-top: 10px;
+    margin-bottom:10px;
+    margin-left: 60px;
+}
+.fast_trans{
+    background: lightgray;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 300px;
+    border-radius: 10px;
+    margin-left: 50px;
+    border-left: var(--primary-color) solid 10px;
+    border-top: var(--primary-color) solid 1px;
+}
+.main_container .fast_trans ul{
+    list-style-type: none;
+}
+.main_container .fast_trans ul li{
+    margin-left: 20px;
+    font-weight: bold;
+}
+.main_container .fast_trans ul li a{
+    text-decoration: none;
+    color: black;
+}
+.main_container .fast_trans ul li a:hover{
+    color: var(--primary-color);
+    text-shadow: 0px 0px 1px var(--primary-color) ;
+}

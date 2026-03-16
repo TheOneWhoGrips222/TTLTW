@@ -1,0 +1,204 @@
+
+.profile-container {
+    width: 100%;
+    background: #f5f5f5;
+    padding: 30px 0;
+}
+
+.profile-container .profile-wrapper {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+
+    display: grid;
+    grid-template-columns: 220px 1fr 260px;
+    gap: 30px;
+}
+
+.profile-sidebar {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+}
+
+.sidebar-user {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.sidebar-user .avatar {
+    width: 60px;
+    height: 60px;
+    background: #007bff;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    font-size: 20px;
+}
+
+.sidebar-user .username {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar-menu li {
+    padding: 10px 0;
+    cursor: pointer;
+    color: #333;
+}
+
+.menu-title {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+}
+
+/* Submenu */
+.submenu-item {
+    display: block;
+    padding: 8px 0 8px 28px;
+    font-size: 14px;
+    color: #555;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.submenu-item:hover {
+    color: #007bff;
+}
+
+.submenu-item.active {
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* Menu-level items: Đơn mua, Kho voucher */
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 15px;
+    color: #333;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.menu-item:hover {
+    color: #007bff;
+}
+
+.menu-item i {
+    width: 20px;
+}
+
+
+
+/* MAIN CONTENT */
+.profile-content {
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 4px;
+}
+
+.profile-content h2 {
+    margin-bottom: 5px;
+}
+
+.profile-content .sub {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.profile-form .form-group {
+    margin-bottom: 20px;
+}
+
+.profile-form label {
+    font-size: 14px;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.profile-form input {
+    width: 300px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+.profile-form span {
+    font-size: 15px;
+}
+
+.change {
+    margin-left: 10px;
+    color: #007bff;
+    font-size: 14px;
+}
+
+.gender label,
+.dob select {
+    margin-right: 15px;
+}
+
+.save-btn {
+    background: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* AVATAR SECTION */
+.avatar-section {
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.avatar-big {
+    width: 120px;
+    height: 120px;
+    margin: auto;
+    background: #007bff;
+    border-radius: 50%;
+    font-size: 40px;
+    font-weight: bold;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-btn {
+    margin-top: 15px;
+    padding: 8px 20px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.note {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #777;
+}

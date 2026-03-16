@@ -1,0 +1,134 @@
+:root {
+    --primary-color: #007bff; /* Màu chủ đạo */
+    --dark-color: #333;
+    --light-color: #f4f4f4;
+    --text-color: #555;
+    --container-width: 1200px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+
+}
+main{
+    max-width: 1200px;
+    margin: auto;
+}
+
+
+.main_container{
+    background-color: #ffffff;
+    padding: 2rem;
+    border: 5px solid var(--primary-color);
+    border-radius: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 550px;
+    box-sizing: border-box;
+    margin-top: 2rem ;
+    margin-bottom: 2rem ;
+
+}
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 3rem;
+}
+.name_input{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+
+.name_input input {
+    width: 100%;
+    padding: 0.75rem 0.5rem;
+    border: none;
+    border-bottom: 1px solid #ddd ;
+    border-radius: 0;
+    box-sizing: border-box;
+    outline: none;
+}
+
+
+.input_field {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 0.75rem 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Căn chỉnh Icon */
+.input_field .fa {
+    color: var(--text-color);
+    margin-right: 1rem;
+    font-size: 1.2rem;
+    width: 20px;
+    text-align: center;
+}
+
+
+.input_field input {
+    flex-grow: 1;
+    padding: 0;
+    border: none;
+    box-sizing: border-box;
+    font-size: 1rem;
+    color: var(--dark-color);
+    outline: none;
+}
+
+
+.register_button {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.25rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.register_button:hover {
+    background-color: #003a7a;
+}
+.check{
+    margin-top: 1rem;
+    line-height: 40px;
+    font-weight: bold;
+
+}
+.check input{
+    width: 15px;
+    height: 15px;
+    margin-right: 0.5rem;
+}
+.haveaccount{
+    text-align: center;
+    margin-top: 1rem;
+
+}
+.haveaccount a{
+    color: var(--primary-color);
+}
+.haveaccount a:hover{
+    text-decoration: underline;
+}
+.input_field .toggle-password:hover {
+    cursor: pointer;
+}

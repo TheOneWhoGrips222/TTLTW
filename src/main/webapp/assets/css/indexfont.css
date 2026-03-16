@@ -1,0 +1,16 @@
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--white-color);
+}
+h1, h2, h3, h4, h5, h6, .section-title, .header__logo {
+    font-family: 'Manrope', sans-serif;
+    font-weight: 700;
+    color: var(--brand-dark);
+}
+
+.hero-content h1 {
+    color: var(--white-color);
+}
+

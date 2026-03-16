@@ -1,0 +1,104 @@
+.careers-hero {
+    text-align: center;
+}
+.careers-hero .section-title {
+    margin-bottom: 20px;
+}
+.careers-intro {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 700px;
+    margin: 0 auto;
+}
+.benefits-section {
+    background-color: var(--white-color);
+}
+.job-accordion {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.job-item {
+    background: var(--white-color);
+    border: 1px solid var(--light-color);
+    border-radius: 12px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+.job-item-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+}
+.job-item-header h4 {
+    font-size: 1.3rem;
+    color: var(--brand-dark);
+    margin: 0;
+}
+.job-meta {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    font-family: 'Inter', sans-serif;
+}
+.job-meta span {
+    margin-left: 20px;
+}
+.job-meta i {
+    color: var(--primary-color);
+    margin-right: 5px;
+}
+.job-item-header::after {
+    content: '\f067';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+    transition: transform 0.3s ease;
+}
+.job-item.active .job-item-header::after {
+    transform: rotate(45deg);
+}
+.job-item-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 25px;
+    transition: max-height 0.4s ease, padding 0.4s ease;
+}
+.job-item.active .job-item-content {
+    max-height: 1000px;
+    padding: 10px 25px 30px 25px;
+}
+.job-item-content h5 {
+    font-family: 'Manrope', sans-serif;
+    font-size: 1.1rem;
+    color: var(--brand-dark);
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+.job-item-content ul {
+    list-style-position: inside;
+    padding-left: 5px;
+    color: var(--text-primary);
+    line-height: 1.8;
+}
+.job-item-content .btn-primary {
+    margin-top: 20px;
+}
+@media (max-width: 768px) {
+    .job-item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .job-meta span {
+        margin-left: 0;
+        margin-right: 15px;
+    }
+}

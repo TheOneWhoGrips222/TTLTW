@@ -1,0 +1,330 @@
+.wishlist-section .section-title {
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.wishlist-item {
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.wishlist-item .btn-primary {
+    display: block;
+    width: 100%;
+}
+
+.wishlist-remove-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f00;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.wishlist-remove-btn:hover {
+    background: #fff;
+    color: #c00;
+    transform: scale(1.1);
+}
+/* ===== CÀI ĐẶT CHUNG & BIẾN ===== */
+:root {
+    --primary-color: #007bff; /* Màu chủ đạo */
+    --dark-color: #333;
+    --light-color: #f4f4f4;
+    --text-color: #555;
+    --container-width: 1200px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+}
+
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+}
+
+img {
+    max-width: 100%;
+}
+
+.section-padding {
+    padding: 50px 0;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.2rem;
+    margin-bottom: 40px;
+    color: var(--dark-color);
+}
+
+.bg-light {
+    background-color: var(--light-color);
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+}
+.btn-primary {
+    background-color: var(--primary-color);
+}
+.btn-secondary {
+    background-color: var(--dark-color);
+}
+/* ===== BLOCK 1: HERO BANNER ===== */
+.hero-slide {
+    height: 500px; /* Chiều cao cố định cho banner */
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+}
+.hero-content {
+    background: rgba(0, 0, 0, 0.5); /* Lớp nền mờ để nổi text */
+    padding: 30px;
+    border-radius: 10px;
+}
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+/* ===== BLOCK 2: TRUST BADGES ===== */
+.trust-badges .container {
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+.trust-badge {
+    flex-basis: 23%;
+}
+.trust-badge i {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+/* ===== BLOCK 3: FEATURED CATEGORIES ===== */
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); /* 6 cột */
+    gap: 20px;
+}
+.category-item {
+    text-align: center;
+    color: var(--dark-color);
+    border: 1px solid #eee;
+    padding: 20px;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+}
+.category-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+.category-item:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* ===== BLOCK 4: BEST SELLERS (Product Card) ===== */
+.product-card {
+    border: 1px solid var(--light-color);
+    background: #fff;
+    text-align: center;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+.product-card img {
+    width: 100%; /* Đảm bảo ảnh chiếm hết chiều rộng card */
+    object-fit: cover; /* Cắt ảnh vừa vặn, không làm méo ảnh */
+    border-radius: 8px; /* Bo góc ảnh cho đẹp */
+    margin-bottom: 15px; /* Khoảng cách với tiêu đề */
+}
+.product-card h3 {
+    font-size: 1.1rem;
+    color: var(--dark-color);
+}
+.product-card h3 {
+    font-size: 1.1rem;
+    color: var(--dark-color);
+    min-height: 2.5em;
+}
+.product-card .price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-top: auto;
+    margin-bottom: 15px;
+}
+.product-card .btn-secondary {
+    display: block;
+    width: 100%;
+}
+
+/* ===== BLOCK 5: SHOP BY ECOSYSTEM ===== */
+.ecosystem-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.ecosystem-item {
+    padding: 30px;
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+.ecosystem-item img {
+    display: block;
+    margin: 0 auto 15px auto;
+    width: 80px;
+}
+/* CSS cho SWIPER.JS (Cần thiết cho slider) */
+.swiper {
+    width: 100%;
+    height: 100%;
+}
+/* Định kiểu lại cho các nút next/prev của Swiper nếu cần */
+#bestseller-slider .swiper-button-next,
+#bestseller-slider .swiper-button-prev {
+    color: var(--primary-color);
+}
+/* css thêm cho phần gợi ý giải pháp */
+.solutions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.solution-item {
+    position: relative;
+    display: block;
+    height: 250px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    color: #fff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.solution-item::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.solution-item:hover {
+    transform: scale(1.03);
+}
+
+.solution-content {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+}
+/* css thêm cho phần góc tư vấn và đánh giá*/
+.hub-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+.hub-video iframe {
+    width: 100%;
+    height: 315px;
+    border-radius: 10px;
+}
+
+.hub-articles {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.article-item {
+    display: block;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    transition: 0.3s;
+    background: #fff;
+    text-decoration: none;
+    color: #333;
+}
+
+.article-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.article-item h4 {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+.article-item p {
+    font-size: 0.9rem;
+    color: #666;
+}
+.price {
+    color: #d70018;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin: 10px 0;
+}
+
+
+
+
+
