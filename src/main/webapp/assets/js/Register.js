@@ -1,24 +1,42 @@
 document.addEventListener("DOMContentLoaded", function () {
     const passwordInput = document.getElementById("password");
-    const message = document.getElementById("passwordMessage");
-
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
-
     passwordInput.addEventListener("input", function () {
         const value = passwordInput.value;
 
-        if (value.length === 0) {
-            message.textContent = "";
-            return;
-        }
+        const rules = {
+            length: value.length >= 8,
+            uppercase: /[A-Z]/.test(value),
+            lowercase: /[a-z]/.test(value),
+            number: /\d/.test(value),
+            special: /[@$!%*?&]/.test(value)
+        };
+        for (let rule in rules) {
+            const element = document.getElementById(rule);
 
-        if (regex.test(value)) {
-            message.textContent = "✓ Mật khẩu hợp lệ";
-            message.style.color = "green";
-        } else {
-            message.textContent =
-                "✗ Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt";
-            message.style.color = "red";
+            if (value.length === 0) {
+                element.classList.remove("valid", "invalid");
+                element.classList.add("neutral");
+                continue;
+            }
+
+            // 👉 nếu đang nhập → cập nhật realtime
+            if (rules[rule]) {
+                element.classList.remove("invalid", "neutral");
+                element.classList.add("valid");
+            } else {
+                element.classList.remove("valid", "neutral");
+                element.classList.add("invalid");
+            }
         }
     });
+});
+const toggle = document.getElementById("togglePassword");
+const password = document.getElementById("password");
+
+toggle.addEventListener("click", function () {
+    const type = password.getAttribute("type") === "password" ? "text" : "password";
+    password.setAttribute("type", type);
+
+    this.classList.toggle("fa-eye");
+    this.classList.toggle("fa-eye-slash");
 });

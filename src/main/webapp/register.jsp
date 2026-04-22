@@ -35,8 +35,17 @@
             <input type="text" name="fullName" placeholder="Họ và tên" required>
             <input type="email" name="email" placeholder="Email" required>
             <input type="text" name="phone" placeholder="Số điện thoại" required>
-            <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
-            <small id="passwordMessage" class="password-message"></small>
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" placeholder="Mật khẩu" required>
+                <i id="togglePassword" class="fa-solid fa-eye"></i>
+            </div>
+            <small id="passwordMessage" class="password-message">
+                <div id="length" class="rule neutral">• Ít nhất 8 ký tự</div>
+                <div id="uppercase" class="rule neutral">• Có chữ hoa</div>
+                <div id="lowercase" class="rule neutral">• Có chữ thường</div>
+                <div id="number" class="rule neutral">• Có số</div>
+                <div id="special" class="rule neutral">• Có ký tự đặc biệt</div>
+            </small>
             <input type="password" name="confirmPassword" placeholder="Xác nhận mật khẩu" required>
         </div>
 
