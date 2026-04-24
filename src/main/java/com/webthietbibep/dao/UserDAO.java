@@ -171,6 +171,17 @@ public class UserDAO extends BaseDao {
         ) > 0;
     }
 
+    public User findByEmail(String email) {
+        return get().withHandle(handle ->
+                handle.createQuery("SELECT * FROM users WHERE email = :email")
+                        .bind("email", email)
+                        .mapToBean(User.class)
+                        .findOne()
+                        .orElse(null)
+        );
+    }
+
+
 
 
 }

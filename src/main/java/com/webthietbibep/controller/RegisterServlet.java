@@ -56,6 +56,7 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
+
         User user = new User();
         user.setUsername(username);
         user.setFull_name(fullName);

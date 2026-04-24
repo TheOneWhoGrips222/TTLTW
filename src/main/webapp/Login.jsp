@@ -53,7 +53,23 @@
                 <a href="register" class="no_account">Tôi chưa có tài khoản</a>
             </div>
 
+
             <button type="submit" class="register_button">ĐĂNG NHẬP</button>
+            <div class="social_login">
+                <p>Hoặc đăng nhập với</p>
+
+                <div class="social_buttons">
+                    <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=1088784303202-apea2bsp1bn1af9ibqn8cqtm46bq3s62.apps.googleusercontent.com&redirect_uri=http://localhost:8080/demo_war/login-google&response_type=code&scope=openid%20email%20profile"
+                       class="google_btn">
+
+                        <i class="fa-brands fa-google"></i> Google
+                    </a>
+
+                    <a href="#" class="facebook_btn">
+                        <i class="fa-brands fa-facebook-f"></i> Facebook
+                    </a>
+                </div>
+            </div>
 
         </form>
     </main>
