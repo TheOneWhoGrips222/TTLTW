@@ -180,7 +180,15 @@ public class UserDAO extends BaseDao {
                         .orElse(null)
         );
     }
-
+    //check email tồn tại chưa
+    public boolean existsEmail(String email) {
+        return get().withHandle(handle ->
+                handle.createQuery("SELECT COUNT(*) FROM users WHERE email = :email")
+                        .bind("email", email)
+                        .mapTo(Integer.class)
+                        .one() > 0
+        );
+    }
 
 
 

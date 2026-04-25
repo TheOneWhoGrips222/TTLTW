@@ -55,7 +55,11 @@ public class RegisterServlet extends HttpServlet {
             doGet(req, resp);
             return;
         }
-
+        if (userDAO.existsEmail(email)) {
+            req.setAttribute("error", "Email đã tồn tại");
+            doGet(req, resp);
+            return;
+        }
 
         User user = new User();
         user.setUsername(username);

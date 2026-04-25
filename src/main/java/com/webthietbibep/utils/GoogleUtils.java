@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets;
 
 public class GoogleUtils {
 
-    private static final String CLIENT_ID = "gg cliend id";
-    private static final String CLIENT_SECRET = "gg cliend secret";
+    private static final String CLIENT_ID = "";
+    private static final String CLIENT_SECRET = "";
     private static final String REDIRECT_URI = "http://localhost:8080/demo_war/login-google";
 
     private static final String TOKEN_URL = "https://oauth2.googleapis.com/token";

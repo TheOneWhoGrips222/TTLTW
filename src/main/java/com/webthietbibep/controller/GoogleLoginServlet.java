@@ -21,28 +21,31 @@ public class GoogleLoginServlet extends HttpServlet {
 
         String token = GoogleUtils.getToken(code);
 
-        GoogleUser user = GoogleUtils.getUserInfo(token);
+        GoogleUser gguser = GoogleUtils.getUserInfo(token);
 
-        String email = user.getEmail();
-        String name = user.getName();
+        String email = gguser.getEmail();
+        String name = gguser.getName();
 
         UserDAO userDAO = new UserDAO();
 
-        User u = userDAO.findByEmail(email);
+        User user = userDAO.findByEmail(email);
 
-        if (u == null) {
-            u = new User();
-            u.setEmail(email);
-            u.setFull_name(name);
-            u.setUsername(email);
-            u.setRole("USER");
-            u.setIs_verified(true);
+        if (user == null) {
+            user = new User();
+            user.setEmail(email);
+            user.setFull_name(name);
+            user.setUsername(email);
+            user.setRole("USER");
+            user.setIs_verified(true);
 
-            userDAO.insert(u);
+            userDAO.insert(user);
         }
+        request.getSession().setAttribute("user", user);
 
-        request.getSession().setAttribute("user", u);
-
-        response.sendRedirect("home");
+        if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+            response.sendRedirect(request.getContextPath() + "/admin/dashboard");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/home");
+        }
     }
 }
