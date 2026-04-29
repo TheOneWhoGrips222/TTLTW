@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/checkout.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/index.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/Header.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
 </head>
 <body>
 
@@ -21,7 +23,8 @@
 <main class="checkout-container" style="width: 1200px; max-width: 100%; margin: 0 auto;">
     <h1 class="checkout-title">Thanh toán</h1>
 
-    <form action="checkout" method="post" class="checkout-content" style="width: 1200px; max-width: 100%; margin: 0 auto;">        <input type="hidden" name="mode" value="${mode}">
+    <form action="checkout" method="post" class="checkout-content" style="width: 1200px; max-width: 100%; margin: 0 auto;">
+        <input type="hidden" name="mode" value="${mode}">
         <div class="checkout-left">
 
             <h2>Thông tin giao hàng</h2>
@@ -115,7 +118,7 @@
                     <span>Tổng cộng</span>
                     <c:choose>
                         <c:when test="${mode == 'buynow'}">
-                            <span>${buyNowProduct.price * buyNowQuantity} đ</span>
+                            <span>${buyNowTotalFormatted}</span>
                         </c:when>
                         <c:otherwise>
                             <span>${cart.formatTotal}</span>

@@ -1,16 +1,16 @@
 .checkout-container {
-    width: 1200px !important;       /* Cố định chiều rộng cứng là 1200px */
-    max-width: 100%;                /* Đảm bảo không bị vỡ giao diện trên điện thoại */
-    margin: 0 auto !important;      /* Căn khối này vào chính giữa màn hình */
-    padding: 50px 15px;             /* Giữ padding cũ, thêm 15px trái phải cho thoáng */
-    box-sizing: border-box;         /* Tính padding vào trong kích thước 1200px */
+    width: 1200px !important;
+    max-width: 100%;
+    margin: 0 auto !important;
+    padding: 50px 15px;
+    box-sizing: border-box;
 }
 .checkout-title {
     font-family: 'Manrope', sans-serif;
     font-size: 2rem;
     font-weight: 700;
     margin-bottom: 30px;
-    color: var(--brand-dark);
+    color: #999999;
 }
 
 
