@@ -96,13 +96,26 @@
                     <div class="shop-product-grid">
                         <c:forEach var="p" items="${products}">
                             <div class="product-card">
-                                <img src="${p.image}">
-                                <h3>${p.product_name}</h3>
-                                <h3>${p.description}</h3>
-                                <div class="price">${p.priceFormat}</div>
-                                <a href="${pageContext.request.contextPath}/product-detail?id=${p.product_id}" class="btn btn-secondary">
-                                    Xem chi tiết
+                                <a href="${pageContext.request.contextPath}/product-detail?id=${p.product_id}"
+                                   class="product-link">
+
+                                    <img src="${p.image}" alt="${p.product_name}">
+                                    <h3>${p.product_name}</h3>
+                                    <p class="product-desc">${p.description}</p>
+                                    <div class="price">${p.priceFormat}</div>
+
                                 </a>
+                                <div class="product-actions">
+                                    <a href="${pageContext.request.contextPath}/buy-now?id=${p.product_id}"
+                                       class="btn btn-buy">
+                                        Mua ngay
+                                    </a>
+
+                                    <a href="${pageContext.request.contextPath}/add-cart?id=${p.product_id}"
+                                       class="btn btn-cart">
+                                        <i class="fa-solid fa-cart-plus"></i> Thêm giỏ
+                                    </a>
+                                </div>
                             </div>
                         </c:forEach>
                     </div>
