@@ -15,6 +15,7 @@ public class Product implements Serializable {
     private int brand_id;
     private String image;
     private LocalDateTime created_at;
+    private int sold_quantity;
 
     public Product() {}
 
@@ -45,6 +46,9 @@ public class Product implements Serializable {
 
     public LocalDateTime getCreated_at() { return created_at; }
     public void setCreated_at(LocalDateTime created_at) { this.created_at = created_at; }
+
+    public int getSold_quantity() { return sold_quantity; }
+    public void setSold_quantity(int sold_quantity) { this.sold_quantity = sold_quantity; }
 
     public String getPriceFormat() {
         NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
