@@ -81,4 +81,37 @@
     margin-top: 4px;
     display: block;
 }
+.rule {
+    font-size: 13px;
+    transition: 0.2s;
+}
+
+.rule.valid {
+    color: green;
+}
+
+.rule.invalid {
+    color: red;
+}
+.rule.neutral {
+    color: #999;
+}
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 40px;
+}
+
+.password-wrapper i {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666;
+    font-size: 16px;
+    transition: 0.2s;
+}
 

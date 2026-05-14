@@ -116,7 +116,8 @@ public class ProductDAO extends BaseDao {
                 p.stock_quantity,
                 p.brand_id,
                 p.image,
-                p.created_at
+                p.created_at,
+                p.sold_quantity
             FROM products p
             WHERE 1=1
         """);
@@ -144,7 +145,8 @@ public class ProductDAO extends BaseDao {
         } else if ("price_desc".equals(sort)) {
             sql.append(" ORDER BY p.price DESC");
         } else {
-            sql.append(" ORDER BY p.created_at DESC");
+            // Ưu tiên hiển thị bán chạy nhất lên đầu, nếu bằng nhau thì ưu tiên sản phẩm mới nhất
+            sql.append(" ORDER BY p.sold_quantity DESC, p.created_at DESC");
         }
         sql.append(" LIMIT :limit OFFSET :offset");
 
@@ -301,4 +303,3 @@ public class ProductDAO extends BaseDao {
         );
     }
 }
-
