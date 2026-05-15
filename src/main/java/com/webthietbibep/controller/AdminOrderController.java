@@ -17,6 +17,8 @@ import java.util.List;
 @WebServlet(name = "AdminOrderController", urlPatterns = {"/admin/order"})
 public class AdminOrderController extends HttpServlet {
 
+    private static final int PAGE_SIZE = 10;
+
     private final OrdersDAO orderDAO = new OrdersDAO();
 
     @Override
@@ -31,9 +33,9 @@ public class AdminOrderController extends HttpServlet {
         }
 
         switch (action) {
-            case "list" -> listOrders(request, response);
+            case "list"   -> listOrders(request, response);
             case "detail" -> viewOrderDetail(request, response);
-            default -> listOrders(request, response);
+            default       -> listOrders(request, response);
         }
     }
 
@@ -52,8 +54,36 @@ public class AdminOrderController extends HttpServlet {
     }
 
     private void listOrders(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Order> list = orderDAO.getAllOrders();
-        request.setAttribute("orders", list);
+        // --- Đọc tham số tìm kiếm / lọc ---
+        String keyword = request.getParameter("keyword");
+        String status  = request.getParameter("status_filter");
+
+        // --- Đọc trang hiện tại ---
+        int currentPage = 1;
+        String pageParam = request.getParameter("page");
+        if (pageParam != null && !pageParam.isEmpty()) {
+            try {
+                currentPage = Integer.parseInt(pageParam);
+                if (currentPage < 1) currentPage = 1;
+            } catch (NumberFormatException ignored) {}
+        }
+
+        // --- Truy vấn phân trang ---
+        int totalRecords = orderDAO.countOrdersFiltered(keyword, status);
+        int totalPages   = (int) Math.ceil((double) totalRecords / PAGE_SIZE);
+        if (totalPages < 1) totalPages = 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        List<Order> orders = orderDAO.getOrdersFiltered(keyword, status, currentPage, PAGE_SIZE);
+
+        // --- Đẩy dữ liệu sang JSP ---
+        request.setAttribute("orders",      orders);
+        request.setAttribute("currentPage", currentPage);
+        request.setAttribute("totalPages",  totalPages);
+        request.setAttribute("totalRecords", totalRecords);
+        request.setAttribute("keyword",     keyword  != null ? keyword  : "");
+        request.setAttribute("statusFilter", status  != null ? status   : "");
+
         request.getRequestDispatcher("/admin/order-list.jsp").forward(request, response);
     }
 
@@ -86,15 +116,16 @@ public class AdminOrderController extends HttpServlet {
 
     private void updateOrderStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            int orderId = Integer.parseInt(request.getParameter("order_id"));
+            int orderId   = Integer.parseInt(request.getParameter("order_id"));
             String newStatus = request.getParameter("status");
 
             int result = orderDAO.updateStatus(orderId, newStatus);
 
-            String message = (result > 0) ? "Cập nhật thành công!" : "Cập nhật thất bại!";
+            String message    = (result > 0) ? "Cập nhật thành công!" : "Cập nhật thất bại!";
             String encodedMsg = URLEncoder.encode(message, StandardCharsets.UTF_8);
 
-            response.sendRedirect(request.getContextPath() + "/admin/order?action=detail&id=" + orderId + "&msg=" + encodedMsg);
+            response.sendRedirect(request.getContextPath()
+                    + "/admin/order?action=detail&id=" + orderId + "&msg=" + encodedMsg);
 
         } catch (Exception e) {
             e.printStackTrace();
