@@ -96,19 +96,6 @@ public class OrdersDAO extends BaseDao {
                         .list()
         );
     }
-
-    // ---------------------------------------------------------------
-    // Admin: lấy danh sách đơn hàng có phân trang, lọc và tìm kiếm
-    // ---------------------------------------------------------------
-
-    /**
-     * Lấy danh sách đơn hàng theo bộ lọc, có phân trang.
-     *
-     * @param keyword    Tìm theo mã đơn (số) hoặc tên khách hàng (null / rỗng = bỏ qua)
-     * @param status     Lọc theo trạng thái (null / rỗng = tất cả)
-     * @param page       Trang hiện tại (bắt đầu từ 1)
-     * @param pageSize   Số bản ghi mỗi trang
-     */
     public List<Order> getOrdersFiltered(String keyword, String status, int page, int pageSize) {
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         boolean hasStatus  = status  != null && !status.trim().isEmpty();
@@ -151,10 +138,6 @@ public class OrdersDAO extends BaseDao {
             return query.mapToBean(Order.class).list();
         });
     }
-
-    /**
-     * Đếm tổng số đơn hàng theo bộ lọc (dùng để tính tổng số trang).
-     */
     public int countOrdersFiltered(String keyword, String status) {
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
         boolean hasStatus  = status  != null && !status.trim().isEmpty();
@@ -185,7 +168,6 @@ public class OrdersDAO extends BaseDao {
         });
     }
 
-    // Giữ lại để không ảnh hưởng nơi khác gọi
     public List<Order> getAllOrders() {
         String sql = """
             SELECT 

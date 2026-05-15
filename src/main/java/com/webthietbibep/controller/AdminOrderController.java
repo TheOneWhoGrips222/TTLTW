@@ -54,11 +54,9 @@ public class AdminOrderController extends HttpServlet {
     }
 
     private void listOrders(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // --- Đọc tham số tìm kiếm / lọc ---
         String keyword = request.getParameter("keyword");
         String status  = request.getParameter("status_filter");
 
-        // --- Đọc trang hiện tại ---
         int currentPage = 1;
         String pageParam = request.getParameter("page");
         if (pageParam != null && !pageParam.isEmpty()) {
@@ -68,7 +66,6 @@ public class AdminOrderController extends HttpServlet {
             } catch (NumberFormatException ignored) {}
         }
 
-        // --- Truy vấn phân trang ---
         int totalRecords = orderDAO.countOrdersFiltered(keyword, status);
         int totalPages   = (int) Math.ceil((double) totalRecords / PAGE_SIZE);
         if (totalPages < 1) totalPages = 1;
@@ -76,7 +73,6 @@ public class AdminOrderController extends HttpServlet {
 
         List<Order> orders = orderDAO.getOrdersFiltered(keyword, status, currentPage, PAGE_SIZE);
 
-        // --- Đẩy dữ liệu sang JSP ---
         request.setAttribute("orders",      orders);
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages",  totalPages);
