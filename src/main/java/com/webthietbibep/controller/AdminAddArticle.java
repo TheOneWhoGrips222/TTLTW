@@ -13,7 +13,7 @@ import java.io.IOException;
 
 
 @WebServlet(name = "AdminAddArticle", value = "/admin/add-article")
-public class AdminAddArticle extends HttpServlet {
+public class    AdminAddArticle extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getRequestDispatcher("/admin/admin_content_form.jsp").forward(request, response);
