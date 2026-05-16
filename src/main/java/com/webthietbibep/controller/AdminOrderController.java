@@ -73,12 +73,17 @@ public class AdminOrderController extends HttpServlet {
 
         List<Order> orders = orderDAO.getOrdersFiltered(keyword, status, currentPage, PAGE_SIZE);
 
-        request.setAttribute("orders",      orders);
-        request.setAttribute("currentPage", currentPage);
-        request.setAttribute("totalPages",  totalPages);
+        int startPage = Math.max(1, currentPage - 2);
+        int endPage   = Math.min(totalPages, currentPage + 2);
+
+        request.setAttribute("orders",       orders);
+        request.setAttribute("currentPage",  currentPage);
+        request.setAttribute("totalPages",   totalPages);
         request.setAttribute("totalRecords", totalRecords);
-        request.setAttribute("keyword",     keyword  != null ? keyword  : "");
-        request.setAttribute("statusFilter", status  != null ? status   : "");
+        request.setAttribute("startPage",    startPage);
+        request.setAttribute("endPage",      endPage);
+        request.setAttribute("keyword",      keyword != null ? keyword : "");
+        request.setAttribute("statusFilter", status  != null ? status  : "");
 
         request.getRequestDispatcher("/admin/order-list.jsp").forward(request, response);
     }

@@ -7,51 +7,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Quản lý Đơn hàng | Admin</title>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_style.css">
     <style>
-        /* ---- Pagination ---- */
-        .admin-pagination {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        .admin-pagination .page-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-            height: 36px;
-            padding: 0 10px;
-            border: 1px solid #dde1e7;
-            border-radius: 8px;
-            color: var(--admin-text, #374151);
-            font-size: 0.875rem;
-            text-decoration: none;
-            transition: background .15s, color .15s;
-        }
-        .admin-pagination .page-link:hover {
-            background: #f1f5f9;
-        }
-        .admin-pagination .page-link.active {
-            background: var(--admin-primary, #4f46e5);
-            color: #fff;
-            border-color: var(--admin-primary, #4f46e5);
-            font-weight: 600;
-        }
-        .admin-pagination .page-link.disabled {
-            opacity: .4;
+        /* Chỉ bổ sung style chưa có trong admin_style.css */
+        .page-link.disabled {
+            opacity: 0.4;
             pointer-events: none;
+            cursor: default;
+        }
+        .admin-pagination {
+            justify-content: center; /* ghi đè flex-end thành căn giữa */
         }
         .pagination-info {
-            font-size: 0.85rem;
-            color: var(--admin-text-light, #6b7280);
-            margin-top: 8px;
             text-align: center;
+            font-size: 0.82rem;
+            color: #6b7280;
+            margin-top: 8px;
         }
     </style>
 </head>
@@ -77,8 +49,7 @@
 
             <c:if test="${not empty param.msg}">
                 <div class="alert alert-success">
-                    <i class="fa-solid fa-check-circle"></i>
-                        ${param.msg}
+                    <i class="fa-solid fa-check-circle"></i> ${param.msg}
                 </div>
             </c:if>
             <c:if test="${not empty param.error}">
@@ -88,7 +59,7 @@
                 </div>
             </c:if>
 
-            <%-- ===== Form tìm kiếm & lọc ===== --%>
+            <%-- ===== Tìm kiếm & Lọc ===== --%>
             <form action="${pageContext.request.contextPath}/admin/order" method="get" class="admin-filters">
                 <input type="hidden" name="action" value="list">
 
@@ -112,7 +83,7 @@
 
             <div class="admin-card">
                 <h3>Danh sách đơn hàng
-                    <span style="font-size:0.85rem; font-weight:400; color:var(--admin-text-light);">
+                    <span style="font-size:0.85rem; font-weight:400; color:#6b7280;">
                         (${totalRecords} đơn)
                     </span>
                 </h3>
@@ -122,11 +93,11 @@
                     <tr>
                         <th width="10%">Mã ĐH</th>
                         <th width="20%">Khách hàng</th>
-                        <th width="16%">Ngày đặt</th>
+                        <th width="15%">Ngày đặt</th>
                         <th width="15%">Tổng tiền</th>
                         <th width="15%">Trạng thái</th>
                         <th width="10%">Thanh toán</th>
-                        <th width="14%" class="text-right">Hành động</th>
+                        <th width="15%" class="text-right">Hành động</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -135,8 +106,8 @@
                             <td><strong>#${o.order_id}</strong></td>
 
                             <td>
-                                <div style="font-weight: 600;">${o.userName}</div>
-                                <div style="font-size: 0.8rem; color: var(--admin-text-light);">
+                                <div style="font-weight:600;">${o.userName}</div>
+                                <div style="font-size:0.8rem; color:#9ca3af;">
                                     <c:choose>
                                         <c:when test="${not empty o.addressDetail and o.addressDetail.length() > 30}">
                                             ${o.addressDetail.substring(0, 30)}...
@@ -147,13 +118,13 @@
                             </td>
 
                             <td>
-                                    ${o.created_at.toLocalDate()} <br>
-                                <span style="font-size: 0.8rem; color: #999;">
+                                    ${o.created_at.toLocalDate()}<br>
+                                <span style="font-size:0.8rem; color:#9ca3af;">
                                         ${o.created_at.toLocalTime().toString().substring(0,5)}
                                 </span>
                             </td>
 
-                            <td style="font-weight: 600;">
+                            <td style="font-weight:600;">
                                 <fmt:setLocale value="vi_VN"/>
                                 <fmt:formatNumber value="${o.total_amount}" type="currency"/>
                             </td>
@@ -164,10 +135,7 @@
                                         <span class="status processing">Chờ xác nhận</span>
                                     </c:when>
                                     <c:when test="${o.status == 'VAN_CHUYEN' or o.status == 'CHO_GIAO_HANG'}">
-                                        <span class="status processing"
-                                              style="background-color: #e0f7fa; color: #006064;">
-                                            Vận chuyển
-                                        </span>
+                                        <span class="status processing" style="background:#e0f7fa;color:#006064;">Vận chuyển</span>
                                     </c:when>
                                     <c:when test="${o.status == 'HOAN_THANH'}">
                                         <span class="status completed">Hoàn thành</span>
@@ -176,16 +144,13 @@
                                         <span class="status cancelled">Đã hủy</span>
                                     </c:when>
                                     <c:otherwise>
-                                        <span class="status"
-                                              style="background-color: #f1f5f9; color: #64748b;">
-                                                ${o.status}
-                                        </span>
+                                        <span class="status" style="background:#f1f5f9;color:#64748b;">${o.status}</span>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
 
                             <td>
-                                <span style="font-size: 0.85rem; color: var(--admin-text-light);">
+                                <span style="font-size:0.85rem;color:#9ca3af;">
                                         ${o.payment_method == 'COD' ? 'Tiền mặt' : 'Chuyển khoản'}
                                 </span>
                             </td>
@@ -201,7 +166,7 @@
 
                     <c:if test="${empty orders}">
                         <tr>
-                            <td colspan="7" style="text-align: center; padding: 30px; color: var(--admin-text-light);">
+                            <td colspan="7" style="text-align:center;padding:30px;color:#9ca3af;">
                                 Không tìm thấy đơn hàng nào.
                             </td>
                         </tr>
@@ -209,63 +174,68 @@
                     </tbody>
                 </table>
 
-                <c:if test="${totalPages > 1}">
+                <%-- ===== PHÂN TRANG — dùng đúng class của admin_style.css ===== --%>
+                <c:if test="${totalRecords > 0}">
                     <div class="admin-pagination">
 
-                            <%-- Nút «  Trước --%>
+                            <%-- Nút Trước --%>
                         <c:choose>
                             <c:when test="${currentPage <= 1}">
-                                <span class="page-link disabled">
+                                <a href="#" class="page-link disabled">
                                     <i class="fa-solid fa-chevron-left"></i>
-                                </span>
+                                </a>
                             </c:when>
                             <c:otherwise>
-                                <a class="page-link"
-                                   href="${pageContext.request.contextPath}/admin/order?action=list&page=${currentPage-1}&keyword=${keyword}&status_filter=${statusFilter}">
+                                <a href="${pageContext.request.contextPath}/admin/order?action=list&page=${currentPage-1}&keyword=${keyword}&status_filter=${statusFilter}"
+                                   class="page-link">
                                     <i class="fa-solid fa-chevron-left"></i>
                                 </a>
                             </c:otherwise>
                         </c:choose>
 
+                            <%-- Trang đầu + "..." --%>
                         <c:if test="${currentPage > 3}">
-                            <a class="page-link"
-                               href="${pageContext.request.contextPath}/admin/order?action=list&page=1&keyword=${keyword}&status_filter=${statusFilter}">1</a>
+                            <a href="${pageContext.request.contextPath}/admin/order?action=list&page=1&keyword=${keyword}&status_filter=${statusFilter}"
+                               class="page-link">1</a>
                             <c:if test="${currentPage > 4}">
-                                <span class="page-link disabled">…</span>
+                                <a href="#" class="page-link disabled">…</a>
                             </c:if>
                         </c:if>
 
-                        <c:forEach var="i" begin="${currentPage - 2}" end="${currentPage + 2}">
+                            <%-- Window 5 trang xung quanh trang hiện tại --%>
+                        <c:forEach var="i" begin="${startPage}" end="${endPage}">
                             <c:if test="${i >= 1 and i <= totalPages}">
                                 <c:choose>
                                     <c:when test="${i == currentPage}">
-                                        <span class="page-link active">${i}</span>
+                                        <a href="#" class="page-link active">${i}</a>
                                     </c:when>
                                     <c:otherwise>
-                                        <a class="page-link"
-                                           href="${pageContext.request.contextPath}/admin/order?action=list&page=${i}&keyword=${keyword}&status_filter=${statusFilter}">${i}</a>
+                                        <a href="${pageContext.request.contextPath}/admin/order?action=list&page=${i}&keyword=${keyword}&status_filter=${statusFilter}"
+                                           class="page-link">${i}</a>
                                     </c:otherwise>
                                 </c:choose>
                             </c:if>
                         </c:forEach>
 
+                            <%-- "..." + trang cuối --%>
                         <c:if test="${currentPage < totalPages - 2}">
                             <c:if test="${currentPage < totalPages - 3}">
-                                <span class="page-link disabled">…</span>
+                                <a href="#" class="page-link disabled">…</a>
                             </c:if>
-                            <a class="page-link"
-                               href="${pageContext.request.contextPath}/admin/order?action=list&page=${totalPages}&keyword=${keyword}&status_filter=${statusFilter}">${totalPages}</a>
+                            <a href="${pageContext.request.contextPath}/admin/order?action=list&page=${totalPages}&keyword=${keyword}&status_filter=${statusFilter}"
+                               class="page-link">${totalPages}</a>
                         </c:if>
 
+                            <%-- Nút Sau --%>
                         <c:choose>
                             <c:when test="${currentPage >= totalPages}">
-                                <span class="page-link disabled">
+                                <a href="#" class="page-link disabled">
                                     <i class="fa-solid fa-chevron-right"></i>
-                                </span>
+                                </a>
                             </c:when>
                             <c:otherwise>
-                                <a class="page-link"
-                                   href="${pageContext.request.contextPath}/admin/order?action=list&page=${currentPage+1}&keyword=${keyword}&status_filter=${statusFilter}">
+                                <a href="${pageContext.request.contextPath}/admin/order?action=list&page=${currentPage+1}&keyword=${keyword}&status_filter=${statusFilter}"
+                                   class="page-link">
                                     <i class="fa-solid fa-chevron-right"></i>
                                 </a>
                             </c:otherwise>
@@ -276,6 +246,7 @@
                         Trang ${currentPage} / ${totalPages} &nbsp;|&nbsp; Tổng ${totalRecords} đơn hàng
                     </p>
                 </c:if>
+                <%-- ===== /PHÂN TRANG ===== --%>
 
             </div>
         </div>
