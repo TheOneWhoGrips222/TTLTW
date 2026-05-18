@@ -28,6 +28,14 @@
         <span>/</span>
         <span class="text-gray-900 font-bold" style="font-family: 'Manrope', sans-serif;">${c.name}</span>
     </nav>
+    <c:if test="${not empty sessionScope.message}">
+        <div class="mb-6 p-4 rounded-2xl flex items-center gap-3 shadow-sm border ${sessionScope.messageType == 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'}">
+            <i class="fa ${sessionScope.messageType == 'success' ? 'fa-check-circle text-green-500' : 'fa-exclamation-circle text-red-500'} text-xl"></i>
+            <span class="font-bold">${sessionScope.message}</span>
+            <c:remove var="message" scope="session" />
+            <c:remove var="messageType" scope="session" />
+        </div>
+    </c:if>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 bg-white p-4 md:p-12 rounded-[2.5rem] shadow-2xl border border-gray-50">
 
@@ -53,7 +61,7 @@
 
         <div class="lg:col-span-5 flex flex-col product-info">
             <h3 class="text-5xl font-extrabold text-gray-900 leading-tight mb-4 tracking-tighter"
-               >
+            >
                 ${c.name}
             </h3>
 
@@ -62,7 +70,7 @@
             <div class="bg-blue-50/50 p-6 md:p-8 rounded-[2rem] mb-8 border border-blue-100 shadow-sm overflow-hidden">
                 <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
         <span class="text-3xl md:text-5xl font-black  tracking-tighter shrink-0" style = "color: #e74c3c;"
-              >
+        >
             ${c.getPriceFormat(c.discountprice)}
         </span>
 
@@ -97,6 +105,12 @@
             </div>
 
             <div class="mt-12 space-y-4">
+                <a href="add-combo?id=${c.id}&q=1">
+                    <button class="w-full bg-gray-900 text-white py-6 rounded-2xl font-black text-xl hover:bg-blue-700 transition-all duration-500 shadow-2xl shadow-blue-100 uppercase tracking-widest transform active:scale-[0.98]"
+                            style="font-family: 'Manrope', sans-serif;">
+                        <i class="fa fa-cart-plus"></i> THÊM VÀO GIỎ HÀNG
+                    </button>
+                </a>
                 <button class="w-full bg-gray-900 text-white py-6 rounded-2xl font-black text-xl hover:bg-blue-700 transition-all duration-500 shadow-2xl shadow-blue-100 uppercase tracking-widest transform active:scale-[0.98]"
                         style="font-family: 'Manrope', sans-serif;">
                     SỞ HỮU NGAY COMBO
