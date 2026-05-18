@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html; charset=UTF-8" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -166,6 +165,10 @@
 
                         <div class="cart-summary">
                             <h3>Tổng quan Đơn hàng</h3>
+                            <div class="summary-row">
+                                <span>Tổng số lượng</span>
+                                <span>${sessionScope.cart.totalQuantity} sản phẩm</span>
+                            </div>
                             <div class="summary-row">
                                 <span>Tạm tính</span>
                                 <span id="cart-subtotal">${sessionScope.cart.formatTotal}</span>
