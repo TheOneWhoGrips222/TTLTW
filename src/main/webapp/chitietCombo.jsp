@@ -105,7 +105,7 @@
             </div>
 
             <div class="mt-12 space-y-4">
-                <a href="add-combo?id=${c.id}&q=1">
+                <a href="add-combo?id=${c.id}&q=1" class="btn-add-combo-ajax">
                     <button class="w-full bg-gray-900 text-white py-6 rounded-2xl font-black text-xl hover:bg-blue-700 transition-all duration-500 shadow-2xl shadow-blue-100 uppercase tracking-widest transform active:scale-[0.98]"
                             style="font-family: 'Manrope', sans-serif;">
                         <i class="fa fa-cart-plus"></i> THÊM VÀO GIỎ HÀNG
@@ -125,5 +125,83 @@
 </main>
 <jsp:include page="/common/footer.jsp" />
 <script src="assets/js/ctCombo.js"></script>
+<script>
+    window.addEventListener('load', function() {
+        const addCartLink = document.querySelector('.btn-add-combo-ajax');
+
+        if (addCartLink) {
+            const innerElements = addCartLink.querySelectorAll('*');
+            innerElements.forEach(function(el) {
+                el.style.pointerEvents = 'none';
+            });
+
+            addCartLink.onclick = function(e) {
+                e.preventDefault();
+
+                const url = this.getAttribute('href');
+                if(!url) return false;
+
+                const targetBtn = this.querySelector('button');
+                const originalText = targetBtn.innerHTML;
+                const originalBg = targetBtn.style.backgroundColor;
+
+                targetBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> THÊM VÀO GIỎ HÀNG...';
+                addCartLink.style.pointerEvents = 'none';
+
+                fetch(url)
+                    .then(function(res) {
+                        if(res.redirected && res.url.includes('login')) {
+                            window.location.href = res.url;
+                            return;
+                        }
+                        return res.text();
+                    })
+                    .then(function(html) {
+                        if(!html) return;
+                        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                        const newMsg = doc.querySelector('.mb-6');
+                        const oldMsg = document.querySelector('.mb-6');
+                        const nav = document.querySelector('main nav');
+
+                        if (newMsg) {
+                            if (oldMsg) {
+                                oldMsg.replaceWith(newMsg);
+                            } else if (nav) {
+                                nav.insertAdjacentElement('afterend', newMsg);
+                            }
+                            const msgElement = document.querySelector('.mb-6');
+                            if(msgElement) msgElement.scrollIntoView({behavior: 'smooth', block: 'center'});
+                        }
+
+                        const newHeader = doc.querySelector('header');
+                        const oldHeader = document.querySelector('header');
+                        if (newHeader && oldHeader) {
+                            oldHeader.replaceWith(newHeader);
+                        }
+
+                        targetBtn.innerHTML = '<i class="fa-solid fa-check"></i> ĐÃ THÊM THÀNH CÔNG!';
+                        targetBtn.style.backgroundColor = '#28a745';
+
+                        setTimeout(function() {
+                            targetBtn.innerHTML = originalText;
+                            targetBtn.style.backgroundColor = originalBg;
+                            addCartLink.style.pointerEvents = 'auto';
+                        }, 2000);
+                    })
+                    .catch(function(err) {
+                        console.error("Lỗi:", err);
+                        targetBtn.innerHTML = originalText;
+                        targetBtn.style.backgroundColor = originalBg;
+                        addCartLink.style.pointerEvents = 'auto';
+                    });
+
+                return false;
+            };
+        }
+    });
+</script>
+
+
 </body>
 </html>

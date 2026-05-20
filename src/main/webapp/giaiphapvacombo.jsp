@@ -55,5 +55,82 @@
 </main>
 
 <jsp:include page="common/footer.jsp"/>
+<script>
+    document.addEventListener('click', function (event) {
+        const addCartLink = event.target.closest('a[href*="add-combo"]');
+
+        if (addCartLink) {
+            event.preventDefault();
+
+            const originalText = addCartLink.innerHTML;
+            const originalBg = addCartLink.style.backgroundColor;
+            const originalBorder = addCartLink.style.borderColor;
+            const originalColor = addCartLink.style.color;
+
+            addCartLink.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang thêm...';
+            addCartLink.style.pointerEvents = 'none';
+            addCartLink.style.opacity = '0.7';
+
+            const url = addCartLink.getAttribute('href');
+
+            fetch(url)
+                .then(response => {
+                    if (response.redirected && response.url.includes('login')) {
+                        window.location.href = response.url;
+                        return;
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    if (!html) return;
+
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    const currentHeader = document.querySelector('header');
+                    const newHeader = doc.querySelector('header');
+                    if (currentHeader && newHeader) {
+                        currentHeader.replaceWith(newHeader);
+                    }
+
+                    const newMessage = doc.querySelector('.mb-6');
+                    const currentMessage = document.querySelector('.mb-6');
+
+                    if (newMessage) {
+                        if (currentMessage) {
+                            currentMessage.replaceWith(newMessage);
+                        } else {
+                            const mainLayout = document.querySelector('main');
+                            if (mainLayout) {
+                                mainLayout.insertAdjacentElement('afterbegin', newMessage);
+                            }
+                        }
+                        const targetScroll = document.querySelector('.mb-6') || newMessage;
+                        targetScroll.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+
+                    addCartLink.innerHTML = '<i class="fa-solid fa-check"></i> Đã thêm thành công!';
+                    addCartLink.style.backgroundColor = '#28a745';
+                    addCartLink.style.borderColor = '#28a745';
+                    addCartLink.style.color = '#ffffff';
+                    addCartLink.style.opacity = '1';
+
+                    setTimeout(() => {
+                        addCartLink.innerHTML = originalText;
+                        addCartLink.style.pointerEvents = 'auto';
+                        addCartLink.style.backgroundColor = originalBg;
+                        addCartLink.style.borderColor = originalBorder;
+                        addCartLink.style.color = originalColor;
+                    }, 2000);
+                })
+                .catch(error => {
+                    console.error('Lỗi:', error);
+                    addCartLink.innerHTML = originalText;
+                    addCartLink.style.pointerEvents = 'auto';
+                    addCartLink.style.opacity = '1';
+                });
+        }
+    });
+</script>
 </body>
 </html>

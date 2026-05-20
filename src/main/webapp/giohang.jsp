@@ -182,7 +182,7 @@
                                 <span id="cart-total">${sessionScope.cart.formatTotal}</span>
                             </div>
                             <a href="${pageContext.request.contextPath}/checkout?mode=cart" class="btn btn-primary checkout-btn">Tiến hành Thanh toán</a>
-                            <a href="../../index.html" class="continue-shopping-link">
+                            <a href="Home" class="continue-shopping-link">
                                 <i class="fa fa-arrow-left"></i> Tiếp tục mua sắm
                             </a>
                         </div>
@@ -194,5 +194,73 @@
     </section>
 </main>
 <jsp:include page="common/footer.jsp"></jsp:include>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        function gansukien() {
+            let buttons = document.querySelectorAll('.quantity-control button, .cart-remove-btn, .btn-clear-all');
+
+            for (let i = 0; i < buttons.length; i++) {
+                let btn = buttons[i];
+
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    let f = btn.closest('form');
+                    if (!f) return;
+
+                    let data = new FormData(f);
+                    if (btn.name) {
+                        data.append(btn.name, btn.value);
+                    }
+
+                    let params = new URLSearchParams(data).toString();
+                    let actionAttr = f.getAttribute('action');
+                    let url = "${pageContext.request.contextPath}/" + actionAttr;
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: params
+                    })
+                        .then(function(res) {
+                            return res.text();
+                        })
+                        .then(function(htmlText) {
+                            let parser = new DOMParser();
+                            let newDoc = parser.parseFromString(htmlText, 'text/html');
+
+
+                            let newContent = newDoc.querySelector('.cart-section');
+                            let oldContent = document.querySelector('.cart-section');
+
+                            if (newContent && oldContent) {
+                                oldContent.innerHTML = newContent.innerHTML;
+
+
+                                let newHeader = newDoc.querySelector('.header');
+                                let oldHeader = document.querySelector('.header');
+                                if (newHeader && oldHeader) {
+                                    oldHeader.innerHTML = newHeader.innerHTML;
+                                }
+
+
+                                gansukien();
+                            } else {
+                                f.submit();
+                            }
+                        })
+                        .catch(function(err) {
+                            f.submit();
+                        });
+                });
+            }
+        }
+
+        gansukien();
+    });
+</script>
 </body>
 </html>
