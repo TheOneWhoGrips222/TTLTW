@@ -56,17 +56,28 @@
                     </div>
                 </div>
             </c:forEach>
-
-            <!-- FORM ADD -->
             <form id="addForm" method="post" style="display:none">
-                <input name="receiver_name" placeholder="Tên người nhận">
-                <input name="phone" placeholder="SĐT">
-                <input name="address_detail" placeholder="Địa chỉ chi tiết">
-                <input name="ward" placeholder="Phường/Xã">
-                <input name="district" placeholder="Quận/Huyện">
-                <input name="province" placeholder="Tỉnh/TP">
+                <input name="receiver_name" placeholder="Tên người nhận" required>
+                <input type="tel" name="phone" placeholder="SĐT" required>
+
+                <select id="province" name="province_code" required>
+                    <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                </select>
+                <select id="district" name="district_code" required>
+                    <option value="">-- Chọn Quận/Huyện --</option>
+                </select>
+                <select id="ward" name="ward_code" required>
+                    <option value="">-- Chọn Phường/Xã --</option>
+                </select>
+
+                <input name="address_detail" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)" required>
+
+                <input type="hidden" id="province_name" name="province">
+                <input type="hidden" id="district_name" name="district">
+                <input type="hidden" id="ward_name" name="ward">
+
                 <label><input type="checkbox" name="is_default"> Mặc định</label>
-                <button>Thêm</button>
+                <button type="submit">Thêm</button>
             </form>
 
         </section>
@@ -74,6 +85,6 @@
 </main>
 
 <jsp:include page="common/footer.jsp"/>
+<script src="${pageContext.request.contextPath}/assets/js/address.js" defer></script>
 </body>
 </html>
-
