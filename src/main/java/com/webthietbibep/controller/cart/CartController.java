@@ -38,6 +38,7 @@ public class CartController extends HttpServlet {
 
         Cart cart = (Cart) session.getAttribute("cart");
         Map<Integer,String> data = new HashMap<>();
+
         if(cart != null && cart.getData() != null){
 
 

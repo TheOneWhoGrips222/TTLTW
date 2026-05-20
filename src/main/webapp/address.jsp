@@ -56,25 +56,34 @@
                     </div>
                 </div>
             </c:forEach>
-            <form id="addForm" method="post" style="display:none">
-                <input name="receiver_name" placeholder="Tên người nhận" required>
-                <input type="tel" name="phone" placeholder="SĐT" required>
+                <form id="addForm" method="post" style="display:none">
+                    <input name="receiver_name" placeholder="Tên người nhận" required>
+                    <br>
+                    <input name="phone" placeholder="SĐT" type="tel"  required>
+                    <br>
+                    <select id="province" required>
+                        <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                    </select>
+                    <br>
+                    <select id="district" required>
+                        <option value="">-- Chọn Quận/Huyện --</option>
+                    </select>
+                    <br>
+                    <select id="ward" required>
+                        <option value="">-- Chọn Phường/Xã --</option>
+                    </select>
+                    <br>
+                    <input name="address_detail" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)" required>
+                    <input type="hidden" id="province_name" name="province">
+                    <input type="hidden" id="district_name" name="district">
+                    <input type="hidden" id="ward_name" name="ward">
 
-                <select id="province" name="province_code" required>
-                    <option value="">-- Chọn Tỉnh/Thành phố --</option>
-                </select>
-                <select id="district" name="district_code" required>
-                    <option value="">-- Chọn Quận/Huyện --</option>
-                </select>
-                <select id="ward" name="ward_code" required>
-                    <option value="">-- Chọn Phường/Xã --</option>
-                </select>
-
-                <input name="address_detail" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)" required>
-
-                <input type="hidden" id="province_name" name="province">
-                <input type="hidden" id="district_name" name="district">
-                <input type="hidden" id="ward_name" name="ward">
+                    <div class="geolocation-wrapper">
+                        <button type="button" id="getLocationBtn">
+                            <i class="fa fa-map-marker-alt"></i> Sử dụng vị trí hiện tại
+                        </button>
+                            <span id="locationStatus" style="display: none; font-size: 12px; color: #666; margin-left: 10px;">Đang xác định vị trí...</span>
+                    </div>
 
                 <label><input type="checkbox" name="is_default"> Mặc định</label>
                 <button type="submit">Thêm</button>
