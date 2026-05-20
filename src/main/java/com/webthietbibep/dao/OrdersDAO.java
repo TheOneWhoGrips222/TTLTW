@@ -171,4 +171,22 @@ public class OrdersDAO extends BaseDao {
                         .execute()
         );
     }
+    public boolean hasUserPurchasedProduct(int userId, int productId) {
+        String sql = """
+        SELECT COUNT(*)
+        FROM orders o
+        JOIN order_items oi ON o.order_id = oi.order_id
+        WHERE o.user_id = :userId
+          AND oi.product_id = :productId
+          AND o.status = 'HOAN_THANH'
+    """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .bind("userId", userId)
+                        .bind("productId", productId)
+                        .mapTo(Integer.class)
+                        .one() > 0
+        );
+    }
 }
