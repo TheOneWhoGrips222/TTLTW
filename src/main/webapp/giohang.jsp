@@ -196,67 +196,161 @@
 <jsp:include page="common/footer.jsp"></jsp:include>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        let activeTimeouts = {};
+        let activeIntervals = {};
 
         function gansukien() {
-            let buttons = document.querySelectorAll('.quantity-control button, .cart-remove-btn, .btn-clear-all');
+            let buttons = document.querySelectorAll('.quantity-control button, .btn-clear-all');
+            buttons.forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    executeFormAjax(btn);
+                });
+            });
 
-            for (let i = 0; i < buttons.length; i++) {
-                let btn = buttons[i];
-
+            let removeButtons = document.querySelectorAll('.cart-remove-btn');
+            removeButtons.forEach(function(btn) {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
 
                     let f = btn.closest('form');
                     if (!f) return;
 
-                    let data = new FormData(f);
-                    if (btn.name) {
-                        data.append(btn.name, btn.value);
-                    }
+                    let row = btn.closest('tr');
+                    if (!row) return;
 
-                    let params = new URLSearchParams(data).toString();
-                    let actionAttr = f.getAttribute('action');
-                    let url = "${pageContext.request.contextPath}/" + actionAttr;
+                    let itemId = f.querySelector('input[name="id"]').value;
+                    let isCombo = f.getAttribute('action').includes('combo');
+                    let storageId = (isCombo ? 'combo-' : 'item-') + itemId;
 
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: params
-                    })
-                        .then(function(res) {
-                            return res.text();
-                        })
-                        .then(function(htmlText) {
-                            let parser = new DOMParser();
-                            let newDoc = parser.parseFromString(htmlText, 'text/html');
+                    if (activeTimeouts[storageId]) return;
 
+                    let originalCells = Array.from(row.children).map(function(cell) {
+                        return { element: cell, display: cell.style.display };
+                    });
 
-                            let newContent = newDoc.querySelector('.cart-section');
-                            let oldContent = document.querySelector('.cart-section');
+                    originalCells.forEach(function(item) {
+                        item.element.style.display = 'none';
+                    });
 
-                            if (newContent && oldContent) {
-                                oldContent.innerHTML = newContent.innerHTML;
+                    let undoCell = document.createElement('td');
+                    undoCell.setAttribute('colspan', originalCells.length.toString());
+                    undoCell.style.padding = '15px';
+                    undoCell.style.backgroundColor = '#fef3c7';
+                    undoCell.style.color = '#b45309';
+                    undoCell.style.textAlign = 'center';
+                    undoCell.style.borderRadius = '8px';
 
 
-                                let newHeader = newDoc.querySelector('.header');
-                                let oldHeader = document.querySelector('.header');
-                                if (newHeader && oldHeader) {
-                                    oldHeader.innerHTML = newHeader.innerHTML;
-                                }
+                    undoCell.innerHTML = '<i class="fa fa-info-circle mr-2"></i> Sản phẩm sẽ bị xóa sau <span class="undo-countdown" style="font-weight: 800; color: #b45309;">60</span> giây. ' +
+                        '<button class="undo-trigger-btn" style="' +
+                        'margin-left: 20px; ' +
+                        'background-color: #dbeafe; ' +
+                        'color: #2563eb; ' +
+                        'font-weight: 700; ' +
+                        'font-size: 13px; ' +
+                        'padding: 8px 16px; ' +
+                        'border: 1px solid #bfdbfe; ' +
+                        'border-radius: 9999px; ' +
+                        'cursor: pointer; ' +
+                        'transition: all 0.2s ease-in-out; ' +
+                        'outline: none; ' +
+                        '">Khôi phục</button>';
+
+                    row.appendChild(undoCell);
+
+                    let timeLeft = 60;
+                    let countdownDisplay = undoCell.querySelector('.undo-countdown');
+                    let undoBtn = undoCell.querySelector('.undo-trigger-btn');
 
 
-                                gansukien();
-                            } else {
-                                f.submit();
-                            }
-                        })
-                        .catch(function(err) {
-                            f.submit();
+                    undoBtn.onmouseover = function() {
+                        undoBtn.style.backgroundColor = '#bfdbfe';
+                        undoBtn.style.color = '#1d4ed8';
+                    };
+                    undoBtn.onmouseout = function() {
+                        undoBtn.style.backgroundColor = '#dbeafe';
+                        undoBtn.style.color = '#2563eb';
+                    };
+
+                    activeIntervals[storageId] = setInterval(function() {
+                        timeLeft--;
+                        if (countdownDisplay) countdownDisplay.innerText = timeLeft;
+                        if (timeLeft <= 0) {
+                            clearInterval(activeIntervals[storageId]);
+                        }
+                    }, 1000);
+
+                    activeTimeouts[storageId] = setTimeout(function() {
+                        clearInterval(activeIntervals[storageId]);
+                        delete activeTimeouts[storageId];
+                        delete activeIntervals[storageId];
+                        executeFormAjax(btn);
+                    }, 60000);
+
+                    undoBtn.addEventListener('click', function(ue) {
+                        ue.preventDefault();
+                        clearTimeout(activeTimeouts[storageId]);
+                        clearInterval(activeIntervals[storageId]);
+                        delete activeTimeouts[storageId];
+                        delete activeIntervals[storageId];
+
+                        undoCell.remove();
+                        originalCells.forEach(function(item) {
+                            item.element.style.display = item.display;
                         });
+                    });
                 });
+            });
+        }
+
+        function executeFormAjax(btn) {
+            let f = btn.closest('form');
+            if (!f) return;
+
+            let data = new FormData(f);
+            if (btn.name) {
+                data.append(btn.name, btn.value);
             }
+
+            let params = new URLSearchParams(data).toString();
+            let actionAttr = f.getAttribute('action');
+            let url = "${pageContext.request.contextPath}/" + actionAttr;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: params
+            })
+                .then(function(res) {
+                    return res.text();
+                })
+                .then(function(htmlText) {
+                    let parser = new DOMParser();
+                    let newDoc = parser.parseFromString(htmlText, 'text/html');
+
+                    let newContent = newDoc.querySelector('.cart-section');
+                    let oldContent = document.querySelector('.cart-section');
+
+                    if (newContent && oldContent) {
+                        oldContent.innerHTML = newContent.innerHTML;
+
+                        let newHeader = newDoc.querySelector('.header');
+                        let oldHeader = document.querySelector('.header');
+                        if (newHeader && oldHeader) {
+                            oldHeader.innerHTML = newHeader.innerHTML;
+                        }
+
+                        gansukien();
+                    } else {
+                        f.submit();
+                    }
+                })
+                .catch(function(err) {
+                    f.submit();
+                });
         }
 
         gansukien();
