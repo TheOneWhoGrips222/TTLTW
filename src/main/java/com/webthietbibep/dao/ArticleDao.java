@@ -18,18 +18,57 @@ public class ArticleDao extends  BaseDao{
             return h.createQuery("SELECT * FROM articles where is_active = 1 order by create_date DESC LIMIT 3;").mapToBean(Article.class).list();
         });
     }
-    public List<Article> getFilterArticle(String f){
-        return  get().withHandle(h ->{
+    public List<Article> getFilterArticle(String f, int lastId, String lastValue, int pageSize){
+        return get().withHandle(h -> {
 
             String query = "SELECT * FROM articles WHERE is_active = 1 ";
-            if("new".equals(f)){query += " " + "ORDER BY create_date DESC ";}
-            else if("population".equals(f)) {query += " " + "ORDER BY likecount DESC";}
-            else {query += " " + "ORDER BY title ASC";}
 
-            return h.createQuery(query).mapToBean(Article.class).list();
+            if (lastId > 0) {
+                if ("new".equals(f)) {
+                    query += "AND id < :lastId ";
+                } else if ("population".equals(f)) {
+                    query += "AND (likecount < :lastValue OR (likecount = :lastValue AND id > :lastId)) ";
+                } else {
+                    query += "AND (title > :lastValue OR (title = :lastValue AND id > :lastId)) ";
+                }
+            }
+
+            if("new".equals(f)){query += " " + "ORDER BY id DESC ";}
+            else if("population".equals(f)) {query += " " + "ORDER BY likecount DESC, id ASC";}
+            else {query += " " + "ORDER BY title ASC, id ASC";}
+
+            query += " LIMIT :limit ";
+
+            if (lastId > 0) {
+                if ("new".equals(f)) {
+                    return h.createQuery(query)
+                            .bind("lastId", lastId)
+                            .bind("limit", pageSize)
+                            .mapToBean(Article.class)
+                            .list();
+                } else if ("population".equals(f)) {
+                    return h.createQuery(query)
+                            .bind("lastId", lastId)
+                            .bind("lastValue", Integer.parseInt(lastValue))
+                            .bind("limit", pageSize)
+                            .mapToBean(Article.class)
+                            .list();
+                } else {
+                    return h.createQuery(query)
+                            .bind("lastId", lastId)
+                            .bind("lastValue", lastValue)
+                            .bind("limit", pageSize)
+                            .mapToBean(Article.class)
+                            .list();
+                }
+            } else {
+                return h.createQuery(query)
+                        .bind("limit", pageSize)
+                        .mapToBean(Article.class)
+                        .list();
+            }
         });
     }
-
     public List<Article> getFilterArticleAdmin(String filter,String search,int page, int pageSize){
         return  get().withHandle(h ->{
 

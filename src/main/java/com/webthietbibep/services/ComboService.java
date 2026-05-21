@@ -10,8 +10,8 @@ import java.util.List;
 public class ComboService {
     ComboDao cdao = new ComboDao();
 
-    public List<Combo> getListCombo() {
-        return cdao.getListCombo();
+    public List<Combo> getListCombo(int lastId, int pageSize) {
+        return cdao.getListCombo(lastId, pageSize);
     }
 
     public Combo getCombo(int id) {

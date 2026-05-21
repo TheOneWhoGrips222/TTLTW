@@ -11,6 +11,9 @@ public class EcoService {
     public List<Ecosystems> getListEco() {
         return edao.getListEco();
     }
+    public List<Ecosystems> getListEco2(int lastId, int pageSize) {
+        return edao.getListEco2(lastId, pageSize);
+    }
     public Ecosystems getEcoById(int id) {
         return edao.getEcoById(id);
     }

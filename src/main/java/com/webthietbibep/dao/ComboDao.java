@@ -9,9 +9,25 @@ import java.util.List;
 
 public class ComboDao extends BaseDao {
 
-    public List<Combo> getListCombo() {
+    public List<Combo> getListCombo(int lastId, int pageSize) {
         return get().withHandle(h -> {
-            return h.createQuery("select * from combos where is_active = 1").mapToBean(Combo.class).list();
+            String sql = "select * from combos where is_active = 1";
+            if(lastId > 0){
+                sql += " and id < :lastId";
+            }
+            sql += " order by id desc limit :limit";
+            if(lastId > 0){
+                return h.createQuery(sql)
+                        .bind("lastId", lastId)
+                        .bind("limit", pageSize)
+                        .mapToBean(Combo.class)
+                        .list();
+            } else {
+                return h.createQuery(sql)
+                        .bind("limit", pageSize)
+                        .mapToBean(Combo.class)
+                        .list();
+            }
         });
     }
 
