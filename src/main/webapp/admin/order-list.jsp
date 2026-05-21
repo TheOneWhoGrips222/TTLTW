@@ -10,14 +10,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_style.css">
     <style>
-        /* Chỉ bổ sung style chưa có trong admin_style.css */
         .page-link.disabled {
             opacity: 0.4;
             pointer-events: none;
             cursor: default;
         }
         .admin-pagination {
-            justify-content: center; /* ghi đè flex-end thành căn giữa */
+            justify-content: center;
         }
         .pagination-info {
             text-align: center;
@@ -59,7 +58,6 @@
                 </div>
             </c:if>
 
-            <%-- ===== Tìm kiếm & Lọc ===== --%>
             <form action="${pageContext.request.contextPath}/admin/order" method="get" class="admin-filters">
                 <input type="hidden" name="action" value="list">
 
@@ -173,12 +171,9 @@
                     </c:if>
                     </tbody>
                 </table>
-
-                <%-- ===== PHÂN TRANG — dùng đúng class của admin_style.css ===== --%>
                 <c:if test="${totalRecords > 0}">
                     <div class="admin-pagination">
 
-                            <%-- Nút Trước --%>
                         <c:choose>
                             <c:when test="${currentPage <= 1}">
                                 <a href="#" class="page-link disabled">
@@ -193,7 +188,6 @@
                             </c:otherwise>
                         </c:choose>
 
-                            <%-- Trang đầu + "..." --%>
                         <c:if test="${currentPage > 3}">
                             <a href="${pageContext.request.contextPath}/admin/order?action=list&page=1&keyword=${keyword}&status_filter=${statusFilter}"
                                class="page-link">1</a>
@@ -202,7 +196,6 @@
                             </c:if>
                         </c:if>
 
-                            <%-- Window 5 trang xung quanh trang hiện tại --%>
                         <c:forEach var="i" begin="${startPage}" end="${endPage}">
                             <c:if test="${i >= 1 and i <= totalPages}">
                                 <c:choose>
@@ -217,7 +210,6 @@
                             </c:if>
                         </c:forEach>
 
-                            <%-- "..." + trang cuối --%>
                         <c:if test="${currentPage < totalPages - 2}">
                             <c:if test="${currentPage < totalPages - 3}">
                                 <a href="#" class="page-link disabled">…</a>
@@ -226,7 +218,6 @@
                                class="page-link">${totalPages}</a>
                         </c:if>
 
-                            <%-- Nút Sau --%>
                         <c:choose>
                             <c:when test="${currentPage >= totalPages}">
                                 <a href="#" class="page-link disabled">
@@ -246,7 +237,6 @@
                         Trang ${currentPage} / ${totalPages} &nbsp;|&nbsp; Tổng ${totalRecords} đơn hàng
                     </p>
                 </c:if>
-                <%-- ===== /PHÂN TRANG ===== --%>
 
             </div>
         </div>

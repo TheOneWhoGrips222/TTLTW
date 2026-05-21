@@ -39,6 +39,8 @@ public class OrdersDAO extends BaseDao {
         );
     }
 
+
+
     public List<Order> getOrdersByUser(int userId) {
         String sql = """
             SELECT 
@@ -63,7 +65,6 @@ public class OrdersDAO extends BaseDao {
                         .list()
         );
     }
-
     public void cancelOrder(int orderId, int userId) {
         get().useHandle(h ->
                 h.createUpdate("""
@@ -78,7 +79,6 @@ public class OrdersDAO extends BaseDao {
                         .execute()
         );
     }
-
     public List<Order> getOrdersByUserAndStatus(int userId, String status) {
         String sql = """
         SELECT *
@@ -96,78 +96,6 @@ public class OrdersDAO extends BaseDao {
                         .list()
         );
     }
-    public List<Order> getOrdersFiltered(String keyword, String status, int page, int pageSize) {
-        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-        boolean hasStatus  = status  != null && !status.trim().isEmpty();
-
-        StringBuilder sql = new StringBuilder("""
-            SELECT
-                o.order_id, o.user_id, o.address_id, o.total_amount,
-                o.status, o.payment_method, o.created_at, o.note, o.voucher_id,
-                u.full_name AS userName,
-                CONCAT_WS(', ', ua.address_detail, ua.ward, ua.district, ua.province) AS addressDetail,
-                ua.receiver_name
-            FROM orders o
-            JOIN users u ON o.user_id = u.user_id
-            LEFT JOIN user_addresses ua ON o.address_id = ua.address_id
-            WHERE 1=1
-        """);
-
-        if (hasKeyword) {
-            sql.append(" AND (CAST(o.order_id AS CHAR) LIKE :keyword OR u.full_name LIKE :keyword) ");
-        }
-        if (hasStatus) {
-            sql.append(" AND o.status = :status ");
-        }
-
-        sql.append(" ORDER BY o.created_at DESC ");
-        sql.append(" LIMIT :limit OFFSET :offset ");
-
-        int offset = (page - 1) * pageSize;
-
-        return JDBIConnector.get().withHandle(handle -> {
-            var query = handle.createQuery(sql.toString());
-            if (hasKeyword) {
-                query.bind("keyword", "%" + keyword.trim() + "%");
-            }
-            if (hasStatus) {
-                query.bind("status", status.trim());
-            }
-            query.bind("limit", pageSize);
-            query.bind("offset", offset);
-            return query.mapToBean(Order.class).list();
-        });
-    }
-    public int countOrdersFiltered(String keyword, String status) {
-        boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
-        boolean hasStatus  = status  != null && !status.trim().isEmpty();
-
-        StringBuilder sql = new StringBuilder("""
-            SELECT COUNT(*)
-            FROM orders o
-            JOIN users u ON o.user_id = u.user_id
-            WHERE 1=1
-        """);
-
-        if (hasKeyword) {
-            sql.append(" AND (CAST(o.order_id AS CHAR) LIKE :keyword OR u.full_name LIKE :keyword) ");
-        }
-        if (hasStatus) {
-            sql.append(" AND o.status = :status ");
-        }
-
-        return JDBIConnector.get().withHandle(handle -> {
-            var query = handle.createQuery(sql.toString());
-            if (hasKeyword) {
-                query.bind("keyword", "%" + keyword.trim() + "%");
-            }
-            if (hasStatus) {
-                query.bind("status", status.trim());
-            }
-            return query.mapTo(Integer.class).one();
-        });
-    }
-
     public List<Order> getAllOrders() {
         String sql = """
             SELECT 
@@ -211,6 +139,7 @@ public class OrdersDAO extends BaseDao {
         );
     }
 
+
     public List<OrderItem> getOrderItems(int orderId) {
         String sql = """
             SELECT 
@@ -230,6 +159,7 @@ public class OrdersDAO extends BaseDao {
                         .list()
         );
     }
+
 
     public int updateStatus(int orderId, String newStatus) {
         String sql = "UPDATE orders SET status = :status WHERE order_id = :id";

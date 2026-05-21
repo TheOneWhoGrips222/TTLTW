@@ -22,8 +22,6 @@
 
 <main class="product-detail">
   <div class="container">
-
-    <!-- THÔNG TIN CHÍNH -->
     <div class="product-main">
 
       <div class="product-gallery">
@@ -93,12 +91,10 @@
               <i class="fa fa-heart"></i> Yêu thích
             </a>
 
-          </a>
         </div>
       </div>
     </div>
 
-    <!-- TÍNH NĂNG -->
     <div class="product-features">
       <h2>Tính năng nổi bật</h2>
       <ul>
@@ -108,7 +104,6 @@
       </ul>
     </div>
 
-    <!-- SẢN PHẨM TƯƠNG TỰ -->
     <div class="related-products">
       <h2>Sản phẩm tương tự</h2>
 
@@ -132,24 +127,32 @@
 <div class="product-comments">
   <h2>Bình luận sản phẩm</h2>
 
-  <c:if test="${not empty sessionScope.user}">
-    <form action="${pageContext.request.contextPath}/product-comment" method="post">
-      <input type="hidden" name="product_id" value="${product.product_id}">
-      <textarea name="content" required
-                placeholder="Nhập bình luận của bạn..."></textarea>
-      <button type="submit" class="btn btn-primary">
-        Gửi bình luận
-      </button>
-    </form>
-  </c:if>
+  <c:choose>
+    <c:when test="${not empty sessionScope.user and hasPurchased}">
+      <form action="${pageContext.request.contextPath}/product-comment" method="post">
+        <input type="hidden" name="product_id" value="${product.product_id}">
+        <textarea name="content" required
+                  placeholder="Nhập bình luận của bạn..."></textarea>
+        <button type="submit" class="btn btn-primary">
+          Gửi bình luận
+        </button>
+      </form>
+    </c:when>
 
-  <c:if test="${empty sessionScope.user}">
-    <p>
-      <a href="${pageContext.request.contextPath}/login">
-        Đăng nhập
-      </a> để bình luận.
-    </p>
-  </c:if>
+    <c:when test="${not empty sessionScope.user and not hasPurchased}">
+      <p style="color: #666; font-style: italic; margin-bottom: 15px;">
+        Bạn cần mua sản phẩm này để có thể để lại bình luận.
+      </p>
+    </c:when>
+
+    <c:otherwise>
+      <p>
+        <a href="${pageContext.request.contextPath}/login">
+          Đăng nhập
+        </a> để bình luận.
+      </p>
+    </c:otherwise>
+  </c:choose>
 
   <div class="comment-list">
     <c:forEach var="c" items="${comments}">

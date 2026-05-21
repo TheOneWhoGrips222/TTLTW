@@ -1,18 +1,13 @@
 package com.webthietbibep.controller;
 
-import com.webthietbibep.dao.ProductCommentDAO;
-import com.webthietbibep.dao.ProductDAO;
-import com.webthietbibep.dao.ProductFeatureDAO;
-import com.webthietbibep.dao.ProductImageDAO;
-import com.webthietbibep.model.Product;
-import com.webthietbibep.model.ProductComment;
-import com.webthietbibep.model.ProductFeature;
-import com.webthietbibep.model.ProductImage;
+import com.webthietbibep.dao.*;
+import com.webthietbibep.model.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +20,7 @@ public class ProductDetailServlet extends HttpServlet {
     private final ProductCommentDAO commentDAO =  new ProductCommentDAO();
     private final ProductImageDAO imageDAO = new ProductImageDAO();
 
+    private final OrdersDAO orderDAO = new OrdersDAO();
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -49,6 +45,14 @@ public class ProductDetailServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/products");
             return;
         }
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        boolean hasPurchased = false;
+        if (user != null) {
+            hasPurchased = orderDAO.hasUserPurchasedProduct(user.getUser_id(), productId);
+        }
+        request.setAttribute("hasPurchased", hasPurchased);
         List<ProductFeature> features = featureDAO.getByProductId(productId);
 
         List<Product> relatedProducts = productDAO.getRelatedProducts(product.getCategory_id(), productId);
