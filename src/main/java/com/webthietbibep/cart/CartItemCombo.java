@@ -10,7 +10,8 @@ public class CartItemCombo implements Serializable {
     private Combo combo;
     private int quantity;
     private double price;
-
+    private long time = System.currentTimeMillis();
+    private boolean checkBox = true;
     public CartItemCombo() {
     }
 
@@ -38,6 +39,22 @@ public class CartItemCombo implements Serializable {
 
     public double getPrice() {
         return price;
+    }
+
+    public boolean isCheckBox() {
+        return checkBox;
+    }
+
+    public void setCheckBox(boolean checkBox) {
+        this.checkBox = checkBox;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 
     public void setPrice(double price) {

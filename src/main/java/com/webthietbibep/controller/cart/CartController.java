@@ -37,6 +37,9 @@ public class CartController extends HttpServlet {
         }
 
         Cart cart = (Cart) session.getAttribute("cart");
+        if (cart != null) {
+            cart.removeTimeOut();
+        }
         Map<Integer,String> data = new HashMap<>();
 
         if(cart != null && cart.getData() != null){
