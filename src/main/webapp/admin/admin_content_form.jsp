@@ -54,9 +54,15 @@
                                            value="${oldArticle.tip}" placeholder="Nhập thể loại...">
                                 </div>
                                 <div class="form-group">
-                                    <label>ID danh mục </label>
-                                    <input type="text" name="cate" class="form-control" required
-                                           value="${oldArticle.category_id}" placeholder="Nhập ID danh mục...">
+                                    <label>Danh mục bài viết</label>
+                                    <select name="cate" class="form-control" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100%;">
+                                        <option value="">-- Chọn danh mục --</option>
+                                        <c:forEach var="c" items="${categories}">
+                                            <option value="${c.category_id}" ${c.category_id == oldArticle.category_id ? 'selected' : ''}>
+                                                    ${c.category_id} - ${c.category_name}
+                                            </option>
+                                        </c:forEach>
+                                    </select>
                                 </div>
                             </div>
 
