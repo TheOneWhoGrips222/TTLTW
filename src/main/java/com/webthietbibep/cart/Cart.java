@@ -32,6 +32,7 @@ public class Cart implements Serializable {
         }
         else {
             data.get(product.getProduct_id()).upQuantity(quantity);
+            data.get(product.getProduct_id()).setTime(System.currentTimeMillis());
         }
     }
 
@@ -44,6 +45,7 @@ public class Cart implements Serializable {
         }
         else {
             data2.get(combo.getId()).upQuantity(quantity);
+            data2.get(combo.getId()).setTime(System.currentTimeMillis());
         }
     }
 
@@ -105,5 +107,29 @@ public class Cart implements Serializable {
 
     public String getFormatTotal(){
         return CartItem.Format(getTotal());
+    }
+
+    public void removeTimeOut(){
+        long currentTime = System.currentTimeMillis();
+        long limitTime = 20 * 60 * 1000;
+        List<Integer> singelItem = new ArrayList<>();
+        for (Map.Entry<Integer, CartItem> entry : data.entrySet()) {
+            if (currentTime - entry.getValue().getTime() > limitTime) {
+                singelItem.add(entry.getKey());
+            }
+        }
+        for (int i = 0; i < singelItem.size(); i++) {
+            data.remove(singelItem.get(i));
+        }
+
+        List<Integer> comboItem = new ArrayList<>();
+        for (Map.Entry<Integer, CartItemCombo> entry : data2.entrySet()) {
+            if (currentTime - entry.getValue().getTime() > limitTime) {
+                comboItem.add(entry.getKey());
+            }
+        }
+        for (int i = 0; i < comboItem.size(); i++) {
+            data2.remove(comboItem.get(i));
+        }
     }
 }
