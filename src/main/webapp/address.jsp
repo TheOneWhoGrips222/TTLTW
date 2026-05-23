@@ -65,11 +65,11 @@
                         <option value="">-- Chọn Tỉnh/Thành phố --</option>
                     </select>
                     <br>
-                    <select id="district" required>
+                    <select id="district" name = "district_id" required>
                         <option value="">-- Chọn Quận/Huyện --</option>
                     </select>
                     <br>
-                    <select id="ward" required>
+                    <select id="ward" name="ward_code" required>
                         <option value="">-- Chọn Phường/Xã --</option>
                     </select>
                     <br>

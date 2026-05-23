@@ -46,6 +46,17 @@
             a.setProvince(req.getParameter("province"));
             a.setIs_default("on".equals(req.getParameter("is_default")));
 
+            try {
+                String districtIdStr = req.getParameter("district_id");
+                if (districtIdStr != null && !districtIdStr.isEmpty()) {
+                    a.setDistrict_id(Integer.parseInt(districtIdStr));
+                }
+                String wardCode = req.getParameter("ward_code");
+                a.setWard_code(wardCode);
+
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
             dao.insert(a);
             resp.sendRedirect("addresses");
         }

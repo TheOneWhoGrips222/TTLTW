@@ -31,8 +31,8 @@ public class UserAddressDAO extends BaseDao {
 
             h.createUpdate("""
                 INSERT INTO user_addresses
-                (user_id, receiver_name, phone, address_detail, ward, district, province, is_default)
-                VALUES (:uid, :name, :phone, :detail, :ward, :district, :province, :def)
+                (user_id, receiver_name, phone, address_detail, ward, district, province, is_default,district_id,ward_code)
+                VALUES (:uid, :name, :phone, :detail, :ward, :district, :province, :def, :district_id, :ward_code)
             """)
                     .bind("uid", a.getUser_id())
                     .bind("name", a.getReceiver_name())
@@ -42,6 +42,8 @@ public class UserAddressDAO extends BaseDao {
                     .bind("district", a.getDistrict())
                     .bind("province", a.getProvince())
                     .bind("def", a.isIs_default())
+                    .bind("district_id", a.getDistrict_id())
+                    .bind("ward_code", a.getWard_code())
                     .execute();
         });
     }
