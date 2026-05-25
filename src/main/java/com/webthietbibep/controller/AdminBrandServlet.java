@@ -10,9 +10,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +28,7 @@ import java.util.UUID;
 public class AdminBrandServlet extends HttpServlet {
 
     private final BrandDAO brandDAO = new BrandDAO();
-    private static final String UPLOAD_DIR = "assets/uploads/brands";
+    private static final String UPLOAD_RELATIVE = "assets/uploads/brands";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -50,13 +53,16 @@ public class AdminBrandServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         try {
-            String action       = getPartString(request, "action");
-            String brandName    = getPartString(request, "brand_name");
-            String logoUrl      = getPartString(request, "logo_url");
-            String existingLogo = getPartString(request, "existing_logo");
-            String brandIdStr   = getPartString(request, "brand_id");
+            // Dùng getParameter() cho text fields — hoạt động đúng với @MultipartConfig
+            // KHÔNG dùng getPart() cho text fields để tránh ảnh hưởng đến file Part
+            String action       = request.getParameter("action");
+            String brandName    = request.getParameter("brand_name");
+            String logoUrl      = request.getParameter("logo_url");
+            String existingLogo = request.getParameter("existing_logo");
+            String brandIdStr   = request.getParameter("brand_id");
 
-            String logo = resolveLogoUpload(request, logoUrl);
+            // Chỉ dùng getPart() cho file upload
+            String logo = saveFileLogo(request, logoUrl);
 
             if ("insert".equals(action)) {
                 Brand b = new Brand();
@@ -83,6 +89,94 @@ public class AdminBrandServlet extends HttpServlet {
             e.printStackTrace();
             response.sendRedirect(request.getContextPath() + "/admin/brands?message=error");
         }
+    }
+
+    private String saveFileLogo(HttpServletRequest request, String logoUrl)
+            throws IOException, ServletException {
+
+        Part filePart = request.getPart("logo_file");
+
+        if (filePart != null && filePart.getSize() > 0) {
+            String ct = filePart.getContentType();
+            if (ct == null) ct = "";
+
+            if (ct.contains("jpeg") || ct.contains("png") || ct.contains("svg")) {
+
+                // Lấy đường dẫn thư mục webapp đang chạy
+                Path uploadDir = getUploadDir();
+                if (uploadDir == null) {
+                    System.err.println("[BrandUpload] ERROR: Cannot resolve upload directory");
+                    return null;
+                }
+
+                String ext      = ct.contains("png") ? ".png" : ct.contains("svg") ? ".svg" : ".jpg";
+                String fileName = UUID.randomUUID() + ext;
+                Path   dest     = uploadDir.resolve(fileName);
+
+                try (InputStream in = filePart.getInputStream()) {
+                    long saved = Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+                    System.out.println("[BrandUpload] OK — saved " + saved + " bytes => " + dest);
+                }
+
+                return UPLOAD_RELATIVE + "/" + fileName;
+            }
+        }
+
+        // Không có file → dùng URL nếu hợp lệ
+        if (logoUrl != null && !logoUrl.isBlank()
+                && (logoUrl.startsWith("http://") || logoUrl.startsWith("https://"))) {
+            return logoUrl.trim();
+        }
+
+        return null;
+    }
+
+    /**
+     * Lấy thư mục lưu ảnh upload.
+     * Dùng getRealPath của một resource đã biết tồn tại (/assets/css)
+     * để tránh trường hợp getRealPath("/") trả về null hoặc sai.
+     */
+    private Path getUploadDir() {
+        try {
+            // Cách 1: dùng getRealPath của folder css đã chắc chắn tồn tại
+            String cssPath = getServletContext().getRealPath("/assets/css");
+            if (cssPath != null) {
+                // cssPath = .../assets/css  →  đi lên 2 cấp = webapp root
+                Path webappRoot = Paths.get(cssPath).getParent().getParent();
+                Path uploadDir  = webappRoot.resolve(UPLOAD_RELATIVE);
+                Files.createDirectories(uploadDir);
+                System.out.println("[BrandUpload] uploadDir (via css): " + uploadDir);
+                return uploadDir;
+            }
+        } catch (Exception e) {
+            System.err.println("[BrandUpload] Cách 1 thất bại: " + e.getMessage());
+        }
+
+        try {
+            // Cách 2: getRealPath("/")
+            String root = getServletContext().getRealPath("/");
+            if (root != null) {
+                Path uploadDir = Paths.get(root, UPLOAD_RELATIVE);
+                Files.createDirectories(uploadDir);
+                System.out.println("[BrandUpload] uploadDir (via root): " + uploadDir);
+                return uploadDir;
+            }
+        } catch (Exception e) {
+            System.err.println("[BrandUpload] Cách 2 thất bại: " + e.getMessage());
+        }
+
+        try {
+            // Cách 3: dùng user.dir (thư mục project IntelliJ)
+            Path uploadDir = Paths.get(System.getProperty("user.dir"),
+                    "src", "main", "webapp", UPLOAD_RELATIVE);
+            Files.createDirectories(uploadDir);
+            System.out.println("[BrandUpload] uploadDir (via user.dir): " + uploadDir);
+            return uploadDir;
+        } catch (Exception e) {
+            System.err.println("[BrandUpload] Cách 3 thất bại: " + e.getMessage());
+        }
+
+        return null;
     }
 
     private void listBrands(HttpServletRequest request, HttpServletResponse response)
@@ -121,45 +215,6 @@ public class AdminBrandServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/brands?message=deleted");
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/admin/brands");
-        }
-    }
-
-    private String resolveLogoUpload(HttpServletRequest request, String logoUrl)
-            throws IOException, ServletException {
-
-        Part filePart = request.getPart("logo_file");
-        if (filePart != null && filePart.getSize() > 0) {
-            String ct = filePart.getContentType();
-            if (ct != null && (ct.contains("jpeg") || ct.contains("png") || ct.contains("svg"))) {
-
-                String appPath   = request.getServletContext().getRealPath("");
-                File   uploadDir = new File(appPath, UPLOAD_DIR);
-                if (!uploadDir.exists()) uploadDir.mkdirs();
-
-                String ext      = ct.contains("png") ? ".png" : ct.contains("svg") ? ".svg" : ".jpg";
-                String fileName = UUID.randomUUID().toString() + ext;
-                File   destFile = new File(uploadDir, fileName);
-
-                filePart.write(destFile.getAbsolutePath());
-
-                return UPLOAD_DIR + "/" + fileName;
-            }
-        }
-
-        if (logoUrl != null && !logoUrl.isBlank()
-                && (logoUrl.startsWith("http://") || logoUrl.startsWith("https://"))) {
-            return logoUrl.trim();
-        }
-
-        return null;
-    }
-
-    private String getPartString(HttpServletRequest request, String name)
-            throws IOException, ServletException {
-        Part part = request.getPart(name);
-        if (part == null) return null;
-        try (InputStream is = part.getInputStream()) {
-            return new String(is.readAllBytes(), "UTF-8").trim();
         }
     }
 }
