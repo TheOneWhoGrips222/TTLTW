@@ -1,12 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %> <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="false" %>
 <!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8" />
-    <title>Khuyến mãi - Bếp Thông Minh TTB</title>
+    <title>Săn Mã Giảm Giá - Bếp Thông Minh TTB</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <link rel="stylesheet" href="assets/css/index.css" />
@@ -14,48 +13,69 @@
     <link rel="stylesheet" href="assets/css/Header.css" />
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="assets/css/khuyenmai.css">
-    <script src="../../js/jsBao/Main.js"></script>
 </head>
 
 <body>
 <jsp:include page="common/header.jsp"/>
 
 <main class="main-content">
-    <section class="promo-hero section-padding bg-light">
+    <section class="promo-hero">
         <div class="container">
-            <h1 class="section-title">Chương trình Khuyến mãi</h1>
+            <h1 class="section-title">
+                <i class="fa-solid fa-ticket" style="color: #007bff; margin-right: 10px;"></i> Trạm Săn Voucher
+            </h1>
             <p class="promo-intro">
-                Đừng bỏ lỡ các ưu đãi hấp dẫn nhất từ Bếp Thông Minh TTB để nâng tầm căn bếp của bạn!
+                Nhấn lấy các mã giảm giá siêu hấp dẫn từ Bếp Thông Minh TTB để lưu ưu đãi vào ví của bạn ngay!
             </p>
         </div>
     </section>
 
-    <section class="promo-list section-padding">
+    <section class="promo-list">
         <div class="container">
-            <div class="promo-grid">
-            <c:forEach var = "p" items="${listP}">
-                <article class="promo-card">
-                    <div class="promo-image">
-                        <img src="https://placehold.co/600x400/C79F27/fff?text=${p.name_promotion}" alt="">
-                    </div>
-                    <div class="promo-content">
-                        <span class="promo-tag">${p.tag}</span>
-                        <h3>${p.title}</h3>
-                        <p>${p.content}</p>
-                        <div class="promo-footer">
-                            <span>${p.formatDate(p.endTime)}</span>
-                            <a href="#" class="btn btn-primary">Xem chi tiết</a>
-                        </div>
-                    </div>
-                </article>
+            <div class="voucher-grid">
 
+                <c:forEach var="v" items="${listV}">
+                    <c:if test="${v.status == 1 && !v.isExpired()}">
+                        <article class="voucher-card">
+                            <div class="voucher-left">
+                                <div class="voucher-value">${v.discountFormat}</div>
+                                <div class="voucher-type">${v.discountType}</div>
+                            </div>
+                            <div class="voucher-border-line"></div>
+                            <div class="voucher-right">
+                                <div class="voucher-info">
+                                    <span class="voucher-code-tag">Mã: ${v.id}</span>
+                                    <h3 class="voucher-title">Giảm ngay ${v.discountFormat} </h3>
+                                    <p class="voucher-desc">${v.description}</p>
+                                    <p class="voucher-condition">
+                                        <i class="fa-solid fa-circle-info"></i> Đơn tối thiểu: ${v.minvalueFormat}
+                                    </p>
+                                </div>
+                                <div class="voucher-action">
+                                    <button class="btn-get-voucher" onclick="collectVoucher('${v.id}', this)">
+                                        Lấy mã
+                                    </button>
+                                    <div class="voucher-expiry">Hạn dùng: ${v.dateFormat}</div>
+                                </div>
+                            </div>
+                        </article>
+                    </c:if>
                 </c:forEach>
+
             </div>
         </div>
     </section>
 </main>
 
 <jsp:include page="common/footer.jsp"/>
-</body>
 
+<script>
+    function collectVoucher(voucherId, buttonElement) {
+        buttonElement.innerText = "Đã lấy";
+        buttonElement.classList.add("success");
+        buttonElement.disabled = true;
+    }
+</script>
+
+</body>
 </html>
