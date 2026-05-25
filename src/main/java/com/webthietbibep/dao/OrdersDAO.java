@@ -88,9 +88,6 @@ public class OrdersDAO extends BaseDao {
         );
     }
 
-    // ---------------------------------------------------------------
-    // Admin: phân trang, lọc, tìm kiếm
-    // ---------------------------------------------------------------
 
     public List<Order> getOrdersFiltered(String keyword, String status, int page, int pageSize) {
         boolean hasKeyword = keyword != null && !keyword.trim().isEmpty();
@@ -203,11 +200,7 @@ public class OrdersDAO extends BaseDao {
                         .list()
         );
     }
-
-    /**
-     * Kiểm tra user đã mua sản phẩm này chưa (đơn HOAN_THANH).
-     * Dùng cho tính năng đánh giá / bình luận sản phẩm.
-     */
+    
     public boolean hasUserPurchasedProduct(int userId, int productId) {
         String sql = """
             SELECT COUNT(*)

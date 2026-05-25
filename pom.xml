@@ -19,7 +19,6 @@
 
     <dependencies>
 
-        <!-- Jakarta Servlet API (Tomcat 10) -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
