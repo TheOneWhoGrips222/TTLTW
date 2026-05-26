@@ -210,3 +210,23 @@
 #addForm button:hover {
     background: #0958d9;
 }
+
+/* Thêm vào file assets/css/address.css */
+.geolocation-wrapper {
+    margin-bottom: 15px;
+}
+
+#getLocationBtn {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+}
+
+#getLocationBtn i {
+    margin-right: 5px;
+    color: #e74c3c;
+}

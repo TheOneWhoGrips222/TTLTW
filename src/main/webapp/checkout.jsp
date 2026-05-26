@@ -1,4 +1,3 @@
-
 <%@ page contentType="text/html; charset=UTF-8" isELIgnored="false" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
@@ -30,15 +29,16 @@
             <h2>Thông tin giao hàng</h2>
 
             <c:forEach items="${addresses}" var="a">
-                <label class="address-box">
+                <label class="address-box"
+                       data-district-id="${a.district_id}"
+                       data-ward-code="${a.ward_code}">
                     <input type="radio" name="addressId"
                            value="${a.address_id}"
-                        ${a.isIs_default() ? "checked" : ""}>
+                        ${a.is_default ? "checked" : ""}>
                     <b>${a.receiver_name}</b> - ${a.phone}<br>
                         ${a.address_detail}, ${a.ward}, ${a.district}, ${a.province}
                 </label>
             </c:forEach>
-
 
             <a href="${pageContext.request.contextPath}/addresses" class="add-address">
                 + Thêm địa chỉ mới
@@ -63,21 +63,16 @@
             <h2>Đơn hàng của bạn</h2>
 
             <c:choose>
-
                 <c:when test="${mode == 'buynow'}">
                     <div class="order-item">
                         <img src="${buyNowProduct.image}">
                         <div>
                             <p>${buyNowProduct.product_name}</p>
                             <small>Số lượng: ${buyNowQuantity}</small><br>
-                            <strong>
-                                    ${buyNowTotalFormatted}
-                            </strong>
+                            <strong>${buyNowTotalFormatted}</strong>
                         </div>
                     </div>
                 </c:when>
-
-
                 <c:otherwise>
                     <c:forEach items="${cart.items}" var="ci">
                         <div class="order-item">
@@ -100,62 +95,50 @@
                         </div>
                     </c:forEach>
                 </c:otherwise>
-
             </c:choose>
-
-
 
             <div class="order-summary">
                 <div>
                     <span>Tạm tính</span>
                     <c:choose>
                         <c:when test="${mode == 'buynow'}">
-                            <span>${buyNowTotalFormatted}</span>
+                            <%-- Thêm data-value="${buyNowTotal}" --%>
+                            <span id="temp-total" data-value="${buyNowTotal}">${buyNowTotalFormatted}</span>
                         </c:when>
                         <c:otherwise>
-                            <span>${cart.formatTotal}</span>
+                            <%-- Thêm data-value="${cart.total}" --%>
+                            <span id="temp-total" data-value="${cart.total}">${cart.formatTotal}</span>
                         </c:otherwise>
                     </c:choose>
-
-
-
                 </div>
                 <div>
                     <span>Phí vận chuyển</span>
-                    <span>Miễn phí</span>
+                    <span id="shipping-fee">Chọn địa chỉ để tính phí</span>
                 </div>
                 <div class="total">
                     <span>Tổng cộng</span>
-                    <c:choose>
-                        <c:when test="${mode == 'buynow'}">
-                            <span>${buyNowTotalFormatted}</span>
-                        </c:when>
-                        <c:otherwise>
-                            <span>${cart.formatTotal}</span>
-                        </c:otherwise>
-                    </c:choose>
+                    <span id="total-amount">
+            <%-- Hiển thị tổng ban đầu --%>
+            <c:choose>
+                <c:when test="${mode == 'buynow'}">
+                    ${buyNowTotalFormatted}
+                </c:when>
+                <c:otherwise>
+                    ${cart.formatTotal}
+                </c:otherwise>
+            </c:choose>
+        </span>
                 </div>
 
-                <c:if test="${not empty error}">
-                    <div style="color:red; margin-bottom:15px; font-weight:bold;">
-                            ${error}
-                    </div>
-                </c:if>
-
-
-
-                <button type="submit" class="btn-order">
-                    Đặt hàng
-                </button>
+                <%-- ... phần còn lại --%>
             </div>
-
         </div>
-
     </form>
-
 </main>
 
 <jsp:include page="common/footer.jsp"/>
+
+<script src="${pageContext.request.contextPath}/assets/js/checkout.js" defer></script>
 
 </body>
 </html>
