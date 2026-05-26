@@ -207,6 +207,19 @@
                                     </option>
                                 </c:forEach>
                             </select>
+                            <div class="form-group">
+                                <label>Nhà cung cấp</label>
+                                <select name="supplier_id" class="form-control">
+                                    <option value="0">-- Không có / Chọn sau --</option>
+                                    <c:forEach items="${listSuppliers}" var="sup">
+                                        <option value="${sup.supplier_id}"
+                                            ${product.supplier_id == sup.supplier_id ? 'selected' : ''}>
+                                                ${sup.company_name}
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                            </div>
+
                         </div>
                     </div>
 

@@ -103,6 +103,7 @@
                 <span>Quản lý Khách hàng</span>
             </a>
         </li>
+        <li><a href="<%=request.getContextPath()%>/admin/suppliers">Nhà cung cấp</a></li>
         <li class="menu-item-has-children">
             <a href="#" class="sidebar-link">
                 <i class="fa-solid fa-file-pen"></i>
