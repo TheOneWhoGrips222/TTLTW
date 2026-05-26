@@ -2,43 +2,68 @@ package com.webthietbibep.controller;
 
 import com.google.gson.Gson;
 import com.webthietbibep.services.GhnApiService;
-import jakarta.servlet.ServletException;
+
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Map;
 
 @WebServlet("/api/shipping-fee")
-public class ShippingFeeServlet extends HttpServlet {
+public class ShippingFeeServlet
+        extends HttpServlet {
 
-    private final GhnApiService ghnApiService = new GhnApiService();
-    private final Gson gson = new Gson();
+    private final GhnApiService service =
+            new GhnApiService();
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
+    private final Gson gson =
+            new Gson();
 
-        try {
-            int toDistrictId = Integer.parseInt(request.getParameter("to_district_id"));
-            String toWardCode = request.getParameter("to_ward_code");
+    protected void doGet(
+            HttpServletRequest req,
+            HttpServletResponse resp)
+            throws IOException {
 
-            if (toWardCode == null || toWardCode.isBlank()) {
-                throw new IllegalArgumentException("Ward code is required.");
-            }
+        resp.setContentType(
+                "application/json");
 
-            long fee = ghnApiService.calculateShippingFee(toDistrictId, toWardCode);
-            out.print(gson.toJson(Map.of("status", "success", "fee", fee)));
+        try{
 
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_OK);
-            out.print(gson.toJson(Map.of("status", "error", "message", e.getMessage())));
+            int districtId =
+                    Integer.parseInt(
+                            req.getParameter(
+                                    "to_district_id"));
+
+            String wardCode =
+                    req.getParameter(
+                            "to_ward_code");
+
+            long fee =
+                    service
+                            .calculateShippingFee(
+                                    districtId,
+                                    wardCode);
+
+            resp.getWriter()
+                    .print(
+                            gson.toJson(
+                                    Map.of(
+                                            "status",
+                                            "success",
+                                            "fee",
+                                            fee)));
+
         }
-        out.flush();
+        catch(Exception e){
+
+            resp.getWriter()
+                    .print(
+                            gson.toJson(
+                                    Map.of(
+                                            "status",
+                                            "error",
+                                            "message",
+                                            e.getMessage())));
+        }
     }
 }
