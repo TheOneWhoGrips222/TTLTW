@@ -16,9 +16,10 @@ public class Product implements Serializable {
     private String image;
     private LocalDateTime created_at;
     private int sold_quantity;
+    private int supplier_id;
+    private String supplierName;
 
     public Product() {}
-
 
     public int getProduct_id() { return product_id; }
     public void setProduct_id(int product_id) { this.product_id = product_id; }
@@ -49,6 +50,12 @@ public class Product implements Serializable {
 
     public int getSold_quantity() { return sold_quantity; }
     public void setSold_quantity(int sold_quantity) { this.sold_quantity = sold_quantity; }
+
+    public int getSupplier_id() { return supplier_id; }
+    public void setSupplier_id(int supplier_id) { this.supplier_id = supplier_id; }
+
+    public String getSupplierName() { return supplierName; }
+    public void setSupplierName(String supplierName) { this.supplierName = supplierName; }
 
     public String getPriceFormat() {
         NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
