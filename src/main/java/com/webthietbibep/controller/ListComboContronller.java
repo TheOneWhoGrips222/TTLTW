@@ -16,18 +16,32 @@ public class ListComboContronller extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ComboService cp = new ComboService();
-
-        List<Combo> lisrC = cp.getListCombo();
-        for (Combo c : lisrC) {
-            int curid = c.getId();
-            c.setListadvance(cp.getListComboAdvance(curid));
+        int lastId = 0;
+        String lastIdParam = request.getParameter("lastId");
+        if (lastIdParam != null && !lastIdParam.isEmpty()) {
+            lastId = Integer.parseInt(lastIdParam);
         }
+        int pageSize = 3;
+        List<Combo> lisrC = cp.getListCombo(lastId, pageSize);
+
+        if (lisrC != null) {
+            for (Combo c : lisrC) {
+                int curid = c.getId();
+                c.setListadvance(cp.getListComboAdvance(curid));
+            }
+        }
+
+        int nextLastId = 0;
+        if (lisrC != null && !lisrC.isEmpty()) {
+            nextLastId = lisrC.get(lisrC.size() - 1).getId();
+        }
+
         request.setAttribute("listC", lisrC);
+        request.setAttribute("nextLastId", nextLastId);
         request.getRequestDispatcher("giaiphapvacombo.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
     }
 }

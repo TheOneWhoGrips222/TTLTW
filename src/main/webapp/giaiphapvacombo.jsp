@@ -18,37 +18,52 @@
         <div class="container">
             <h1 class="section-title text-center">Các Combo Sản phẩm </h1>
             <p class="section-subtitle text-center">Giảm giá khi mua trọn bộ thiết bị.</p>
+
             <div class="combo-grid">
                 <c:forEach var="c" items="${listC}">
-                    <div class="combo-card">
-                        <div class="combo-header">
-                            <span class="combo-label combo-basic">${c.tag}</span>
-                            <img src="${c.image}" alt="Combo Căn hộ" class="combo-image">
-                        </div>
-                        <div class="combo-body">
-                            <h4>${c.name}</h4>
-                            <p class="combo-desc">${c.content}</p>
-                            <ul>
-                                <c:forEach var = "i" items="${c.listadvance}">
-                                    <li><i class="fa fa-check-circle"></i> ${i.advance}</li>
-                                </c:forEach>
-                                <li><i class="fa fa-gift"></i> ${c.gift}</li>
-                            </ul>
-                            <div class="combo-price-block">
-                                <span class="old-price">${c.getPriceFormat(c.baseprice)}</span>
-                                <span class="current-price">${c.getPriceFormat(c.discountprice)}</span>
-
+                    <%-- CHỈ HIỂN THỊ KHI ĐỐI TƯỢNG CÓ DỮ LIỆU THỰC SỰ --%>
+                    <c:if test="${not empty c.id && not empty c.name}">
+                        <div class="combo-card">
+                            <div class="combo-header">
+                                <span class="combo-label combo-basic">${c.tag}</span>
+                                <img src="${c.image}" alt="Combo Căn hộ" class="combo-image">
                             </div>
+                            <div class="combo-body">
+                                <h4>${c.name}</h4>
+                                <p class="combo-desc">${c.content}</p>
+                                <ul>
+                                    <c:forEach var="i" items="${c.listadvance}">
+                                        <c:if test="${not empty i.advance}">
+                                            <li><i class="fa fa-check-circle"></i> ${i.advance}</li>
+                                        </c:if>
+                                    </c:forEach>
+                                    <c:if test="${not empty c.gift}">
+                                        <li><i class="fa fa-gift"></i> ${c.gift}</li>
+                                    </c:if>
+                                </ul>
 
-                            <a href="add-combo?id=${c.id}&q=1" style="margin-bottom: 10px" class="btn btn-primary btn-full-width">Thêm vào giỏ hàng</a>
+                                <div class="combo-price-block">
+                                    <span class="old-price">${c.getPriceFormat(c.baseprice)}</span>
+                                    <span class="current-price">${c.getPriceFormat(c.discountprice)}</span>
+                                </div>
 
-                            <a href="combo?id=${c.id}" class="btn btn-primary btn-full-width">Xem chi tiết </a>
+                                <a href="add-combo?id=${c.id}&q=1" style="margin-bottom: 10px" class="btn btn-primary btn-full-width">Thêm vào giỏ hàng</a>
+                                <a href="combo?id=${c.id}" class="btn btn-primary btn-full-width">Xem chi tiết </a>
+                            </div>
                         </div>
-                    </div>
+                    </c:if>
                 </c:forEach>
+            </div> <%-- HẾT ĐỒNG BỘ LƯỚI --%>
 
-
+            <div class="load-more-container" style="text-align: center; margin: 40px 0; width: 100%;">
+                <c:if test="${nextLastId > 0 && listC.size() >= 3}">
+                    <a href="listcombo?lastId=${nextLastId}"
+                       style="background-color: #0f172a; color: #ffffff; padding: 12px 30px; border-radius: 9999px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-block;">
+                        Xem thêm »
+                    </a>
+                </c:if>
             </div>
+
         </div>
     </div>
     </div>

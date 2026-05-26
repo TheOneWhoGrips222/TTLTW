@@ -47,11 +47,11 @@
 
 /* ------------------ Combo Section------------------ */
 .combo-grid {
-    /* Bố cục lưới responsive cho các combo */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 30px;
     margin-top: 20px;
+    align-items: stretch; /* Ép các phần tử cùng hàng có chiều cao bằng nhau */
 }
 .combo-card {
     background: #fff;
@@ -59,9 +59,13 @@
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s;
+
+    /* Thiết lập bố cục dọc cho card */
+    display: flex;
+    flex-direction: column;
 }
 .combo-card:hover {
-    transform: translateY(-8px); /* Hiệu ứng nổi khi rê chuột */
+    transform: translateY(-8px);
 }
 .combo-header {
     position: relative;
@@ -89,11 +93,15 @@
     background-color: var(--secondary-color);
 }
 .combo-security {
-    background-color: #28a745; /* Green */
+    background-color: #28a745;
 }
 
 .combo-body {
     padding: 25px;
+    /* Biến body thành cột tự co dãn để chiếm không gian trống thừa */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 .combo-body h4 {
     color: var(--dark-color);
@@ -116,17 +124,23 @@
     color: var(--dark-color);
 }
 .combo-body ul li i {
-    color: #28a745; /* Green check */
+    color: #28a745;
     margin-right: 10px;
 }
 .combo-body ul li:last-child {
     border-bottom: none;
 }
+
+/* KHỐI GIÁ CẢ & NÚT BẤM */
 .combo-price-block {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 20px;
+
+    /* Đẩy khối giá và 2 nút bấm kế tiếp xuống kịch đáy card */
+    margin-top: auto;
+    padding-top: 10px;
 }
 .old-price {
     text-decoration: line-through;
