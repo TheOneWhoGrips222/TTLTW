@@ -45,7 +45,15 @@
                 </div>
             </c:forEach>
 
-
+                <div class="load-more-container" style="text-align: center; margin: 30px 0;">
+                    <c:if test="${nextLastId > 0}">
+                        <a href="arcticle?filter=${filter}&lastId=${nextLastId}&lastValue=${nextLastValue}"
+                           class="btn-load-more"
+                           style="background-color: #0f172a; color: #ffffff; padding: 12px 30px; border-radius: 9999px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-block;">
+                            Xem thêm bài viết »
+                        </a>
+                    </c:if>
+                </div>
 
             </div>
             <div class = "right">

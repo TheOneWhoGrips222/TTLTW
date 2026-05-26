@@ -43,14 +43,25 @@
                                 <a href="detail-ecosystem?id=${e.id}" class="btn-eco">Khám phá ngay</a>
                             </div>
                         </div>
-                    </div> </c:forEach>
-            </div> <c:if test="${empty listE}">
-            <p style="text-align: center;">Hiện chưa có hệ sinh thái nào để hiển thị.</p>
-        </c:if>
+                    </div>
+                </c:forEach>
+            </div>
+
+            <c:if test="${empty listE}">
+                <p style="text-align: center;">Hiện chưa có hệ sinh thái nào để hiển thị.</p>
+            </c:if>
+
+            <div class="load-more-container" style="text-align: center; margin: 40px 0; width: 100%;">
+                <c:if test="${nextLastId > 0}">
+                    <a href="ecos-list?lastId=${nextLastId}"
+                       style="background-color: #0f172a; color: #ffffff; padding: 12px 30px; border-radius: 9999px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-block;">
+                        Xem thêm »
+                    </a>
+                </c:if>
+            </div>
+
         </div>
     </section>
-
-
 </main>
 
 <jsp:include page="common/footer.jsp"></jsp:include>

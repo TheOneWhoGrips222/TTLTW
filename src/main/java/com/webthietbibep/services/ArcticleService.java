@@ -12,8 +12,8 @@ public class    ArcticleService {
     public List<Article>  getListHotArticle() {
         return adao.getListHotArticle();
     }
-    public List<Article> getFilterArticle(String f){
-        return adao.getFilterArticle(f);
+    public List<Article> getFilterArticle(String filter, int lastId, String lastValue, int pageSize) {
+        return adao.getFilterArticle(filter, lastId, lastValue, pageSize);
     }
     public List<Article> getNewArticle(){
         return adao.getNewArticle();
