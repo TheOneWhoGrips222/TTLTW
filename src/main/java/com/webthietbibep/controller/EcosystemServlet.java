@@ -16,8 +16,19 @@ public class EcosystemServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        EcoService es = new EcoService();
-       List<Ecosystems> listE = es.getListEco();
+        int lastId = 0;
+        String lastIdParam = request.getParameter("lastId");
+        if (lastIdParam != null && !lastIdParam.isEmpty()) {
+            lastId = Integer.parseInt(lastIdParam);
+        }
+        int pageSize = 3;
+       List<Ecosystems> listE = es.getListEco2(lastId, pageSize);
+        int nextLastId = 0;
+        if (listE != null && !listE.isEmpty()) {
+            nextLastId = listE.get(listE.size() - 1).getId();
+        }
        request.setAttribute("listE", listE);
+        request.setAttribute("nextLastId", nextLastId);
        request.getRequestDispatcher("Ecosystem.jsp").forward(request, response);
     }
 

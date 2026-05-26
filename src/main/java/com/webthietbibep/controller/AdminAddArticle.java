@@ -13,9 +13,11 @@ import java.io.IOException;
 
 
 @WebServlet(name = "AdminAddArticle", value = "/admin/add-article")
-public class AdminAddArticle extends HttpServlet {
+public class    AdminAddArticle extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        CategoryService cs = new CategoryService();
+        request.setAttribute("categories", cs.getAll());
         request.getRequestDispatcher("/admin/admin_content_form.jsp").forward(request, response);
     }
 
@@ -47,7 +49,7 @@ public class AdminAddArticle extends HttpServlet {
         a.setCategory_id(cateId);
         a.setIs_active((byte) ("1".equals(is_active) ? 1 : 0));
 
-        // kiểm tra id tồn tại
+
         CategoryService cs = new CategoryService();
         boolean check = cs.checkExist(cateId);
 
@@ -73,6 +75,7 @@ public class AdminAddArticle extends HttpServlet {
             request.setAttribute("oldArticle", a);
             request.setAttribute("errorMessage", "ID danh mục :" + cateId + " không tồn tại!");
 
+            request.setAttribute("categories", cs.getAll());
 
             request.getRequestDispatcher("/admin/admin_content_form.jsp").forward(request, response);
         }

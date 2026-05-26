@@ -10,6 +10,8 @@ public class CartItem implements Serializable {
     private Product product;
     private int quantity;
     private double price;
+    private long time = System.currentTimeMillis();
+    private boolean checkBox = true;
 
 
     public CartItem() {
@@ -49,6 +51,21 @@ public class CartItem implements Serializable {
         this.quantity += q ;
     }
 
+    public boolean isCheckBox() {
+        return checkBox;
+    }
+
+    public void setCheckBox(boolean checkBox) {
+        this.checkBox = checkBox;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
 
     public static String Format(double price) {
         NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));

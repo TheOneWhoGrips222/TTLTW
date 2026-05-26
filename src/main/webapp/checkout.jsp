@@ -84,6 +84,16 @@
                             </div>
                         </div>
                     </c:forEach>
+                    <c:forEach items = "${cart.itemsCombo}" var ="combo">
+                        <div class="order-item">
+                            <img src="${combo.combo.image}">
+                            <div>
+                                <p>${combo.combo.name}</p>
+                                <small>Số lượng: ${combo.quantity}</small><br>
+                                <strong>${combo.Format(combo.price * combo.quantity)}</strong>
+                            </div>
+                        </div>
+                    </c:forEach>
                 </c:otherwise>
             </c:choose>
 

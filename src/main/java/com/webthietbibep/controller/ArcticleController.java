@@ -18,12 +18,21 @@ public class ArcticleController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String filter = request.getParameter("filter");
-
+        int lastId = 0;
+        String lastIdParam = request.getParameter("lastId");
+        if (lastIdParam != null && !lastIdParam.isEmpty()) {
+            lastId = Integer.parseInt(lastIdParam);
+        }
+        int pageSize = 4;
+        String lastValue = request.getParameter("lastValue");
+        if (lastValue == null) {
+            lastValue = "";
+        }
         ArcticleService as = new ArcticleService();
         CategoryService asc = new CategoryService();
-   if(filter == null) filter = "new";
+        if(filter == null) filter = "new";
         List<Category> listCate =  asc.getAll();
-        List<Article> listA = as.getFilterArticle(filter);
+        List<Article> listA = as.getFilterArticle(filter, lastId, lastValue, pageSize);
         List<Article> listHA = as.getListHotArticle();
 
 
@@ -31,7 +40,19 @@ public class ArcticleController extends HttpServlet {
         request.setAttribute("listHA", listHA);
         request.setAttribute("filter", filter);
         request.setAttribute("listCate", listCate);
-
+        int nextLastId = 0;
+        String nextLastValue = "";
+        if (listA != null && !listA.isEmpty()) {
+            nextLastId = listA.get(listA.size() - 1).getId();
+            Article lastArticle = listA.get(listA.size() - 1);
+            if ("population".equals(filter)) {
+                nextLastValue = String.valueOf(lastArticle.getLikecount());
+            } else if ("AZ".equals(filter)) {
+                nextLastValue = lastArticle.getTitle();
+            }
+        }
+        request.setAttribute("nextLastId", nextLastId);
+        request.setAttribute("nextLastValue", nextLastValue);
         request.getRequestDispatcher("/goctuvan.jsp").forward(request, response);
     }
 

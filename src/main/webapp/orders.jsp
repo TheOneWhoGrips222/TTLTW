@@ -96,6 +96,7 @@
                             </div>
                         </div>
                     </c:forEach>
+                    <c:forEach var = "combo" item
 
                     <!-- Footer -->
                     <div class="order-footer">

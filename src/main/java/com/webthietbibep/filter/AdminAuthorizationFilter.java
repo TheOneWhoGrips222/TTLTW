@@ -20,15 +20,18 @@ public class AdminAuthorizationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletRequest  httpRequest  = (HttpServletRequest)  request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        HttpSession session = httpRequest.getSession(false);
 
-        boolean isLoggedIn = (session != null && session.getAttribute("user") != null);
+        httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        httpResponse.setHeader("Pragma", "no-cache");
+        httpResponse.setDateHeader("Expires", 0);
+
+        HttpSession session   = httpRequest.getSession(false);
+        boolean     isLoggedIn = (session != null && session.getAttribute("user") != null);
 
         if (isLoggedIn) {
             User user = (User) session.getAttribute("user");
-
             if ("ADMIN".equals(user.getRole())) {
                 chain.doFilter(request, response);
                 return;
