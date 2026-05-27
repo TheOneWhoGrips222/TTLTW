@@ -56,7 +56,7 @@
             <span><i class="fa fa-phone"></i> Hỗ trợ Kỹ thuật: 1900.1234</span>
             <span><i class="fa fa-phone"></i> Kinh doanh: 1900.5678</span>
             <span class="spacer"></span>
-            <a href="${pageContext.request.contextPath}/showroom">Hệ thống Showroom</a>
+            <a href="${pageContext.request.contextPath}/showroom">Hệ thống Showroom  </a>
 
             <c:if test="${empty sessionScope.user}">
                 <a href="${pageContext.request.contextPath}/login">

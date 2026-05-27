@@ -7,7 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class Voucher implements Serializable {
-    private String id;
+    private int id;
+    private String code;
     private String title;
     private String description;
     private int category_id;
@@ -21,25 +22,34 @@ public class Voucher implements Serializable {
     public Voucher() {
     }
 
-    public Voucher(String id, String title, String description,int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status) {
+    public Voucher(int id, String code, String title, String description, int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status) {
         this.id = id;
+        this.code = code;
         this.title = title;
         this.description = description;
+        this.category_id = category_id;
         this.discountType = discountType;
         this.discountValue = discountValue;
         this.minOrderValue = minOrderValue;
         this.quantity = quantity;
         this.endDate = endDate;
         this.status = status;
-        this.category_id = category_id;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getTitle() {
