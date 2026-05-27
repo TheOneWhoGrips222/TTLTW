@@ -165,7 +165,7 @@ public class OrdersDAO extends BaseDao {
         String sql = """
             SELECT
                 o.order_id, o.user_id, o.address_id, o.total_amount,
-                o.status, o.payment_method, o.created_at, o.note, o.voucher_id,
+                o.status, o.payment_method, o.created_at, o.note, o.voucher_id, o.ghn_order_code,
                 u.full_name AS userName,
                 CONCAT_WS(', ', ua.address_detail, ua.ward, ua.district, ua.province) AS addressDetail
             FROM orders o
@@ -226,6 +226,24 @@ public class OrdersDAO extends BaseDao {
                         .bind("status", newStatus)
                         .bind("id", orderId)
                         .execute()
+        );
+    }
+
+    public void saveGhnCode(int orderId,String code){
+
+        String sql="""
+        UPDATE orders
+        SET ghn_order_code=:code
+        WHERE order_id=:id
+    """;
+
+        get().useHandle(h->
+
+                h.createUpdate(sql)
+                        .bind("code",code)
+                        .bind("id",orderId)
+                        .execute()
+
         );
     }
 }

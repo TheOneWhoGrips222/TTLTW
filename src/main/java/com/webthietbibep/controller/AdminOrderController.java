@@ -8,7 +8,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import com.webthietbibep.dao.UserAddressDAO;
+import com.webthietbibep.model.UserAddress;
+import com.webthietbibep.services.GhnOrderService;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -20,6 +22,9 @@ public class AdminOrderController extends HttpServlet {
     private static final int PAGE_SIZE = 10;
 
     private final OrdersDAO orderDAO = new OrdersDAO();
+    private final UserAddressDAO addressDAO = new UserAddressDAO();
+
+    private final GhnOrderService ghnService = new GhnOrderService();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -120,7 +125,33 @@ public class AdminOrderController extends HttpServlet {
             int orderId   = Integer.parseInt(request.getParameter("order_id"));
             String newStatus = request.getParameter("status");
 
-            int result = orderDAO.updateStatus(orderId, newStatus);
+            if("VAN_CHUYEN".equals(newStatus)){
+
+                Order order=
+                        orderDAO.getOrderById(orderId);
+
+                UserAddress address=
+                        addressDAO.findById(
+                                order.getAddress_id()
+                        );
+
+                String ghnCode=
+                        ghnService.createOrder(
+                                order,
+                                address
+                        );
+
+                orderDAO.saveGhnCode(
+                        orderId,
+                        ghnCode
+                );
+            }
+
+            int result=
+                    orderDAO.updateStatus(
+                            orderId,
+                            newStatus
+                    );
 
             String message    = (result > 0) ? "Cập nhật thành công!" : "Cập nhật thất bại!";
             String encodedMsg = URLEncoder.encode(message, StandardCharsets.UTF_8);

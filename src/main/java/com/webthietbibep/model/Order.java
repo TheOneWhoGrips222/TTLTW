@@ -17,6 +17,7 @@ public class Order implements Serializable {
     private int voucher_id;
     private String userName;
     private String addressDetail;
+    private String ghn_order_code;
     public Order() {
     }
 
@@ -124,4 +125,11 @@ public class Order implements Serializable {
         return CartItem.Format(total_amount);
     }
 
+    public String getGhn_order_code() {
+        return ghn_order_code;
+    }
+
+    public void setGhn_order_code(String ghn_order_code) {
+        this.ghn_order_code = ghn_order_code;
+    }
 }

@@ -118,20 +118,19 @@
                 <div class="total">
                     <span>Tổng cộng</span>
                     <span id="total-amount">
-            <%-- Hiển thị tổng ban đầu --%>
-            <c:choose>
-                <c:when test="${mode == 'buynow'}">
+                     <c:choose>
+                    <c:when test="${mode == 'buynow'}">
                     ${buyNowTotalFormatted}
                 </c:when>
                 <c:otherwise>
                     ${cart.formatTotal}
                 </c:otherwise>
-            </c:choose>
-        </span>
+                 </c:choose>
+                </span>
                 </div>
-
-                <%-- ... phần còn lại --%>
-            </div>
+                <button type="submit" class="btn-order">
+                    Đặt hàng
+                </button>
         </div>
     </form>
 </main>

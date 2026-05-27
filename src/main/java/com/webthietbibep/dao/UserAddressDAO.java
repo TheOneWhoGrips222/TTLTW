@@ -75,4 +75,20 @@ public class UserAddressDAO extends BaseDao {
             """).bind("id", addressId).execute();
         });
     }
+    public UserAddress findById(int id){
+
+        return get().withHandle(h->
+
+                h.createQuery("""
+            SELECT *
+            FROM user_addresses
+            WHERE address_id=:id
+        """)
+                        .bind("id",id)
+                        .mapToBean(UserAddress.class)
+                        .findOne()
+                        .orElse(null)
+
+        );
+    }
 }
