@@ -14,8 +14,20 @@ public class VoucherContronller extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         VoucherService vs = new VoucherService();
-        List<Voucher> listV = vs.getListVouchers();
+        int lastId = 0;
+        String lastIdParam = request.getParameter("lastId");
+        if (lastIdParam != null && !lastIdParam.isEmpty()) {
+            lastId = Integer.parseInt(lastIdParam);
+        }
+        int pageSize = 4;
+        List<Voucher> listV = vs.getListVouchers(lastId, pageSize);
+
+        int nextLastId = 0;
+        if (listV != null && !listV.isEmpty()) {
+            nextLastId = listV.get(listV.size() - 1).getId();
+        }
         request.setAttribute("listV", listV);
+        request.setAttribute("nextLastId", nextLastId);
         request.getRequestDispatcher("khuyenmai.jsp").forward(request, response);
     }
 

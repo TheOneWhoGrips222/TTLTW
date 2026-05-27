@@ -31,6 +31,7 @@
         <li><a href="addresses">Địa chỉ</a></li>
         <li class="active"><a href="change-password">Đổi mật khẩu</a></li>
         <li><a href="orders">Đơn mua</a></li>
+          <li><a href="user-voucher">Voucher</a></li>
       </ul>
     </aside>
 

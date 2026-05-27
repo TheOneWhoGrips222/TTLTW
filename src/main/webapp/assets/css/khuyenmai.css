@@ -12,7 +12,7 @@
 
 .promo-hero .section-title {
     font-size: 2.2rem;
-    color: #333333; /* Đã sửa hẳn thành mã màu cứng để không bị lỗi IDE */
+    color: #333333;
     margin-bottom: 15px;
     font-weight: 700;
 }
@@ -24,7 +24,6 @@
     margin: 0 auto;
 }
 
-/* Lưới hiển thị Voucher */
 .voucher-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -38,7 +37,6 @@
     }
 }
 
-/* Thiết kế thẻ hình chiếc Vé */
 .voucher-card {
     display: flex;
     background: #ffffff;
@@ -53,10 +51,9 @@
 
 .voucher-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15); /* Đổi bóng đổ sang màu xanh */
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
 }
 
-/* Vùng bên trái: Màu xanh dương chủ đạo */
 .voucher-left {
     width: 140px;
     background: linear-gradient(135deg, var(--voucher-blue), #4da3ff);
@@ -103,7 +100,6 @@
     background-color: #fff;
 }
 
-/* Tạo hốc khuyết trên dưới */
 .voucher-card::before, .voucher-card::after {
     content: "";
     position: absolute;
@@ -118,7 +114,6 @@
 .voucher-card::before { top: -8px; }
 .voucher-card::after { bottom: -8px; }
 
-/* Vùng bên phải */
 .voucher-right {
     flex-grow: 1;
     padding: 20px;
@@ -170,7 +165,6 @@
     margin-top: auto;
 }
 
-/* Nút Lấy Mã */
 .voucher-action {
     display: flex;
     flex-direction: column;
@@ -197,7 +191,6 @@
     background-color: #0056b3;
 }
 
-/* Trạng thái sau khi bấm Lấy mã thành công */
 .btn-get-voucher.success {
     background-color: #e2e3e5;
     color: #6c757d;
@@ -231,4 +224,27 @@
         align-items: flex-start;
         gap: 10px;
     }
+}
+
+.see-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.btn-see-more {
+    background-color: #0b122c;
+    color: #ffffff;
+    border: none;
+    padding: 12px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-see-more:hover {
+    background-color: #1e293b;
 }

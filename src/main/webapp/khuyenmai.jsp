@@ -1,4 +1,5 @@
-<%@ taglib prefix="c" uri="jakarta.tags.core" %> <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="false" %>
 <!DOCTYPE html>
 <html lang="vi">
@@ -35,7 +36,7 @@
             <div class="voucher-grid">
 
                 <c:forEach var="v" items="${listV}">
-                    <c:if test="${v.status == 1 && !v.isExpired()}">
+                    <c:if test="${v.status == 1 && !v.isExpired() && v.quantity > 0}">
                         <article class="voucher-card">
                             <div class="voucher-left">
                                 <div class="voucher-value">${v.discountFormat}</div>
@@ -44,7 +45,7 @@
                             <div class="voucher-border-line"></div>
                             <div class="voucher-right">
                                 <div class="voucher-info">
-                                    <span class="voucher-code-tag">Mã: ${v.id}</span>
+                                    <span class="voucher-code-tag">Mã: ${v.code}</span>
                                     <h3 class="voucher-title">Giảm ngay ${v.discountFormat} </h3>
                                     <p class="voucher-desc">${v.description}</p>
                                     <p class="voucher-condition">
@@ -63,6 +64,13 @@
                 </c:forEach>
 
             </div>
+
+            <c:if test="${nextLastId > 0}">
+                <div class="see-more-container">
+                    <a href="list-voucher?lastId=${nextLastId}" class="btn-see-more" style="text-decoration: none; display: inline-block;">Xem thêm »</a>
+                </div>
+            </c:if>
+
         </div>
     </section>
 </main>
