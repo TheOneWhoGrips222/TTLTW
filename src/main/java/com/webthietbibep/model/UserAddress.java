@@ -14,6 +14,8 @@ public class UserAddress implements Serializable {
     private String province;
 
     private boolean is_default;
+    private int district_id;
+    private String ward_code;
 
     public UserAddress() {}
 
@@ -44,4 +46,20 @@ public class UserAddress implements Serializable {
 
     public boolean isIs_default() { return is_default; }
     public void setIs_default(boolean is_default) { this.is_default = is_default; }
+
+    public int getDistrict_id() {
+        return district_id;
+    }
+
+    public void setDistrict_id(int district_id) {
+        this.district_id = district_id;
+    }
+
+    public String getWard_code() {
+        return ward_code;
+    }
+
+    public void setWard_code(String ward_code) {
+        this.ward_code = ward_code;
+    }
 }
