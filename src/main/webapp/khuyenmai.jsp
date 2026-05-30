@@ -36,7 +36,7 @@
             <div class="voucher-grid">
 
                 <c:forEach var="v" items="${listV}">
-                    <c:if test="${v.status == 1 && !v.isExpired() && v.quantity > 0}">
+                    <c:if test="${v.status == 1 && !v.expired && v.quantity > 0}">
                         <article class="voucher-card">
                             <div class="voucher-left">
                                 <div class="voucher-value">${v.discountFormat}</div>
@@ -53,9 +53,17 @@
                                     </p>
                                 </div>
                                 <div class="voucher-action">
-                                    <button class="btn-get-voucher" onclick="collectVoucher('${v.id}', this)">
-                                        Lấy mã
-                                    </button>
+                                    <c:if test="${v.collection == true}">
+                                        <button type="button" class="btn-get-voucher success" disabled>
+                                            Đã lấy
+                                        </button>
+                                    </c:if>
+
+                                    <c:if test="${v.collection == false || empty v.collection}">
+                                        <button type="button" class="btn-get-voucher" onclick="collectVoucher('${v.id}', this)">
+                                            Lấy mã
+                                        </button>
+                                    </c:if>
                                     <div class="voucher-expiry">Hạn dùng: ${v.dateFormat}</div>
                                 </div>
                             </div>
@@ -79,9 +87,38 @@
 
 <script>
     function collectVoucher(voucherId, buttonElement) {
-        buttonElement.innerText = "Đã lấy";
-        buttonElement.classList.add("success");
+        const originalText = buttonElement.innerText;
+
+        buttonElement.innerText = "Đang xử lý...";
         buttonElement.disabled = true;
+
+        fetch("getVoucher", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "id=" + encodeURIComponent(voucherId)
+        })
+            .then(response => {
+                if (response.redirected) {
+                    buttonElement.innerText = originalText;
+                    buttonElement.disabled = false;
+
+
+                    window.location.href = response.url;
+                    return;
+                }
+
+
+                buttonElement.innerText = "Đã lấy";
+                buttonElement.classList.add("success");
+                buttonElement.disabled = true;
+            })
+            .catch(error => {
+                buttonElement.innerText = originalText;
+                buttonElement.disabled = false;
+                console.error("Lỗi hệ thống:", error);
+            });
     }
 </script>
 

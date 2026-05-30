@@ -15,4 +15,22 @@ public class VoucherDao extends BaseDao {
                     .list();
         });
     }
+    public boolean checkVoucher(int id, int userId) {
+        String sql = "select exists(select 1 from user_vouchers where voucher_id = :id and  user_id = :userid)";
+        return get().withHandle(v->{
+            return v.createQuery(sql).bind("id", id).bind("userid",userId).mapTo(boolean.class).one();
+        });
+    }
+    public void getVoucher (int id , int userId){
+        boolean check = checkVoucher(id,userId);
+        if(check == true){
+            return;
+        }
+        else{
+            String sql = "insert into user_vouchers (user_id, voucher_id,status) values  (:user_id, :voucher_id,0) ";
+            get().useHandle(v -> {
+                v.createUpdate(sql).bind("voucher_id",id).bind("user_id",userId).execute();
+            });
+        }
+    }
 }

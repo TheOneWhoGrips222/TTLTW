@@ -85,9 +85,11 @@
                                         </button>
                                     </c:if>
                                     <c:if test="${listU.status == 0 && !listU.expired}">
+                                        <a href="products">
                                         <button class="btn-get-voucher" style="background-color: #1677ff;" onclick="location.href='index'">
                                             Dùng ngay
                                         </button>
+                                        </a>
                                     </c:if>
                                     <div class="voucher-expiry">Hạn dùng: ${listU.dateFormat}</div>
                                 </div>

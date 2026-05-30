@@ -18,6 +18,7 @@ public class Voucher implements Serializable {
     private int quantity;
     private LocalDateTime endDate;
     private int status;
+    private boolean isCollection;
 
     public Voucher() {
     }
@@ -123,8 +124,17 @@ public class Voucher implements Serializable {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    public boolean isCollection() {
+        return isCollection;
+    }
+
+    public void setCollection(boolean collection) {
+        this.isCollection = collection;
+    }
+
     public String getDiscountFormat() {
-        if ("percentage".equalsIgnoreCase(this.discountType)) {
+        if ("phần trăm".equalsIgnoreCase(this.discountType)) {
             return String.format("%.0f", discountValue) + " %";
         } else {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
