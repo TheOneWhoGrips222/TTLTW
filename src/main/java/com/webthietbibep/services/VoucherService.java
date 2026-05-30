@@ -16,5 +16,10 @@ public class VoucherService {
     public List<Voucher> getUserVouchers(String type, int id) {
         return  uv.getListVoucher(type, id);
     }
-
+    public void getVoucher(int id,int userId) {
+        vd.getVoucher(id,userId);
+    }
+    public boolean checkVoucher(int id,int  userId) {
+        return  vd.checkVoucher(id,userId);
+    }
 }
