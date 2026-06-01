@@ -4,6 +4,7 @@ import com.webthietbibep.dao.BrandDAO;
 import com.webthietbibep.dao.CategoryDAO;
 import com.webthietbibep.dao.ProductDAO;
 import com.webthietbibep.dao.ProductImageDAO;
+import com.webthietbibep.dao.SupplierDAO;
 import com.webthietbibep.model.Product;
 import com.webthietbibep.model.ProductImage;
 import jakarta.servlet.ServletException;
@@ -16,7 +17,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024 * 2,
         maxFileSize = 1024 * 1024 * 10,
@@ -25,31 +25,33 @@ import java.util.List;
 @WebServlet(name = "AdminProductServlet", urlPatterns = {"/admin/product-save"})
 public class AdminProductServlet extends HttpServlet {
 
-    private ProductDAO productDAO;
-    private CategoryDAO categoryDAO;
-    private BrandDAO brandDAO;
-    private ProductImageDAO productImageDAO; // Khai báo
+    private ProductDAO      productDAO;
+    private CategoryDAO     categoryDAO;
+    private BrandDAO        brandDAO;
+    private ProductImageDAO productImageDAO;
+    private SupplierDAO     supplierDAO;
 
     @Override
     public void init() {
-        this.productDAO = new ProductDAO();
-        this.categoryDAO = new CategoryDAO();
-        this.brandDAO = new BrandDAO();
-        this.productImageDAO = new ProductImageDAO(); // Khởi tạo
+        this.productDAO      = new ProductDAO();
+        this.categoryDAO     = new CategoryDAO();
+        this.brandDAO        = new BrandDAO();
+        this.productImageDAO = new ProductImageDAO();
+        this.supplierDAO     = new SupplierDAO();
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String action = req.getParameter("action");
-        String idStr = req.getParameter("id");
+        String idStr  = req.getParameter("id");
         Product p = new Product();
-        List<ProductImage> listExtraImages = null; // List ảnh phụ
+        List<ProductImage> listExtraImages = null;
 
         if ("edit".equals(action) && idStr != null) {
             try {
                 int id = Integer.parseInt(idStr);
                 p = productDAO.getProduct(id);
-                // Lấy thêm danh sách ảnh phụ
                 if (p != null) {
                     listExtraImages = productImageDAO.getByProductId(id);
                 }
@@ -58,16 +60,18 @@ public class AdminProductServlet extends HttpServlet {
             }
         }
 
-        req.setAttribute("product", p);
-        req.setAttribute("extraImages", listExtraImages); // Đẩy ảnh phụ ra view
+        req.setAttribute("product",        p);
+        req.setAttribute("extraImages",    listExtraImages);
         req.setAttribute("listCategories", categoryDAO.getAll());
-        req.setAttribute("listBrands", brandDAO.getAll());
+        req.setAttribute("listBrands",     brandDAO.getAll());
+        req.setAttribute("listSuppliers",  supplierDAO.getAll());
 
         req.getRequestDispatcher("/admin/admin_add_product.jsp").forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         Product p = new Product();
@@ -83,15 +87,13 @@ public class AdminProductServlet extends HttpServlet {
             p.setStock_quantity(parseInt(req.getParameter("stock_quantity")));
             p.setCategory_id(parseInt(req.getParameter("category_id")));
             p.setBrand_id(parseInt(req.getParameter("brand_id")));
-
+            p.setSupplier_id(parseInt(req.getParameter("supplier_id")));
 
             String mainImageUrl = handleFileUpload(req.getPart("imageFile"), uploadDir);
-            if (mainImageUrl == null) {
-                mainImageUrl = req.getParameter("image");
-            }
+            if (mainImageUrl == null) mainImageUrl = req.getParameter("image");
             if (mainImageUrl == null && pid > 0) {
                 Product oldP = productDAO.getProduct(pid);
-                if(oldP != null) mainImageUrl = oldP.getImage();
+                if (oldP != null) mainImageUrl = oldP.getImage();
             }
             p.setImage(mainImageUrl);
 
@@ -99,16 +101,11 @@ public class AdminProductServlet extends HttpServlet {
                 productDAO.update(p);
                 session.setAttribute("msg", "Cập nhật thành công!");
             } else {
-
                 productDAO.insert(p);
-
             }
 
-            // 1. Upload nhiều file
             Collection<Part> parts = req.getParts();
             int sortOrder = 1;
-
-            // Xử lý các input file có name="extraImageFiles" (Input multiple)
             for (Part part : parts) {
                 if ("extraImageFiles".equals(part.getName()) && part.getSize() > 0) {
                     String url = handleFileUpload(part, uploadDir);
@@ -118,7 +115,6 @@ public class AdminProductServlet extends HttpServlet {
                     }
                 }
             }
-
 
             String[] extraUrls = req.getParameterValues("extraImageUrls");
             if (extraUrls != null) {
@@ -135,37 +131,27 @@ public class AdminProductServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             req.setAttribute("error", "Lỗi: " + e.getMessage());
-            req.setAttribute("product", p);
+            req.setAttribute("product",        p);
             req.setAttribute("listCategories", categoryDAO.getAll());
-            req.setAttribute("listBrands", brandDAO.getAll());
+            req.setAttribute("listBrands",     brandDAO.getAll());
+            req.setAttribute("listSuppliers",  supplierDAO.getAll());
             req.getRequestDispatcher("/admin/admin_add_product.jsp").forward(req, resp);
         }
     }
 
-
     private String handleFileUpload(Part part, String uploadDir) throws IOException {
-        if (part == null || part.getSize() == 0 || part.getSubmittedFileName().isEmpty()) {
-            return null;
-        }
-
-
+        if (part == null || part.getSize() == 0 || part.getSubmittedFileName().isEmpty()) return null;
         File dir = new File(uploadDir);
         if (!dir.exists()) dir.mkdirs();
-
-
         String fileName = System.currentTimeMillis() + "_" + part.getSubmittedFileName();
-        String filePath = uploadDir + File.separator + fileName;
-
-
-        part.write(filePath);
-
-
+        part.write(uploadDir + File.separator + fileName);
         return "assets/images/products/" + fileName;
     }
 
     private double parseDouble(String s) {
         try { return Double.parseDouble(s); } catch (Exception e) { return 0; }
     }
+
     private int parseInt(String s) {
         try { return Integer.parseInt(s); } catch (Exception e) { return 0; }
     }

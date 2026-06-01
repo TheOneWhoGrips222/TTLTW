@@ -7,7 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 public class Voucher implements Serializable {
-    private String id;
+    private int id;
+    private String code;
     private String title;
     private String description;
     private int category_id;
@@ -17,29 +18,40 @@ public class Voucher implements Serializable {
     private int quantity;
     private LocalDateTime endDate;
     private int status;
+    private boolean isCollection;
+
 
     public Voucher() {
     }
 
-    public Voucher(String id, String title, String description,int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status) {
+    public Voucher(int id, String code, String title, String description, int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status) {
         this.id = id;
+        this.code = code;
         this.title = title;
         this.description = description;
+        this.category_id = category_id;
         this.discountType = discountType;
         this.discountValue = discountValue;
         this.minOrderValue = minOrderValue;
         this.quantity = quantity;
         this.endDate = endDate;
         this.status = status;
-        this.category_id = category_id;
     }
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getTitle() {
@@ -113,8 +125,17 @@ public class Voucher implements Serializable {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    public boolean isCollection() {
+        return isCollection;
+    }
+
+    public void setCollection(boolean collection) {
+        this.isCollection = collection;
+    }
+
     public String getDiscountFormat() {
-        if ("percentage".equalsIgnoreCase(this.discountType)) {
+        if ("phần trăm".equalsIgnoreCase(this.discountType)) {
             return String.format("%.0f", discountValue) + " %";
         } else {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));

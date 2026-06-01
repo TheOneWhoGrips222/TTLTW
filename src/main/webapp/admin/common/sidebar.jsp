@@ -103,6 +103,13 @@
                 <span>Quản lý Khách hàng</span>
             </a>
         </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/restock">
+                <i class="fa-solid fa-boxes-stacked"></i>
+                <span>Đề xuất nhập hàng</span>
+            </a>
+        </li>
+        <li><a href="<%=request.getContextPath()%>/admin/suppliers">Nhà cung cấp</a></li>
         <li class="menu-item-has-children">
             <a href="#" class="sidebar-link">
                 <i class="fa-solid fa-file-pen"></i>
@@ -114,6 +121,11 @@
                 <li><a href="<%=request.getContextPath()%>/admin/content" class="active-sub"><i class="fa-solid fa-newspaper"></i> Danh sách Bài viết</a></li>
                 <li><a href="<%=request.getContextPath()%>/admin/add-article" class="active-sub"><i class="fa-solid fa-plus"></i> Viết bài mới</a></li>
             </ul>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/admin-voucher">
+                <i class="fa-solid fa-ticket"></i>Quản lý Voucher
+            </a>
         </li>
         <li>
             <a href="#">

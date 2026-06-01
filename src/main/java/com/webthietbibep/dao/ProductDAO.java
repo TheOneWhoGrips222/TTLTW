@@ -10,7 +10,6 @@ public class ProductDAO extends BaseDao {
 
     public List<Product> getBestSellers() {
         return get().withHandle(h -> {
-
             String sql = """
                 SELECT p.*, SUM(o.quantity) AS TongSoLuongDaBan
                 FROM order_items o 
@@ -24,13 +23,11 @@ public class ProductDAO extends BaseDao {
         });
     }
 
-
     public void inserts(List<Product> products) {
         String sql = """
             INSERT INTO products (category_id, product_name, description, price, stock_quantity, image, brand_id, created_at)
             VALUES (:category_id, :product_name, :description, :price, :stock_quantity, :image, :brand_id, NOW())
         """;
-
         get().useHandle(h -> {
             PreparedBatch batch = h.prepareBatch(sql);
             for (Product p : products) {
@@ -48,10 +45,16 @@ public class ProductDAO extends BaseDao {
         );
     }
 
-    public Product getProduct(int id){
+    public Product getProduct(int id) {
+        String sql = """
+            SELECT p.*, s.company_name AS supplierName
+            FROM products p
+            LEFT JOIN suppliers s ON p.supplier_id = s.supplier_id
+            WHERE p.product_id = :id
+        """;
         return get().withHandle(h ->
-                h.createQuery("SELECT * FROM products WHERE product_id = :id")
-                        .bind("id",id)
+                h.createQuery(sql)
+                        .bind("id", id)
                         .mapToBean(Product.class)
                         .stream().findFirst().orElse(null)
         );
@@ -59,10 +62,9 @@ public class ProductDAO extends BaseDao {
 
     public int insert(Product product) {
         String sql = """
-            INSERT INTO products (category_id, product_name, description, price, stock_quantity, brand_id, image, created_at)
-            VALUES (:category_id, :product_name, :description, :price, :stock_quantity, :brand_id, :image, NOW())
+            INSERT INTO products (category_id, product_name, description, price, stock_quantity, brand_id, image, supplier_id, created_at)
+            VALUES (:category_id, :product_name, :description, :price, :stock_quantity, :brand_id, :image, :supplier_id, NOW())
         """;
-
         return get().withHandle(handle ->
                 handle.createUpdate(sql)
                         .bindBean(product)
@@ -73,16 +75,16 @@ public class ProductDAO extends BaseDao {
     public int update(Product product) {
         String sql = """
             UPDATE products 
-            SET category_id = :category_id,
-                product_name = :product_name,
-                description = :description,
-                price = :price,
+            SET category_id    = :category_id,
+                product_name   = :product_name,
+                description    = :description,
+                price          = :price,
                 stock_quantity = :stock_quantity,
-                brand_id = :brand_id,
-                image = :image
+                brand_id       = :brand_id,
+                image          = :image,
+                supplier_id    = :supplier_id
             WHERE product_id = :product_id
         """;
-
         return get().withHandle(handle ->
                 handle.createUpdate(sql)
                         .bindBean(product)
@@ -108,23 +110,13 @@ public class ProductDAO extends BaseDao {
     ) {
         StringBuilder sql = new StringBuilder("""
             SELECT
-                p.product_id,
-                p.category_id,
-                p.product_name,
-                p.description,
-                p.price,
-                p.stock_quantity,
-                p.brand_id,
-                p.image,
-                p.created_at,
-                p.sold_quantity
+                p.product_id, p.category_id, p.product_name, p.description,
+                p.price, p.stock_quantity, p.brand_id, p.image, p.created_at, p.sold_quantity
             FROM products p
             WHERE 1=1
         """);
 
-        if (categoryId != null) {
-            sql.append(" AND p.category_id = :categoryId");
-        }
+        if (categoryId != null) sql.append(" AND p.category_id = :categoryId");
 
         if (priceRange != null) {
             switch (priceRange) {
@@ -135,19 +127,14 @@ public class ProductDAO extends BaseDao {
             }
         }
 
-
-        if (brands != null && brands.length > 0 && !brands[0].isBlank() ) {
+        if (brands != null && brands.length > 0 && !brands[0].isBlank()) {
             sql.append(" AND p.brand_id IN (<brands>)");
         }
 
-        if ("price_asc".equals(sort)) {
-            sql.append(" ORDER BY p.price ASC");
-        } else if ("price_desc".equals(sort)) {
-            sql.append(" ORDER BY p.price DESC");
-        } else {
-            // Ưu tiên hiển thị bán chạy nhất lên đầu, nếu bằng nhau thì ưu tiên sản phẩm mới nhất
-            sql.append(" ORDER BY p.sold_quantity DESC, p.created_at DESC");
-        }
+        if ("price_asc".equals(sort)) sql.append(" ORDER BY p.price ASC");
+        else if ("price_desc".equals(sort)) sql.append(" ORDER BY p.price DESC");
+        else sql.append(" ORDER BY p.sold_quantity DESC, p.created_at DESC");
+
         sql.append(" LIMIT :limit OFFSET :offset");
 
         int offset = (page - 1) * pageSize;
@@ -156,30 +143,16 @@ public class ProductDAO extends BaseDao {
             var query = h.createQuery(sql.toString())
                     .bind("limit", pageSize)
                     .bind("offset", offset);
-
-            if (categoryId != null) {
-                query.bind("categoryId", categoryId);
-            }
-            if (brands != null && brands.length > 0 && !brands[0].isBlank()) {
-                query.bindList("brands", brands);
-            }
-
+            if (categoryId != null) query.bind("categoryId", categoryId);
+            if (brands != null && brands.length > 0 && !brands[0].isBlank()) query.bindList("brands", brands);
             return query.mapToBean(Product.class).list();
         });
     }
 
-    public int countProducts(
-            String priceRange,
-            String[] brands,
-            Integer categoryId
-    ) {
-        StringBuilder sql = new StringBuilder("""
-            SELECT COUNT(*) FROM products p WHERE 1=1
-        """);
+    public int countProducts(String priceRange, String[] brands, Integer categoryId) {
+        StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM products p WHERE 1=1");
 
-        if (categoryId != null) {
-            sql.append(" AND p.category_id = :categoryId");
-        }
+        if (categoryId != null) sql.append(" AND p.category_id = :categoryId");
 
         if (priceRange != null) {
             switch (priceRange) {
@@ -196,14 +169,8 @@ public class ProductDAO extends BaseDao {
 
         return get().withHandle(h -> {
             var query = h.createQuery(sql.toString());
-
-            if (categoryId != null) {
-                query.bind("categoryId", categoryId);
-            }
-            if (brands != null && brands.length > 0 && !brands[0].isBlank()) {
-                query.bindList("brands", brands);
-            }
-
+            if (categoryId != null) query.bind("categoryId", categoryId);
+            if (brands != null && brands.length > 0 && !brands[0].isBlank()) query.bindList("brands", brands);
             return query.mapTo(Integer.class).one();
         });
     }
@@ -212,8 +179,7 @@ public class ProductDAO extends BaseDao {
         return JDBIConnector.get().withHandle(handle ->
                 handle.createQuery("""
                     SELECT * FROM products
-                    WHERE category_id = :cid
-                      AND product_id != :pid
+                    WHERE category_id = :cid AND product_id != :pid
                     LIMIT 6
                 """)
                         .bind("cid", categoryId)
@@ -222,30 +188,24 @@ public class ProductDAO extends BaseDao {
                         .list()
         );
     }
-        public Product getById(int id) {
-            String sql = """
-            SELECT 
-                product_id,
-                product_name,
-                image,
-                price
-            FROM products
-            WHERE product_id = :id
+
+    public Product getById(int id) {
+        String sql = """
+            SELECT product_id, product_name, image, price
+            FROM products WHERE product_id = :id
         """;
-
-            return get().withHandle(h ->
-                    h.createQuery(sql)
-                            .bind("id", id)
-                            .mapToBean(Product.class)
-                            .findOne()
-                            .orElse(null)
-            );
-        }
-
-    public List<Product> getByBrandId(int brandId) {
-        String sql = "SELECT * FROM products WHERE brand_id = :brandId";
         return get().withHandle(h ->
                 h.createQuery(sql)
+                        .bind("id", id)
+                        .mapToBean(Product.class)
+                        .findOne()
+                        .orElse(null)
+        );
+    }
+
+    public List<Product> getByBrandId(int brandId) {
+        return get().withHandle(h ->
+                h.createQuery("SELECT * FROM products WHERE brand_id = :brandId")
                         .bind("brandId", brandId)
                         .mapToBean(Product.class)
                         .list()
@@ -255,38 +215,24 @@ public class ProductDAO extends BaseDao {
     public int countAll() {
         return get().withHandle(h ->
                 h.createQuery("SELECT COUNT(*) FROM products")
-                        .mapTo(Integer.class)
-                        .one()
+                        .mapTo(Integer.class).one()
         );
     }
 
     public List<Product> findAll(int limit, int offset) {
-        String sql = """
-        SELECT * FROM products
-        ORDER BY product_id DESC
-        LIMIT :limit OFFSET :offset
-    """;
-
         return get().withHandle(h ->
-                h.createQuery(sql)
+                h.createQuery("SELECT * FROM products ORDER BY product_id DESC LIMIT :limit OFFSET :offset")
                         .bind("limit", limit)
                         .bind("offset", offset)
                         .mapToBean(Product.class)
                         .list()
         );
     }
-    // Thêm đoạn code này vào trong class ProductDAO
-    public List<Product> searchByNameLimit(String keyword, int limit) {
-        String sql = """
-        SELECT * FROM products 
-        WHERE product_name LIKE :keyword 
-        ORDER BY product_id DESC 
-        LIMIT :limit
-    """;
 
+    public List<Product> searchByNameLimit(String keyword, int limit) {
         return get().withHandle(h ->
-                h.createQuery(sql)
-                        .bind("keyword", "%" + keyword + "%") // Tìm kiếm chứa từ khóa
+                h.createQuery("SELECT * FROM products WHERE product_name LIKE :keyword ORDER BY product_id DESC LIMIT :limit")
+                        .bind("keyword", "%" + keyword + "%")
                         .bind("limit", limit)
                         .mapToBean(Product.class)
                         .list()
@@ -294,9 +240,8 @@ public class ProductDAO extends BaseDao {
     }
 
     public List<Product> searchByName(String keyword) {
-        String sql = "SELECT * FROM products WHERE product_name LIKE :keyword";
         return get().withHandle(h ->
-                h.createQuery(sql)
+                h.createQuery("SELECT * FROM products WHERE product_name LIKE :keyword")
                         .bind("keyword", "%" + keyword + "%")
                         .mapToBean(Product.class)
                         .list()
