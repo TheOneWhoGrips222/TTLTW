@@ -28,4 +28,8 @@ public class VoucherService {
     public int getTotalVouchers(String filter,String search) {
        return vd.getTotalVoucher(filter, search);
     }
+
+    public boolean DeleteVoucher(int id) {
+        return vd.deleteVoucher(id);
+    }
 }
