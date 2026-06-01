@@ -21,7 +21,7 @@ public class VoucherContronller extends HttpServlet {
         if (lastIdParam != null && !lastIdParam.isEmpty()) {
             lastId = Integer.parseInt(lastIdParam);
         }
-        int pageSize = 4;
+        int pageSize = 6;
         List<Voucher> listV = vs.getListVouchers(lastId, pageSize);
 
         int nextLastId = 0;

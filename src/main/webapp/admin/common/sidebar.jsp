@@ -123,6 +123,11 @@
             </ul>
         </li>
         <li>
+            <a href="${pageContext.request.contextPath}/admin/admin-voucher">
+                <i class="fa-solid fa-ticket"></i>Quản lý Voucher
+            </a>
+        </li>
+        <li>
             <a href="#">
                 <i class="fa-solid fa-gear"></i>
                 <span>Cài đặt</span>

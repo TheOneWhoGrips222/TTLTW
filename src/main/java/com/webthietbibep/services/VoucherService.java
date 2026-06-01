@@ -22,4 +22,10 @@ public class VoucherService {
     public boolean checkVoucher(int id,int  userId) {
         return  vd.checkVoucher(id,userId);
     }
+    public List<Voucher> getAdminListVouchers(String filter,String search, int page , int pageSize) {
+        return vd.getFilterVoucherAdmin(filter, search, page, pageSize);
+    }
+    public int getTotalVouchers(String filter,String search) {
+       return vd.getTotalVoucher(filter, search);
+    }
 }
