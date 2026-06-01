@@ -20,6 +20,7 @@ public class Voucher implements Serializable {
     private int status;
     private boolean isCollection;
 
+
     public Voucher() {
     }
 

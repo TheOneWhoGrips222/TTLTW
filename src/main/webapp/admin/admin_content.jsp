@@ -24,13 +24,13 @@
 
 <div class="admin-layout">
 
-    <!-- SIDEBAR (MENU BÊN TRÁI) - ĐÃ CẬP NHẬT -->
+
     <jsp:include page="common/sidebar.jsp"></jsp:include>
 
-    <!-- NỘI DUNG CHÍNH (BÊN PHẢI) -->
+
     <div class="admin-main">
 
-        <!-- HEADER CỦA NỘI DUNG CHÍNH -->
+
         <header class="admin-header">
             <h2>Quản lý nội dung (Góc tư vấn/Bài viết)</h2>
             <div class="admin-header-actions">
@@ -41,7 +41,7 @@
             </div>
         </header>
 
-        <!-- VÙNG NỘI DUNG CHÍNH -->
+
         <main class="admin-content">
             <div class="admin-content">
                 <c:if test="${not empty param.message}">

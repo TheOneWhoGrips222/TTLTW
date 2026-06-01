@@ -1,5 +1,6 @@
 package com.webthietbibep.dao;
 
+import com.webthietbibep.model.Article;
 import com.webthietbibep.model.Ecosystems;
 import com.webthietbibep.model.Voucher;
 
@@ -8,7 +9,7 @@ import java.util.List;
 public class VoucherDao extends BaseDao {
     public List<Voucher> getListVoucher(int lastId, int pageSize) {
         return get().withHandle(h -> {
-            return h.createQuery("SELECT id, code, title, description, category_id, discountType, discountValue, minOrderValue, quantity, endDate, status FROM vouchers WHERE id > :lastId AND status = 1 AND endDate >= NOW() ORDER BY id ASC LIMIT :pageSize")
+            return h.createQuery("SELECT id, code, title, description, category_id, discountType, discountValue, minOrderValue, quantity, endDate, status FROM vouchers WHERE id > :lastId AND status = 1 AND quantity > 0 AND endDate >= NOW() ORDER BY id ASC LIMIT :pageSize")
                     .bind("lastId", lastId)
                     .bind("pageSize", pageSize)
                     .mapToBean(Voucher.class)
@@ -32,5 +33,54 @@ public class VoucherDao extends BaseDao {
                 v.createUpdate(sql).bind("voucher_id",id).bind("user_id",userId).execute();
             });
         }
+    }
+
+    public List<Voucher> getFilterVoucherAdmin(String filter, String search, int page, int pageSize){
+        return get().withHandle(h -> {
+            StringBuilder query = new StringBuilder("SELECT id, code, title, discountType, quantity, endDate, status FROM vouchers WHERE 1=1");
+            String searchParam = (search == null) ? "" : search;
+
+            if ("act".equals(filter)) {
+                query.append(" AND code LIKE :search AND status = 1");
+            } else if ("stop".equals(filter)) {
+                query.append(" AND code LIKE :search AND status = 0");
+            } else if ("expire".equals(filter)) {
+                query.append(" AND code LIKE :search AND endDate < NOW()");
+            } else {
+                query.append(" AND code LIKE :search");
+            }
+
+            query.append(" ORDER BY id DESC LIMIT :limit OFFSET :offset");
+            int offset = (page - 1) * pageSize;
+
+            return h.createQuery(query.toString())
+                    .bind("search", "%" + searchParam + "%")
+                    .bind("limit", pageSize)
+                    .bind("offset", offset)
+                    .mapToBean(Voucher.class)
+                    .list();
+        });
+    }
+
+    public int getTotalVoucher(String filter, String search) {
+        return get().withHandle(h -> {
+            StringBuilder query = new StringBuilder("SELECT COUNT(*) FROM vouchers WHERE 1=1");
+            String searchParam = (search == null) ? "" : search;
+
+            if ("act".equals(filter)) {
+                query.append(" AND code LIKE :search AND status = 1");
+            } else if ("stop".equals(filter)) {
+                query.append(" AND code LIKE :search AND status = 0");
+            } else if ("expire".equals(filter)) {
+                query.append(" AND code LIKE :search AND endDate < NOW()");
+            } else {
+                query.append(" AND code LIKE :search");
+            }
+
+            return h.createQuery(query.toString())
+                    .bind("search", "%" + searchParam + "%")
+                    .mapTo(Integer.class)
+                    .one();
+        });
     }
 }
