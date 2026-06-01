@@ -95,8 +95,8 @@
                                 <td>${v.endDate}</td>
                                 <td ><span class="status ${v.status == 1 ? 'status-published' : 'status-draft'}">${v.status == 1? "Hoạt động" : "Tạm dừng"}</span></td>
                                 <td>
-                                    <a href="${pageContext.request.contextPath}/admin/action-article?action=edit&id=${a.id}" class="btn-action edit"  ><i class="fa-solid fa-pencil"></i></a>
-                                    <a href="${pageContext.request.contextPath}/admin/action-article?action=delete&id=${a.id}"
+                                    <a href="#" class="btn-action edit"  ><i class="fa-solid fa-pencil"></i></a>
+                                    <a href="${pageContext.request.contextPath}/admin/action-voucher?action=delete&id=${v.id}"
                                        class="btn-action delete"
                                        onclick="return confirm('Chắc chắn muốn xóa ?')">
                                         <i class="fa-solid fa-trash"></i>
@@ -108,14 +108,14 @@
                         </tbody>
                     </table>
                     <div class="admin-pagination">
-                        <%-- Nút trang trước --%>
+
                         <c:if test="${currentPage > 1}">
                             <a href="?page=${currentPage - 1}&filter=${param.filter}&search=${param.search}" class="page-link">
                                 <i class="fa-solid fa-chevron-left"></i>
                             </a>
                         </c:if>
 
-                        <%-- Vòng lặp hiển thị số trang --%>
+
                         <c:forEach begin="1" end="${totalPages}" var="i">
                             <a href="?page=${i}&filter=${param.filter}&search=${param.search}"
                                class="page-link ${i == currentPage ? 'active' : ''}">

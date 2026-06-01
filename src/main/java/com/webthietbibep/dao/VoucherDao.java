@@ -83,4 +83,19 @@ public class VoucherDao extends BaseDao {
                     .one();
         });
     }
+
+    public boolean deleteVoucher(int id){
+        String sql = "DELETE FROM vouchers WHERE id = :id";
+        return  get().withHandle(h->{
+            return   h.createUpdate(sql).bind("id",id).execute() > 0;
+        });
+    }
+
+    public boolean updateVoucher(Voucher voucher){
+        String sql = "UPDATE vouchers Set code = UPPER(:code) , title = :title, description = :description,category_id = :category_id,discountType = :discountType,discountValue = :discountValue , minOrderValue = :minOrderValue,quantity = :quantity, endDate = :endDate, status = :status  WHERE id = :id ";
+        return get().withHandle(h->{
+            return  h.createUpdate(sql).bindBean(voucher)
+                    .execute() > 0;
+        });
+    }
 }
