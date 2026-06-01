@@ -96,9 +96,7 @@
                             </div>
                         </div>
                     </c:forEach>
-                    <c:forEach var = "combo" item
 
-                    <!-- Footer -->
                     <div class="order-footer">
                         <div>
                             Phương thức: <b>${o.payment_method}</b>

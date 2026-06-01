@@ -53,6 +53,7 @@ public class CheckoutServlet extends HttpServlet {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
             String buyNowTotalFormatted = vn.format(total) + " đ";
 
+            req.setAttribute("buyNowTotal", total);
             req.setAttribute("buyNowTotalFormatted", buyNowTotalFormatted);
             req.setAttribute("buyNowProduct", product);
             req.setAttribute("buyNowQuantity", quantity);
