@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -26,10 +28,22 @@ public class GHNWebhookServlet extends HttpServlet {
             payload.append(line);
         }
 
-        System.out.println("===== GHN WEBHOOK =====");
-        System.out.println(payload.toString());
+        try {
+            JSONObject json = new JSONObject(payload.toString());
 
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write("Webhook received");
+            String status = json.optString("status");
+            String orderCode = json.optString("order_code");
+
+            System.out.println("===== GHN WEBHOOK =====");
+            System.out.println("Status: " + status);
+            System.out.println("Order Code: " + orderCode);
+
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("Webhook processed");
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Invalid JSON");
+        }
     }
 }
