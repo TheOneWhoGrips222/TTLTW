@@ -1,49 +1,79 @@
 package com.webthietbibep.controller;
 
-import jakarta.servlet.ServletException;
+import com.webthietbibep.dao.OrdersDAO;
+import com.webthietbibep.model.Order;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
-import org.json.JSONObject;
+import jakarta.servlet.http.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import org.json.JSONObject;
+
 @WebServlet("/ghn-webhook")
 public class GHNWebhookServlet extends HttpServlet {
+
+    private OrdersDAO orderDAO = new OrdersDAO();
 
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
 
         StringBuilder payload = new StringBuilder();
 
         BufferedReader reader = request.getReader();
+
         String line;
 
-        while ((line = reader.readLine()) != null) {
+        while((line=reader.readLine())!=null){
             payload.append(line);
         }
 
-        try {
-            JSONObject json = new JSONObject(payload.toString());
+        JSONObject json=new JSONObject(payload.toString());
 
-            String status = json.optString("status");
-            String orderCode = json.optString("order_code");
+        String ghnStatus=json.optString("status");
+        String orderCode=json.optString("order_code");
 
-            System.out.println("===== GHN WEBHOOK =====");
-            System.out.println("Status: " + status);
-            System.out.println("Order Code: " + orderCode);
+        System.out.println("===== GHN WEBHOOK =====");
+        System.out.println("GHN STATUS: "+ghnStatus);
+        System.out.println("ORDER CODE: "+orderCode);
 
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write("Webhook processed");
+        Order order=orderDAO.getByGhnCode(orderCode);
 
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Invalid JSON");
+        if(order!=null){
+
+            String appStatus=switch (ghnStatus){
+
+                case "ready_to_pick",
+                     "picking" -> "CHO_XAC_NHAN";
+
+                case "transporting",
+                     "sorting" -> "VAN_CHUYEN";
+
+                case "delivering" -> "CHO_GIAO_HANG";
+
+                case "delivered" -> "HOAN_THANH";
+
+                case "cancel" -> "DA_HUY";
+
+                default -> null;
+            };
+
+            if(appStatus!=null){
+
+                orderDAO.updateStatus(
+                        order.getOrder_id(),
+                        appStatus
+                );
+
+                System.out.println(
+                        "UPDATED -> "+appStatus
+                );
+            }
         }
+
+        response.getWriter()
+                .write("Webhook processed");
     }
 }

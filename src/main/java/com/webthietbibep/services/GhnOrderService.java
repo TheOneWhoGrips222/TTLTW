@@ -4,24 +4,20 @@ import com.google.gson.*;
 import com.webthietbibep.model.Order;
 import com.webthietbibep.model.UserAddress;
 import com.webthietbibep.utils.GhnConfig;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 public class GhnOrderService {
 
     private final Gson gson = new Gson();
 
-    public String createOrder(
-            Order order,
-            UserAddress address
-    ) throws Exception {
+    public String createOrder(Order order, UserAddress address) throws Exception {
 
-        int serviceId =
-                getServiceId(
-                        address.getDistrict_id()
-                );
+        int serviceId = getServiceId(address.getDistrict_id());
 
         JsonObject body = new JsonObject();
 
@@ -344,5 +340,42 @@ public class GhnOrderService {
                 .getAsJsonObject()
                 .get("service_id")
                 .getAsInt();
+    }
+    public String getOrderStatus(String ghnOrderCode) throws Exception {
+
+        String url =
+                GhnConfig.API_BASE_URL + "/v2/shipping-order/detail";
+
+        JSONObject body = new JSONObject();
+        body.put("order_code", ghnOrderCode);
+
+        HttpURLConnection conn =
+                (HttpURLConnection) new URL(url).openConnection();
+
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setRequestProperty("Token", GhnConfig.TOKEN);
+
+        conn.setDoOutput(true);
+
+        try (OutputStream os = conn.getOutputStream()) {
+            os.write(body.toString().getBytes(StandardCharsets.UTF_8));
+        }
+
+        String response;
+
+        try (BufferedReader br =
+                     new BufferedReader(
+                             new InputStreamReader(
+                                     conn.getInputStream(),
+                                     StandardCharsets.UTF_8))) {
+
+            response = br.lines().collect(Collectors.joining());
+        }
+
+        JSONObject json = new JSONObject(response);
+
+        return json.getJSONObject("data")
+                .getString("status");
     }
 }
