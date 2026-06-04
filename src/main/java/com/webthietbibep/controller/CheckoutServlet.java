@@ -5,10 +5,8 @@ import com.webthietbibep.cart.CartItem;
 import com.webthietbibep.dao.OrderItemDAO;
 import com.webthietbibep.dao.OrdersDAO;
 import com.webthietbibep.dao.UserAddressDAO;
-import com.webthietbibep.model.Order;
-import com.webthietbibep.model.OrderItem;
-import com.webthietbibep.model.Product;
-import com.webthietbibep.model.User;
+import com.webthietbibep.model.*;
+import com.webthietbibep.services.GhnOrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,6 +23,7 @@ public class CheckoutServlet extends HttpServlet {
     private final UserAddressDAO addressDAO = new UserAddressDAO();
     private final OrdersDAO ordersDAO = new OrdersDAO();
     private final OrderItemDAO itemDAO = new OrderItemDAO();
+    private final GhnOrderService ghnService = new GhnOrderService();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -121,6 +120,7 @@ public class CheckoutServlet extends HttpServlet {
             order.setTotal_amount(product.getPrice() * quantity);
             orderId = ordersDAO.insert(order);
 
+
             OrderItem oi = new OrderItem();
             oi.setOrder_id(orderId);
             oi.setProduct_id(product.getProduct_id());
@@ -153,6 +153,18 @@ public class CheckoutServlet extends HttpServlet {
             }
 
             req.getSession().removeAttribute("cart");
+        }
+
+        try {
+            UserAddress address = addressDAO.findById(addressId);
+            if (address != null) {
+                String ghnOrderCode = ghnService.createOrder(order, address);
+                ordersDAO.saveGhnCode(orderId, ghnOrderCode);
+                System.out.println(" GHN Order Code: " + ghnOrderCode);
+            }
+        } catch (Exception e) {
+            System.err.println(" Lỗi tạo GHN Order: " + e.getMessage());
+            e.printStackTrace();
         }
 
         if ("BANK".equals(payment)) {

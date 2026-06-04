@@ -246,4 +246,20 @@ public class OrdersDAO extends BaseDao {
 
         );
     }
+    public Order getByGhnCode(String ghnCode) {
+
+        String sql = """
+        SELECT *
+        FROM orders
+        WHERE ghn_order_code = :code
+    """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .bind("code", ghnCode)
+                        .mapToBean(Order.class)
+                        .findOne()
+                        .orElse(null)
+        );
+    }
 }

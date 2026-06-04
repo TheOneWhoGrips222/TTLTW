@@ -19,6 +19,9 @@ public abstract class BaseDao {
         src.setUser(DBProperties.username());
         src.setPassword(DBProperties.password());
 
+        System.out.println("URL = " + url);
+        System.out.println("USER = " + DBProperties.username());
+        System.out.println("PASS = " + DBProperties.password());
         try{
             src.setUseCompression(true);
             src.setAutoReconnect(true);
@@ -28,6 +31,7 @@ public abstract class BaseDao {
             throw new RuntimeException(e);
         }
         jdbi = Jdbi.create(src);
+
     }
 
 
