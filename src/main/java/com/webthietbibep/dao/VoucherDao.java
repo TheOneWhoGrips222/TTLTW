@@ -91,6 +91,28 @@ public class VoucherDao extends BaseDao {
             return h.createUpdate(sql).bind("id", id).execute() > 0;
         });
     }
+    public boolean updateVoucher(Voucher voucher) {
+        String sql = "UPDATE vouchers Set code = UPPER(:code) , title = :title, description = :description,category_id = :category_id,discountType = :discountType,discountValue = :discountValue , minOrderValue = :minOrderValue,quantity = :quantity, endDate = :endDate, status = :status  WHERE id = :id ";
+        return get().withHandle(h -> {
+            return h.createUpdate(sql)
+                    .bindBean(voucher)
+                    .execute() > 0;
+        });
+    }
 
+    public boolean addVoucher(Voucher voucher) {
+        String sql = "INSERT INTO vouchers (code, title, description, category_id, discountType, discountValue, minOrderValue, quantity, endDate, status) VALUES (UPPER(:code), :title, :description, :category_id, :discountType, :discountValue, :minOrderValue, :quantity, :endDate, :status)";
+        return get().withHandle(h -> {
+            return h.createUpdate(sql)
+                    .bindBean(voucher)
+                    .execute() > 0;
+        });
+    }
+    public Voucher getVoucherById(int id){
+        String sql = "SELECT * FROM vouchers WHERE id = :id";
+        return get().withHandle(h->{
+            return h.createQuery(sql).bind("id", id).mapToBean(Voucher.class).stream().findFirst().orElse(null);
+        });
+    }
 
 }
