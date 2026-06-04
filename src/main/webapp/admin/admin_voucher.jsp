@@ -34,7 +34,7 @@
         <header class="admin-header">
             <h2>Quản lý Voucher</h2>
             <div class="admin-header-actions">
-                <a href="#" class="btn-primary">
+                <a href="${pageContext.request.contextPath}/admin/add-voucher" class="btn-primary">
                     <i class="fa-solid fa-plus"></i> Thêm Voucher
                 </a>
 
@@ -95,7 +95,7 @@
                                 <td>${v.endDate}</td>
                                 <td ><span class="status ${v.status == 1 ? 'status-published' : 'status-draft'}">${v.status == 1? "Hoạt động" : "Tạm dừng"}</span></td>
                                 <td>
-                                    <a href="#" class="btn-action edit"  ><i class="fa-solid fa-pencil"></i></a>
+                                    <a href="${pageContext.request.contextPath}/admin/action-voucher?action=edit&id=${v.id}" class="btn-action edit"  ><i class="fa-solid fa-pencil"></i></a>
                                     <a href="${pageContext.request.contextPath}/admin/action-voucher?action=delete&id=${v.id}"
                                        class="btn-action delete"
                                        onclick="return confirm('Chắc chắn muốn xóa ?')">
