@@ -262,4 +262,21 @@ public class OrdersDAO extends BaseDao {
                         .orElse(null)
         );
     }
+
+    public List<Order> getOrdersNeedSync() {
+
+        String sql = """
+        SELECT *
+        FROM orders
+        WHERE ghn_order_code IS NOT NULL
+          AND ghn_order_code <> ''
+          AND status NOT IN ('DA_GIAO', 'DA_HUY')
+    """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .mapToBean(Order.class)
+                        .list()
+        );
+    }
 }
