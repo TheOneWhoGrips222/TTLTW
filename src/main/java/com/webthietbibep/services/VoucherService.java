@@ -38,5 +38,14 @@ public class VoucherService {
         return vd.deleteVoucher(id);
     }
 
+    public Voucher getVoucherByID(int id) {
+        return vd.getVoucherById(id);
+    }
 
+    public boolean AddVoucher(Voucher voucher) {
+        return vd.addVoucher(voucher);
+    }
+    public boolean updateVoucher(Voucher voucher) {
+        return vd.updateVoucher(voucher);
+    }
 }

@@ -6,7 +6,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Thêm voucher mới | Admin</title>
+    <title>${oldVoucher.id > 0 ? 'Cập nhật voucher' : 'Thêm voucher mới'} | Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_style.css">
 </head>
@@ -21,12 +21,20 @@
                 <a href="${pageContext.request.contextPath}/admin/admin-voucher" class="btn-back">
                     <i class="fa-solid fa-arrow-left"></i> Quay lại
                 </a>
-                <h2>Thêm voucher mới</h2>
+                <h2>${oldVoucher.id > 0 ? 'Cập nhật voucher' : 'Thêm voucher mới'}</h2>
             </div>
         </header>
 
         <div class="admin-content">
+            <c:if test="${not empty errorMessage}">
+                <div style="color: red; margin-bottom: 10px;">${errorMessage}</div>
+            </c:if>
+
             <form action="${pageContext.request.contextPath}/admin/add-voucher" method="post">
+
+                <c:if test="${oldVoucher.id > 0}">
+                    <input type="hidden" name="id" value="${oldVoucher.id}">
+                </c:if>
 
                 <div class="admin-form-layout">
                     <div class="form-col-main">
@@ -36,21 +44,25 @@
                             <div class="form-group">
                                 <label>Tiêu đề voucher</label>
                                 <input type="text" name="title" class="form-control" required
-                                       value="" placeholder="Nhập tiêu đề...">
+                                       value="${oldVoucher.title}" placeholder="Nhập tiêu đề...">
                             </div>
 
                             <div class="form-grid-mini" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div class="form-group">
                                     <label>Mã voucher (Viết hoa)</label>
                                     <input type="text" name="code" class="form-control" required
-                                           value="" placeholder="Ví dụ: VOUCHER10K" style="text-transform: uppercase;">
+                                           value="${oldVoucher.code}" placeholder="Ví dụ: VOUCHER10K" style="text-transform: uppercase;">
                                 </div>
                                 <div class="form-group">
                                     <label>Danh mục áp dụng</label>
                                     <select name="category_id" class="form-control" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100%;">
-                                        <option value="0" selected>0 - Tất cả sản phẩm</option>
-                                        <option value="1">1 - Thiết bị nhà bếp</option>
-                                        <option value="2">2 - Đồ dùng phòng ăn</option>
+                                        <option value="0" ${oldVoucher.category_id == 0 ? 'selected' : ''}>0 - Tất cả sản phẩm</option>
+                                        <c:forEach var="c" items="${categories}">
+                                            <option value="${c.category_id}"
+                                                ${c.category_id == oldVoucher.category_id ? 'selected' : ''}>
+                                                    ${c.category_id} - ${c.category_name}
+                                            </option>
+                                        </c:forEach>
                                     </select>
                                 </div>
                             </div>
@@ -58,7 +70,7 @@
                             <div class="form-group">
                                 <label>Mô tả / Điều kiện áp dụng</label>
                                 <textarea name="description" class="form-control" rows="4"
-                                          placeholder="Tóm tắt..."></textarea>
+                                          placeholder="Tóm tắt...">${oldVoucher.description}</textarea>
                             </div>
                         </div>
                     </div>
@@ -70,21 +82,23 @@
                             <div class="form-group">
                                 <label>Loại ưu đãi</label>
                                 <select name="discountType" class="form-control" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100%;">
-                                    <option value="cố định" selected>Giảm thẳng (đ)</option>
-                                    <option value="phần trăm">Phần trăm (%)</option>
+                                    <option value="cố định" ${oldVoucher.discountType == 'cố định' ? 'selected' : ''}>Giảm thẳng (đ)</option>
+                                    <option value="phần trăm" ${oldVoucher.discountType == 'phần trăm' ? 'selected' : ''}>Phần trăm (%)</option>
                                 </select>
                             </div>
 
                             <div class="form-grid-mini" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div class="form-group">
                                     <label>Giá trị giảm</label>
+                                    <fmt:formatNumber var="plainDiscountValue" value="${oldVoucher.discountValue}" pattern="#"/>
                                     <input type="number" name="discountValue" class="form-control" required min="1"
-                                           value="" placeholder="Số giảm">
+                                           value="${oldVoucher.id > 0 ? plainDiscountValue : ''}" placeholder="Số giảm">
                                 </div>
                                 <div class="form-group">
                                     <label>Đơn tối thiểu</label>
+                                    <fmt:formatNumber var="plainMinOrderValue" value="${oldVoucher.minOrderValue}" pattern="#"/>
                                     <input type="number" name="minOrderValue" class="form-control" required min="0"
-                                           value="0" placeholder="Tối thiểu">
+                                           value="${oldVoucher.id > 0 ? plainMinOrderValue : '0'}" placeholder="Tối thiểu">
                                 </div>
                             </div>
                         </div>
@@ -94,24 +108,28 @@
                             <div class="form-group">
                                 <label>Số lượng</label>
                                 <input type="number" name="quantity" class="form-control" required min="1"
-                                       value="" placeholder="Số lượng">
+                                       value="${oldVoucher.id > 0 ? oldVoucher.quantity : ''}" placeholder="Số lượng">
                             </div>
 
                             <div class="form-group">
                                 <label>Ngày hết hạn</label>
-                                <input type="date" name="endDate" class="form-control" required value="">
+                                <input type="date" name="endDate" class="form-control" required
+                                       value="${oldVoucher.id > 0 && oldVoucher.endDate != null ? oldVoucher.endDate.toLocalDate() : ''}">
                             </div>
 
                             <div class="form-group">
                                 <label>Trạng thái</label>
                                 <div class="toggle-group">
                                     <label class="switch">
-                                        <input type="checkbox" id="activeSwitch" checked onchange="updateActiveValue()">
+                                        <input type="checkbox" id="activeSwitch"
+                                        ${oldVoucher.id == 0 || oldVoucher.status == 1 ? 'checked' : ''} onchange="updateActiveValue()">
                                         <span class="slider round"></span>
                                     </label>
-                                    <span id="statusLabel" style="color: var(--green);">Đang kích hoạt</span>
+                                    <span id="statusLabel">
+                                        ${oldVoucher.id == 0 || oldVoucher.status == 1 ? 'Đang kích hoạt' : 'Đang ẩn'}
+                                    </span>
                                 </div>
-                                <input type="hidden" name="status" id="isActiveInput" value="1">
+                                <input type="hidden" name="status" id="isActiveInput" value="${oldVoucher.id == 0 ? '1' : oldVoucher.status}">
                             </div>
                         </div>
                     </div>
@@ -119,7 +137,8 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
-                        <i class="fa-solid fa-save"></i> Đăng voucher
+                        <i class="fa-solid fa-save"></i>
+                        ${oldVoucher.id > 0 ? 'Lưu voucher' : 'Đăng voucher'}
                     </button>
                     <a href="${pageContext.request.contextPath}/admin/admin-voucher" class="btn-secondary">Hủy bỏ</a>
                 </div>
