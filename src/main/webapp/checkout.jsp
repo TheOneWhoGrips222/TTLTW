@@ -63,39 +63,57 @@
             <h2>Đơn hàng của bạn</h2>
 
             <c:choose>
-                <c:when test="${mode == 'buynow'}">
-                    <div class="order-item">
-                        <img src="${buyNowProduct.image}">
-                        <div>
-                            <p>${buyNowProduct.product_name}</p>
-                            <small>Số lượng: ${buyNowQuantity}</small><br>
-                            <strong>${buyNowTotalFormatted}</strong>
-                        </div>
-                    </div>
-                </c:when>
-                <c:otherwise>
-                    <c:forEach items="${cart.items}" var="ci">
-                        <div class="order-item">
-                            <img src="${ci.product.image}">
-                            <div>
-                                <p>${ci.product.product_name}</p>
-                                <small>Số lượng: ${ci.quantity}</small><br>
-                                <strong>${ci.formattedTotal}</strong>
-                            </div>
-                        </div>
-                    </c:forEach>
-                    <c:forEach items = "${cart.itemsCombo}" var ="combo">
-                        <div class="order-item">
-                            <img src="${combo.combo.image}">
-                            <div>
-                                <p>${combo.combo.name}</p>
-                                <small>Số lượng: ${combo.quantity}</small><br>
-                                <strong>${combo.Format(combo.price * combo.quantity)}</strong>
-                            </div>
-                        </div>
-                    </c:forEach>
-                </c:otherwise>
+            <c:when test="${mode == 'buynow'}">
+            <div class="order-item">
+                <img src="${buyNowProduct.image}">
+                <div>
+                    <p>${buyNowProduct.product_name}</p>
+                    <small>Số lượng: ${buyNowQuantity}</small><br>
+                    <strong>${buyNowTotalFormatted}</strong>
+                </div>
+            </div>
+            </c:when>
+            <c:otherwise>
+            <c:forEach items="${cart.items}" var="ci">
+            <div class="order-item">
+                <img src="${ci.product.image}">
+                <div>
+                    <p>${ci.product.product_name}</p>
+                    <small>Số lượng: ${ci.quantity}</small><br>
+                    <strong>${ci.formattedTotal}</strong>
+                </div>
+            </div>
+            </c:forEach>
+            <c:forEach items = "${cart.itemsCombo}" var ="combo">
+            <div class="order-item">
+                <img src="${combo.combo.image}">
+                <div>
+                    <p>${combo.combo.name}</p>
+                    <small>Số lượng: ${combo.quantity}</small><br>
+                    <strong>${combo.Format(combo.price * combo.quantity)}</strong>
+                </div>
+            </div>
+            </c:forEach>
+            </c:otherwise>
             </c:choose>
+
+
+            <div class="voucher-section" style="margin-top: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 10px; color: black; font-family: 'Manrope', sans-serif;">Mã giảm giá</h3>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border: 1px solid #ddd; border-radius: 6px; background-color: #fcfcfc;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fa-solid fa-ticket" style="color: var(--primary-color); font-size: 1.2rem;"></i>
+
+                        <span style="font-family: 'Inter', sans-serif; color: #555; font-size: 0.95rem;">Chưa chọn mã giảm giá nào</span>
+                    </div>
+
+                    <button type="button" style="padding: 8px 15px; border-radius: 6px; border: 1px solid var(--primary-color); cursor: pointer; color: var(--primary-color); background-color: white; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.3s;">
+                        Chọn mã
+                    </button>
+                </div>
+            </div>
+
 
             <div class="order-summary">
                 <div>
@@ -119,19 +137,19 @@
                     <span>Tổng cộng</span>
                     <span id="total-amount">
                      <c:choose>
-                    <c:when test="${mode == 'buynow'}">
-                    ${buyNowTotalFormatted}
-                </c:when>
-                <c:otherwise>
-                    ${cart.formatTotal}
-                </c:otherwise>
-                 </c:choose>
+                         <c:when test="${mode == 'buynow'}">
+                             ${buyNowTotalFormatted}
+                         </c:when>
+                         <c:otherwise>
+                             ${cart.formatTotal}
+                         </c:otherwise>
+                     </c:choose>
                 </span>
                 </div>
                 <button type="submit" class="btn-order">
                     Đặt hàng
                 </button>
-        </div>
+            </div>
     </form>
 </main>
 
