@@ -1,19 +1,25 @@
 package com.webthietbibep.db;
 
 import com.mysql.cj.jdbc.MysqlDataSource;
+import com.webthietbibep.dao.DBProperties;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.sqlobject.SqlObjectPlugin;
+
 import java.sql.SQLException;
 
 public class JDBIConnector {
     private static Jdbi jdbi;
 
     private static void makeConnect() {
-        System.out.println("=== JDBI CONNECTING ===");
         MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setURL("jdbc:mysql://localhost:3306/web_nha_bep?useUnicode=true&characterEncoding=UTF-8");
-        dataSource.setUser("root");
-        dataSource.setPassword("Root@123456");
+        String url = "jdbc:mysql://"
+                + DBProperties.host() + ":"
+                + DBProperties.port() + "/"
+                + DBProperties.dbname() + "?"
+                + DBProperties.option();
+        dataSource.setURL(url);
+        dataSource.setUser(DBProperties.username());
+        dataSource.setPassword(DBProperties.password());
 
         try {
             dataSource.setAutoReconnect(true);

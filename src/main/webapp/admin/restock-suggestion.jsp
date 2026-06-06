@@ -8,85 +8,36 @@
     <title>Đề xuất nhập hàng | Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/admin_style.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/export-utils.js"></script>
     <style>
-        .restock-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .restock-stat-card {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px 24px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 1px 4px rgba(0,0,0,.06);
-            border: 1px solid #f0f0f0;
-        }
-        .restock-stat-card .icon {
-            width: 48px; height: 48px;
-            border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.4rem; flex-shrink: 0;
-        }
-        .icon-urgent  { background: #fef2f2; color: #ef4444; }
-        .icon-warning { background: #fffbeb; color: #f59e0b; }
-        .icon-total   { background: #eff6ff; color: #3b82f6; }
-        .restock-stat-card .info p { margin: 0; font-size: .82rem; color: #6b7280; }
-        .restock-stat-card .info h3 { margin: 4px 0 0; font-size: 1.6rem; font-weight: 700; color: #111827; }
-
-        .badge-urgent {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 4px 10px; border-radius: 20px;
-            background: #fef2f2; color: #dc2626;
-            font-size: .78rem; font-weight: 600;
-        }
-        .badge-warning {
-            display: inline-flex; align-items: center; gap: 5px;
-            padding: 4px 10px; border-radius: 20px;
-            background: #fffbeb; color: #d97706;
-            font-size: .78rem; font-weight: 600;
-        }
-
-        .days-critical { color: #dc2626; font-weight: 700; }
-        .days-warning  { color: #d97706; font-weight: 600; }
-        .days-ok       { color: #059669; }
-
-        .suggest-qty {
-            font-weight: 700;
-            color: #4f46e5;
-            font-size: 1rem;
-        }
-
-        .product-cell {
-            display: flex; align-items: center; gap: 10px;
-        }
-        .product-cell img {
-            width: 42px; height: 42px; object-fit: cover;
-            border-radius: 8px; border: 1px solid #f0f0f0;
-        }
-        .product-cell .pname {
-            font-weight: 600; font-size: .88rem; color: #111827;
-            display: -webkit-box; -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical; overflow: hidden;
-        }
-
-        .filter-tabs {
-            display: flex; gap: 8px; margin-bottom: 16px;
-        }
-        .filter-tab {
-            padding: 7px 18px; border-radius: 8px; border: 1px solid #e5e7eb;
-            background: #fff; cursor: pointer; font-size: .875rem; color: #374151;
-            transition: background .15s;
-        }
-        .filter-tab.active        { background: #4f46e5; color: #fff; border-color: #4f46e5; font-weight: 600; }
-        .filter-tab.tab-urgent    { }
-        .filter-tab.tab-urgent.active  { background: #ef4444; border-color: #ef4444; }
-        .filter-tab.tab-warning.active { background: #f59e0b; border-color: #f59e0b; }
-
-        .hidden-row { display: none; }
+        .restock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+        .restock-stat-card{background:#fff;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:16px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid #f0f0f0}
+        .restock-stat-card .icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+        .icon-urgent{background:#fef2f2;color:#ef4444}.icon-warning{background:#fffbeb;color:#f59e0b}.icon-total{background:#eff6ff;color:#3b82f6}
+        .restock-stat-card .info p{margin:0;font-size:.82rem;color:#6b7280}
+        .restock-stat-card .info h3{margin:4px 0 0;font-size:1.6rem;font-weight:700;color:#111827}
+        .badge-urgent{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:#fef2f2;color:#dc2626;font-size:.78rem;font-weight:600}
+        .badge-warning{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:#fffbeb;color:#d97706;font-size:.78rem;font-weight:600}
+        .days-critical{color:#dc2626;font-weight:700}.days-warning{color:#d97706;font-weight:600}.days-ok{color:#059669}
+        .suggest-qty{font-weight:700;color:#4f46e5;font-size:1rem}
+        .product-cell{display:flex;align-items:center;gap:10px}
+        .product-cell img{width:42px;height:42px;object-fit:cover;border-radius:8px;border:1px solid #f0f0f0}
+        .product-cell .pname{font-weight:600;font-size:.88rem;color:#111827}
+        .filter-tabs{display:flex;gap:8px}
+        .filter-tab{padding:7px 18px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:.875rem;color:#374151;transition:background .15s}
+        .filter-tab.active{background:#4f46e5;color:#fff;border-color:#4f46e5;font-weight:600}
+        .filter-tab.tab-urgent.active{background:#ef4444;border-color:#ef4444}
+        .filter-tab.tab-warning.active{background:#f59e0b;border-color:#f59e0b}
+        .toolbar-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+        .export-group{display:flex;gap:5px}
+        .btn-export{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:.8rem;color:#374151;font-weight:500;transition:background .15s}
+        .btn-export:hover{background:#f3f4f6}
+        .btn-export.csv{border-color:#10b981;color:#10b981}.btn-export.csv:hover{background:#ecfdf5}
+        .btn-export.excel{border-color:#2563eb;color:#2563eb}.btn-export.excel:hover{background:#eff6ff}
+        .btn-export.pdf{border-color:#ef4444;color:#ef4444}.btn-export.pdf:hover{background:#fef2f2}
     </style>
 </head>
 <body>
@@ -109,40 +60,32 @@
             <div class="restock-stats">
                 <div class="restock-stat-card">
                     <div class="icon icon-urgent"><i class="fa-solid fa-circle-exclamation"></i></div>
-                    <div class="info">
-                        <p>Cần nhập gấp</p>
-                        <h3>${urgentCount}</h3>
-                    </div>
+                    <div class="info"><p>Cần nhập gấp</p><h3>${urgentCount}</h3></div>
                 </div>
                 <div class="restock-stat-card">
                     <div class="icon icon-warning"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    <div class="info">
-                        <p>Sắp hết hàng</p>
-                        <h3>${warningCount}</h3>
-                    </div>
+                    <div class="info"><p>Sắp hết hàng</p><h3>${warningCount}</h3></div>
                 </div>
                 <div class="restock-stat-card">
                     <div class="icon icon-total"><i class="fa-solid fa-list-check"></i></div>
-                    <div class="info">
-                        <p>Tổng cần xử lý</p>
-                        <h3>${urgentCount + warningCount}</h3>
-                    </div>
+                    <div class="info"><p>Tổng cần xử lý</p><h3>${urgentCount + warningCount}</h3></div>
                 </div>
             </div>
 
             <div class="admin-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:16px;">
-                    <h3 style="margin:0;">Danh sách sản phẩm cần nhập</h3>
-                    <div class="filter-tabs">
-                        <button class="filter-tab active" onclick="filterTable('all', this)">
-                            Tất cả (${urgentCount + warningCount})
-                        </button>
-                        <button class="filter-tab tab-urgent" onclick="filterTable('URGENT', this)">
-                            <i class="fa-solid fa-circle-exclamation"></i> Gấp (${urgentCount})
-                        </button>
-                        <button class="filter-tab tab-warning" onclick="filterTable('WARNING', this)">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Sắp hết (${warningCount})
-                        </button>
+                <div class="toolbar-row">
+                    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                        <h3 style="margin:0;">Danh sách sản phẩm cần nhập</h3>
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" onclick="filterTable('all',this)">Tất cả (${urgentCount + warningCount})</button>
+                            <button class="filter-tab tab-urgent" onclick="filterTable('URGENT',this)"><i class="fa-solid fa-circle-exclamation"></i> Gấp (${urgentCount})</button>
+                            <button class="filter-tab tab-warning" onclick="filterTable('WARNING',this)"><i class="fa-solid fa-triangle-exclamation"></i> Sắp hết (${warningCount})</button>
+                        </div>
+                    </div>
+                    <div class="export-group">
+                        <button class="btn-export csv"   onclick="exportRestockCSV()">  <i class="fa-solid fa-file-csv"></i> CSV</button>
+                        <button class="btn-export excel" onclick="exportRestockExcel()"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                        <button class="btn-export pdf"   onclick="exportRestockPDF()">  <i class="fa-solid fa-file-pdf"></i> PDF</button>
                     </div>
                 </div>
 
@@ -155,7 +98,7 @@
                         <th width="14%" style="text-align:center;">Dự kiến hết</th>
                         <th width="14%" style="text-align:center;">Đề xuất nhập</th>
                         <th width="13%" style="text-align:center;">Mức độ</th>
-                        <th width="6%" style="text-align:center;">Chi tiết</th>
+                        <th width="6%"  style="text-align:center;">Chi tiết</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -170,7 +113,14 @@
                         </c:when>
                         <c:otherwise>
                             <c:forEach var="s" items="${suggestions}">
-                                <tr class="restock-row" data-urgency="${s.urgencyLevel}">
+                                <tr class="restock-row"
+                                    data-urgency="${s.urgencyLevel}"
+                                    data-name="${s.productName}"
+                                    data-stock="${s.stockQuantity}"
+                                    data-avg="${s.avgSoldPerDay}"
+                                    data-days="${s.daysUntilEmpty}"
+                                    data-suggest="${s.suggestedQuantity}"
+                                    data-level="${s.urgencyLevel == 'URGENT' ? 'Cần gấp' : 'Sắp hết'}">
                                     <td>
                                         <div class="product-cell">
                                             <c:choose>
@@ -178,66 +128,35 @@
                                                     <img src="https://placehold.co/42x42?text=SP" alt="No image">
                                                 </c:when>
                                                 <c:when test="${s.productImage.startsWith('http://') or s.productImage.startsWith('https://')}">
-                                                    <img src="${s.productImage}"
-                                                         onerror="this.src='https://placehold.co/42x42?text=SP'"
-                                                         alt="${s.productName}">
+                                                    <img src="${s.productImage}" onerror="this.src='https://placehold.co/42x42?text=SP'" alt="${s.productName}">
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <img src="${pageContext.request.contextPath}/${s.productImage}"
-                                                         onerror="this.src='https://placehold.co/42x42?text=SP'"
-                                                         alt="${s.productName}">
+                                                    <img src="${pageContext.request.contextPath}/${s.productImage}" onerror="this.src='https://placehold.co/42x42?text=SP'" alt="${s.productName}">
                                                 </c:otherwise>
                                             </c:choose>
                                             <span class="pname">${s.productName}</span>
                                         </div>
                                     </td>
                                     <td style="text-align:center;font-weight:600;">
-                                        <c:choose>
-                                            <c:when test="${s.urgencyLevel == 'URGENT'}">
-                                                <span style="color:#dc2626;">${s.stockQuantity}</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span style="color:#d97706;">${s.stockQuantity}</span>
-                                            </c:otherwise>
-                                        </c:choose>
+                                        <span style="color:${s.urgencyLevel == 'URGENT' ? '#dc2626' : '#d97706'};">${s.stockQuantity}</span>
                                     </td>
                                     <td style="text-align:center;">${s.avgSoldPerDay}</td>
                                     <td style="text-align:center;">
                                         <c:choose>
-                                            <c:when test="${s.daysUntilEmpty <= 7}">
-                                                <span class="days-critical">
-                                                    <i class="fa-solid fa-clock"></i>
-                                                    ${s.daysUntilEmpty} ngày
-                                                </span>
-                                            </c:when>
-                                            <c:when test="${s.daysUntilEmpty <= 14}">
-                                                <span class="days-warning">${s.daysUntilEmpty} ngày</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="days-ok">${s.daysUntilEmpty} ngày</span>
-                                            </c:otherwise>
+                                            <c:when test="${s.daysUntilEmpty <= 7}"><span class="days-critical"><i class="fa-solid fa-clock"></i> ${s.daysUntilEmpty} ngày</span></c:when>
+                                            <c:when test="${s.daysUntilEmpty <= 14}"><span class="days-warning">${s.daysUntilEmpty} ngày</span></c:when>
+                                            <c:otherwise><span class="days-ok">${s.daysUntilEmpty} ngày</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="text-align:center;">
-                                        <span class="suggest-qty">+${s.suggestedQuantity}</span>
-                                    </td>
+                                    <td style="text-align:center;"><span class="suggest-qty">+${s.suggestedQuantity}</span></td>
                                     <td style="text-align:center;">
                                         <c:choose>
-                                            <c:when test="${s.urgencyLevel == 'URGENT'}">
-                                                <span class="badge-urgent">
-                                                    <i class="fa-solid fa-circle-exclamation"></i> Cần gấp
-                                                </span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="badge-warning">
-                                                    <i class="fa-solid fa-triangle-exclamation"></i> Sắp hết
-                                                </span>
-                                            </c:otherwise>
+                                            <c:when test="${s.urgencyLevel == 'URGENT'}"><span class="badge-urgent"><i class="fa-solid fa-circle-exclamation"></i> Cần gấp</span></c:when>
+                                            <c:otherwise><span class="badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Sắp hết</span></c:otherwise>
                                         </c:choose>
                                     </td>
                                     <td style="text-align:center;">
-                                        <a href="${pageContext.request.contextPath}/admin/product-save?action=edit&id=${s.productId}"
-                                           class="btn-view" title="Xem sản phẩm">
+                                        <a href="${pageContext.request.contextPath}/admin/product-save?action=edit&id=${s.productId}" class="btn-view" title="Xem sản phẩm">
                                             <i class="fa-solid fa-pen"></i>
                                         </a>
                                     </td>
@@ -247,7 +166,6 @@
                     </c:choose>
                     </tbody>
                 </table>
-
                 <p style="font-size:.8rem;color:#9ca3af;margin-top:12px;text-align:right;">
                     * Dựa trên dữ liệu đơn hoàn thành trong 30 ngày gần nhất.
                     Ngưỡng cần gấp: tồn kho &le; TB 7 ngày &times; 2.
@@ -259,18 +177,37 @@
 </div>
 
 <script>
+    let curFilter = 'all';
+
     function filterTable(urgency, btn) {
+        curFilter = urgency;
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
         btn.classList.add('active');
-
-        document.querySelectorAll('.restock-row').forEach(function(row) {
-            if (urgency === 'all' || row.dataset.urgency === urgency) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+        document.querySelectorAll('.restock-row').forEach(row => {
+            row.style.display = (urgency === 'all' || row.dataset.urgency === urgency) ? '' : 'none';
         });
     }
+
+    const RESTOCK_HEADERS = ['Sản phẩm','Tồn kho','TB bán/ngày','Dự kiến hết (ngày)','Đề xuất nhập','Mức độ'];
+    function getRestockRows() {
+        const rows = [];
+        document.querySelectorAll('.restock-row').forEach(tr => {
+            if (curFilter !== 'all' && tr.dataset.urgency !== curFilter) return;
+            rows.push([
+                tr.dataset.name,
+                tr.dataset.stock,
+                tr.dataset.avg,
+                tr.dataset.days,
+                '+' + tr.dataset.suggest,
+                tr.dataset.level
+            ]);
+        });
+        return rows;
+    }
+    const fname = 'de-xuat-nhap-hang-' + new Date().toLocaleDateString('vi-VN').replace(/\//g,'-');
+    function exportRestockCSV()   { exportCSV(RESTOCK_HEADERS,   getRestockRows(), fname); }
+    function exportRestockExcel() { exportExcel(RESTOCK_HEADERS, getRestockRows(), fname, 'Nhập hàng'); }
+    function exportRestockPDF()   { exportPDF(RESTOCK_HEADERS,   getRestockRows(), fname, 'Đề xuất nhập hàng'); }
 </script>
 </body>
 </html>
