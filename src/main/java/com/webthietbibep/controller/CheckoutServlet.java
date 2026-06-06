@@ -155,17 +155,6 @@ public class CheckoutServlet extends HttpServlet {
             req.getSession().removeAttribute("cart");
         }
 
-        try {
-            UserAddress address = addressDAO.findById(addressId);
-            if (address != null) {
-                String ghnOrderCode = ghnService.createOrder(order, address);
-                ordersDAO.saveGhnCode(orderId, ghnOrderCode);
-                System.out.println(" GHN Order Code: " + ghnOrderCode);
-            }
-        } catch (Exception e) {
-            System.err.println(" Lỗi tạo GHN Order: " + e.getMessage());
-            e.printStackTrace();
-        }
 
         if ("BANK".equals(payment)) {
             resp.sendRedirect("payment?orderId=" + orderId);
