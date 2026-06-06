@@ -37,7 +37,8 @@ public class SyncGhnServlet extends HttpServlet {
                 String webStatus =
                         mapStatus(ghnStatus);
 
-                if (webStatus != null) {
+                if (webStatus != null
+                        && !webStatus.equals(order.getStatus())) {
 
                     ordersDAO.updateStatus(
                             order.getOrder_id(),
@@ -45,9 +46,10 @@ public class SyncGhnServlet extends HttpServlet {
                     );
 
                     System.out.println(
-                            order.getOrder_id()
-                                    + " -> "
-                                    + ghnStatus
+                            "SYNC "
+                                    + order.getOrder_id()
+                                    + " : "
+                                    + order.getStatus()
                                     + " -> "
                                     + webStatus
                     );
@@ -70,8 +72,6 @@ public class SyncGhnServlet extends HttpServlet {
             case "ready_to_pick":
             case "picking":
             case "money_collect_picking":
-                return "CHO_XAC_NHAN";
-
             case "transporting":
             case "sorting":
                 return "VAN_CHUYEN";
@@ -89,5 +89,4 @@ public class SyncGhnServlet extends HttpServlet {
                 return null;
         }
     }
-
-    }
+}

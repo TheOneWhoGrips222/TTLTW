@@ -270,7 +270,7 @@ public class OrdersDAO extends BaseDao {
         FROM orders
         WHERE ghn_order_code IS NOT NULL
           AND ghn_order_code <> ''
-          AND status NOT IN ('DA_GIAO', 'DA_HUY')
+          AND status NOT IN ('HOAN_THANH', 'DA_HUY')
     """;
 
         return get().withHandle(h ->

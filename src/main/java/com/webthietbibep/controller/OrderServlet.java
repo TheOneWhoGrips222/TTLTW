@@ -6,6 +6,7 @@ import com.webthietbibep.dao.ProductDAO;
 import com.webthietbibep.model.Order;
 import com.webthietbibep.model.Product;
 import com.webthietbibep.model.User;
+import com.webthietbibep.services.GhnOrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,11 +26,14 @@ public class OrderServlet extends HttpServlet {
     private OrderItemDAO itemDAO = new OrderItemDAO();
     private ProductDAO productDAO = new ProductDAO();
 
+    private GhnOrderService ghnService = new GhnOrderService();
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
         orderDAO.cancelExpiredOrders();
+        syncGhnOrders();
         User user = (User) req.getSession().getAttribute("user");
         if (user == null) {
             resp.sendRedirect("login");
@@ -63,6 +67,73 @@ public class OrderServlet extends HttpServlet {
         req.setAttribute("orders", orders);
         req.setAttribute("orderProducts", orderProducts);
         req.getRequestDispatcher("/orders.jsp").forward(req, resp);
+    }
+    private void syncGhnOrders() {
+
+        try {
+
+            List<Order> orders =
+                    orderDAO.getOrdersNeedSync();
+
+            for (Order order : orders) {
+
+                String ghnStatus =
+                        ghnService.getOrderStatus(
+                                order.getGhn_order_code()
+                        );
+
+                String webStatus =
+                        mapStatus(ghnStatus);
+
+                if (webStatus != null
+                        && !webStatus.equals(order.getStatus())) {
+
+                    orderDAO.updateStatus(
+                            order.getOrder_id(),
+                            webStatus
+                    );
+
+                    System.out.println(
+                            "SYNC "
+                                    + order.getOrder_id()
+                                    + " : "
+                                    + order.getStatus()
+                                    + " -> "
+                                    + webStatus
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+    }
+
+    private String mapStatus(String ghnStatus) {
+
+        switch (ghnStatus) {
+
+            case "ready_to_pick":
+            case "picking":
+            case "money_collect_picking":
+            case "transporting":
+            case "sorting":
+                return "VAN_CHUYEN";
+
+            case "delivering":
+                return "CHO_GIAO_HANG";
+
+            case "delivered":
+                return "HOAN_THANH";
+
+            case "cancel":
+                return "DA_HUY";
+
+            default:
+                return null;
+        }
     }
 
 }

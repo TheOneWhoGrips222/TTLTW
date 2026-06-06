@@ -59,6 +59,7 @@ public class AdminOrderController extends HttpServlet {
     }
 
     private void listOrders(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        syncGhnOrders();
         String keyword = request.getParameter("keyword");
         String status  = request.getParameter("status_filter");
 
@@ -127,27 +128,36 @@ public class AdminOrderController extends HttpServlet {
 
             if("VAN_CHUYEN".equals(newStatus)){
 
-                Order order=
+                Order order =
                         orderDAO.getOrderById(orderId);
 
-                UserAddress address=
-                        addressDAO.findById(
-                                order.getAddress_id()
-                        );
+                if(order.getGhn_order_code() == null
+                        || order.getGhn_order_code().isEmpty()){
 
-                String ghnCode=
-                        ghnService.createOrder(
-                                order,
-                                address
-                        );
+                    UserAddress address =
+                            addressDAO.findById(
+                                    order.getAddress_id()
+                            );
 
-                orderDAO.saveGhnCode(
-                        orderId,
-                        ghnCode
-                );
+                    String ghnCode =
+                            ghnService.createOrder(
+                                    order,
+                                    address
+                            );
+
+                    orderDAO.saveGhnCode(
+                            orderId,
+                            ghnCode
+                    );
+
+                    System.out.println(
+                            "Created GHN order: "
+                                    + ghnCode
+                    );
+                }
             }
 
-            int result=
+            int result =
                     orderDAO.updateStatus(
                             orderId,
                             newStatus
@@ -164,4 +174,72 @@ public class AdminOrderController extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/admin/order?error=system_error");
         }
     }
+    private void syncGhnOrders() {
+
+        try {
+
+            List<Order> orders =
+                    orderDAO.getOrdersNeedSync();
+
+            for (Order order : orders) {
+
+                String ghnStatus =
+                        ghnService.getOrderStatus(
+                                order.getGhn_order_code()
+                        );
+
+                String webStatus =
+                        mapStatus(ghnStatus);
+
+                if (webStatus != null
+                        && !webStatus.equals(order.getStatus())) {
+
+                    orderDAO.updateStatus(
+                            order.getOrder_id(),
+                            webStatus
+                    );
+
+                    System.out.println(
+                            "SYNC "
+                                    + order.getOrder_id()
+                                    + " : "
+                                    + order.getStatus()
+                                    + " -> "
+                                    + webStatus
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+        }
+    }
+
+    private String mapStatus(String ghnStatus) {
+
+        switch (ghnStatus) {
+
+            case "ready_to_pick":
+            case "picking":
+            case "money_collect_picking":
+            case "transporting":
+            case "sorting":
+                return "VAN_CHUYEN";
+
+            case "delivering":
+                return "CHO_GIAO_HANG";
+
+            case "delivered":
+                return "HOAN_THANH";
+
+            case "cancel":
+                return "DA_HUY";
+
+            default:
+                return null;
+        }
+    }
+
 }
