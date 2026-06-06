@@ -246,4 +246,37 @@ public class OrdersDAO extends BaseDao {
 
         );
     }
+    public Order getByGhnCode(String ghnCode) {
+
+        String sql = """
+        SELECT *
+        FROM orders
+        WHERE ghn_order_code = :code
+    """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .bind("code", ghnCode)
+                        .mapToBean(Order.class)
+                        .findOne()
+                        .orElse(null)
+        );
+    }
+
+    public List<Order> getOrdersNeedSync() {
+
+        String sql = """
+        SELECT *
+        FROM orders
+        WHERE ghn_order_code IS NOT NULL
+          AND ghn_order_code <> ''
+          AND status NOT IN ('DA_GIAO', 'DA_HUY')
+    """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .mapToBean(Order.class)
+                        .list()
+        );
+    }
 }

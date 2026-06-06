@@ -9,10 +9,11 @@ public class JDBIConnector {
     private static Jdbi jdbi;
 
     private static void makeConnect() {
+        System.out.println("=== JDBI CONNECTING ===");
         MysqlDataSource dataSource = new MysqlDataSource();
         dataSource.setURL("jdbc:mysql://localhost:3306/web_nha_bep?useUnicode=true&characterEncoding=UTF-8");
         dataSource.setUser("root");
-        dataSource.setPassword("");
+        dataSource.setPassword("Root@123456");
 
         try {
             dataSource.setAutoReconnect(true);
