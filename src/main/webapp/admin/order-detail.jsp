@@ -150,15 +150,40 @@
                             <div class="form-group">
                                 <label style="font-size: 0.9rem; color: var(--admin-text-light);">Trạng thái hiện tại:</label>
                                 <select name="status" class="form-control">
-                                    <option value="CHO_XAC_NHAN" ${order.status == 'CHO_XAC_NHAN' ? 'selected' : ''}>Chờ xác nhận</option>
-                                    <option value="VAN_CHUYEN" ${order.status == 'VAN_CHUYEN' ? 'selected' : ''}>Đang vận chuyển</option>
-                                    <option value="CHO_GIAO_HANG" ${order.status == 'CHO_GIAO_HANG' ? 'selected' : ''}>Chờ giao hàng</option>
-                                    <option value="HOAN_THANH" ${order.status == 'HOAN_THANH' ? 'selected' : ''}>Hoàn thành</option>
-                                    <option value="DA_HUY" ${order.status == 'DA_HUY' ? 'selected' : ''}>Đã hủy</option>
+
+                                    <c:if test="${order.status == 'CHO_XAC_NHAN'}">
+                                        <option value="CHO_XAC_NHAN" selected>
+                                            Chờ xác nhận
+                                        </option>
+
+                                        <option value="VAN_CHUYEN">
+                                            Xác nhận giao hàng
+                                        </option>
+
+                                        <option value="DA_HUY">
+                                            Hủy đơn
+                                        </option>
+                                    </c:if>
+
+                                    <c:if test="${order.status == 'VAN_CHUYEN'
+                                             || order.status == 'CHO_GIAO_HANG'
+                                             || order.status == 'HOAN_THANH'
+                                             || order.status == 'DA_HUY'}">
+
+                                        <option selected>
+                                                ${order.statusText}
+                                        </option>
+
+                                    </c:if>
+
                                 </select>
                             </div>
 
-                            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; justify-content: center;">
+                            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px; justify-content: center;"
+                                    <c:if test="${order.status != 'CHO_XAC_NHAN'}">
+                                        disabled
+                                    </c:if>
+                            >
                                 <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
                             </button>
                         </form>
