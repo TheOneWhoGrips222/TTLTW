@@ -21,4 +21,11 @@ public class UserVoucherDao extends BaseDao{
             }
         });
     }
+
+    public List<Voucher> getUserSelectVoucher(int userID){
+        String sql = "select  v.id, v.code, v.title, v.description, v.category_id, v.discountType, v.discountValue, v.minOrderValue,v.endDate from user_vouchers uv  JOIN vouchers v ON uv.voucher_id = v.id where uv.user_id = :userID AND NOW() < v.endDate AND v.status = 1 AND uv.status = 0 ORDER BY endDate ASC ";
+        return get().withHandle(v-> {
+            return v.createQuery(sql).bind("userID",userID).mapToBean(Voucher.class).list();
+        });
+    }
 }
