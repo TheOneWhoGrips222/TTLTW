@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
             formatCurrency(newTotal);
     }
 
+
     const handleAddressChange = async (selectedRadio) => {
         if (!selectedRadio) return;
 

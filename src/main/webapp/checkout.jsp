@@ -57,7 +57,7 @@
 
             <label class="payment-method">
                 <input type="radio" name="paymentMethod" value="BANK">
-                Chuyển khoản ngân hàng
+                Thanh toán online (VNPAY)
             </label>
 
         </div>
@@ -106,11 +106,9 @@
                     <span>Tạm tính</span>
                     <c:choose>
                         <c:when test="${mode == 'buynow'}">
-                            <%-- Thêm data-value="${buyNowTotal}" --%>
                             <span id="temp-total" data-value="${buyNowTotal}">${buyNowTotalFormatted}</span>
                         </c:when>
                         <c:otherwise>
-                            <%-- Thêm data-value="${cart.total}" --%>
                             <span id="temp-total" data-value="${cart.total}">${cart.formatTotal}</span>
                         </c:otherwise>
                     </c:choose>
