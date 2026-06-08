@@ -88,6 +88,9 @@
             </div>
 
             <div class="voucher-footer">
+                <button type="button" class="btn-clear" onclick="clearAllVouchers()" style="background-color: #f3f4f6; color: #4b5563; border: 1px solid #d1d5db; padding: 10px 20px;margin-right: 10px; border-radius: 4px; cursor: pointer; font-weight: 500;">
+                    XÓA LỰA CHỌN
+                </button>
                 <button type="submit" class="btn-ok">ĐỒNG Ý</button>
             </div>
         </div>
@@ -95,6 +98,13 @@
 </main>
 
 <jsp:include page="common/footer.jsp"/>
-
+<script>
+    function clearAllVouchers() {
+        let radios = document.querySelectorAll('input[type="radio"][name="idF"], input[type="radio"][name="discount"]');
+        radios.forEach(radio => {
+            radio.checked = false;
+        });
+    }
+</script>
 </body>
 </html>
