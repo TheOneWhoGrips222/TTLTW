@@ -16,7 +16,7 @@
 <jsp:include page="common/header.jsp"/>
 
 <main>
-    <form action="${pageContext.request.contextPath}/apply-voucher" method="POST">
+    <form action="${pageContext.request.contextPath}/select-voucher" method="POST">
         <div class="voucher-page-container">
             <div class="voucher-header">
                 <button type="button" class="btn-back" onclick="window.location.href='checkout.jsp'">
@@ -39,7 +39,8 @@
                             </div>
                             <div class="v-right">
                                 <div class="v-info">
-                                    <h4>${v.discountFormat}</h4>
+                                    <h4>Giảm ${v.discountFormat}</h4>
+                                    <p>${v.title}</p>
                                     <p>Đơn Tối Thiểu ${v.minvalueFormat}</p>
                                     <c:if test="${!v.validVoucher}">
                                         <small style="color: red; display: block;">Chưa đạt giá trị đơn hàng tối thiểu</small>
@@ -49,7 +50,7 @@
                                         Ngày hết hạn: ${v.dateFormat}
                                     </small>
                                 </div>
-                                <input type="radio" name="selected_freeship" value="${v.id}" ${v.validVoucher ? '' : 'disabled'} style="width: 20px; height: 20px;">
+                                <input type="radio" name="idF" value="${v.id}" ${v.validVoucher ? '' : 'disabled'} style="width: 20px; height: 20px;">
                             </div>
                         </label>
                     </c:if>
@@ -69,6 +70,7 @@
                             <div class="v-right">
                                 <div class="v-info">
                                     <h4>Giảm ${v.discountFormat}</h4>
+                                    <p>${v.title}</p>
                                     <p>Đơn Tối Thiểu ${v.minvalueFormat} </p>
                                     <c:if test="${!v.validVoucher}">
                                         <small style="color: red; display: block;">Chưa đạt giá trị đơn hàng tối thiểu</small>
@@ -78,7 +80,7 @@
                                         Ngày hết hạn: ${v.dateFormat}
                                     </small>
                                 </div>
-                                <input type="radio" name="selected_discount" value="${v.id}" ${v.validVoucher ? '' : 'disabled'} style="width: 20px; height: 20px;">
+                                <input type="radio" name="discount" value="${v.id}" ${v.validVoucher ? '' : 'disabled'} style="width: 20px; height: 20px;">
                             </div>
                         </label>
                     </c:if>

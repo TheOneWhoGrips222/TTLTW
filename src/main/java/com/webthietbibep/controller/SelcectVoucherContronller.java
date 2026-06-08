@@ -53,6 +53,31 @@ public class SelcectVoucherContronller extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        VoucherService vs = new VoucherService();
+        String idFreeShip  = request.getParameter("idF");
+        String idDiscount =  request.getParameter("discount");
 
+        if(idFreeShip != null && !idFreeShip.isEmpty()){
+            int idFS =  Integer.parseInt(idFreeShip);
+            Voucher v = vs.getVoucherByID(idFS);
+            session.setAttribute("chosseFS", v);
+
+        }
+        else {
+            session.removeAttribute("chosseFS");
+        }
+
+        if(idDiscount != null && !idDiscount.isEmpty()){
+            int idD =  Integer.parseInt(idDiscount);
+            Voucher vd = vs.getVoucherByID(idD);
+            session.setAttribute("chosseD", vd);
+
+        }
+        else {
+            session.removeAttribute("chosseD");
+        }
+
+        response.sendRedirect("checkout");
     }
 }
