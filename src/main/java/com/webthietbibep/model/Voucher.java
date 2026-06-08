@@ -1,9 +1,12 @@
 package com.webthietbibep.model;
 
+import com.webthietbibep.cart.CartItem;
+
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Locale;
 
 public class Voucher implements Serializable {
@@ -19,6 +22,7 @@ public class Voucher implements Serializable {
     private LocalDateTime endDate;
     private int status;
     private boolean isCollection;
+    private boolean isValidVoucher;
 
 
     public Voucher() {
@@ -36,6 +40,14 @@ public class Voucher implements Serializable {
         this.quantity = quantity;
         this.endDate = endDate;
         this.status = status;
+    }
+
+    public boolean isValidVoucher() {
+        return isValidVoucher;
+    }
+
+    public void setValidVoucher(boolean validVoucher) {
+        isValidVoucher = validVoucher;
     }
 
     public int getId() {
@@ -137,7 +149,12 @@ public class Voucher implements Serializable {
     public String getDiscountFormat() {
         if ("phần trăm".equalsIgnoreCase(this.discountType)) {
             return String.format("%.0f", discountValue) + " %";
-        } else {
+        }
+        else if("freeship".equalsIgnoreCase(this.discountType)) {
+            NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
+            return "Giảm " + vn.format(this.discountValue) + " đ";
+        }
+        else {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
             return vn.format(this.discountValue) + " đ";
         }
@@ -159,5 +176,26 @@ public class Voucher implements Serializable {
         DateTimeFormatter c = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return this.endDate.format(c);
     }
+    public boolean isValid(double orderTotal, List<CartItem> cartItems) {
+        if (orderTotal < this.minOrderValue) {
+            return false;
+        }
 
+        if (!"freeship".equals(this.discountType) && this.category_id != 0) {
+            boolean hasCategory = false;
+            if (cartItems != null) {
+                for (CartItem item : cartItems) {
+                    if (item.getProduct() != null && item.getProduct().getCategory_id() == this.category_id) {
+                        hasCategory = true;
+                        break;
+                    }
+                }
+            }
+            if (hasCategory == false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
