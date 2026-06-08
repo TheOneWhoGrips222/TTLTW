@@ -18,6 +18,9 @@ public class Order implements Serializable {
     private String userName;
     private String addressDetail;
     private String ghn_order_code;
+    private String payment_status;
+    private LocalDateTime payment_time;
+    private String transaction_no;
     public Order() {
     }
 
@@ -131,5 +134,29 @@ public class Order implements Serializable {
 
     public void setGhn_order_code(String ghn_order_code) {
         this.ghn_order_code = ghn_order_code;
+    }
+
+    public String getPayment_status() {
+        return payment_status;
+    }
+
+    public void setPayment_status(String payment_status) {
+        this.payment_status = payment_status;
+    }
+
+    public String getTransaction_no() {
+        return transaction_no;
+    }
+
+    public void setTransaction_no(String transaction_no) {
+        this.transaction_no = transaction_no;
+    }
+
+    public LocalDateTime getPayment_time() {
+        return payment_time;
+    }
+
+    public void setPayment_time(LocalDateTime payment_time) {
+        this.payment_time = payment_time;
     }
 }
