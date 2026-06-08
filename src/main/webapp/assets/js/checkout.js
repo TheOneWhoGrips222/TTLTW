@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const shippingFeeEl = document.getElementById('shipping-fee');
     const totalAmountEl = document.getElementById('total-amount');
     const tempTotalEl = document.getElementById('temp-total');
+    const shippingFeeInput = document.getElementById('shippingFeeInput');
 
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
@@ -33,18 +34,35 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const updateUI = (result) => {
+
         if (result.fee === -1) {
+
             shippingFeeEl.textContent = result.message;
-            totalAmountEl.textContent = tempTotalEl.textContent;
+
+            shippingFeeInput.value = 0;
+
+            totalAmountEl.textContent =
+                tempTotalEl.textContent;
+
             return;
         }
 
-        shippingFeeEl.textContent = formatCurrency(result.fee);
+        shippingFeeEl.textContent =
+            formatCurrency(result.fee);
 
-        const tempTotalValue = parseFloat(tempTotalEl.dataset.value);
-        const newTotal = tempTotalValue + result.fee;
-        totalAmountEl.textContent = formatCurrency(newTotal);
-    };
+        shippingFeeInput.value =
+            result.fee;
+
+        const tempTotalValue =
+            parseFloat(tempTotalEl.dataset.value);
+
+        const newTotal =
+            tempTotalValue + result.fee;
+
+        totalAmountEl.textContent =
+            formatCurrency(newTotal);
+    }
+
 
     const handleAddressChange = async (selectedRadio) => {
         if (!selectedRadio) return;
