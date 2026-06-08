@@ -94,6 +94,21 @@ public class CheckoutServlet extends HttpServlet {
         int addressId = Integer.parseInt(addressIdStr);
         String payment = req.getParameter("paymentMethod");
 
+
+        double shippingFee = 0;
+
+        String shippingFeeStr = req.getParameter("shippingFee");
+
+        System.out.println("shippingFeeStr = " + shippingFeeStr);
+        if (shippingFeeStr != null
+                && !shippingFeeStr.isEmpty()) {
+
+            shippingFee =
+                    Double.parseDouble(
+                            shippingFeeStr
+                    );
+        }
+
         Order order = new Order();
         order.setUser_id(user.getUser_id());
         order.setAddress_id(addressId);
@@ -117,7 +132,7 @@ public class CheckoutServlet extends HttpServlet {
                 return;
             }
 
-            order.setTotal_amount(product.getPrice() * quantity);
+            order.setTotal_amount(product.getPrice() * quantity + shippingFee);
             orderId = ordersDAO.insert(order);
 
 
@@ -140,7 +155,7 @@ public class CheckoutServlet extends HttpServlet {
                 return;
             }
 
-            order.setTotal_amount(cart.getTotal());
+            order.setTotal_amount(cart.getTotal() + shippingFee);
             orderId = ordersDAO.insert(order);
 
             for (CartItem ci : cart.getItems()) {

@@ -23,6 +23,10 @@
     <h1 class="checkout-title">Thanh toán</h1>
 
     <form action="checkout" method="post" class="checkout-content" style="width: 1200px; max-width: 100%; margin: 0 auto;">
+        <input type="hidden"
+               name="shippingFee"
+               id="shippingFeeInput"
+               value="0">
         <input type="hidden" name="mode" value="${mode}">
         <div class="checkout-left">
 
