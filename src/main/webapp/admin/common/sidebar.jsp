@@ -46,7 +46,6 @@
     </div>
     <ul class="sidebar-menu">
 
-        <%-- Dashboard: chỉ OWNER --%>
         <% if (isOwner) { %>
         <li>
             <a href="<%=request.getContextPath()%>/admin/dashboard">
@@ -55,7 +54,6 @@
         </li>
         <% } %>
 
-        <%-- Đơn hàng: OWNER + SALES --%>
         <% if (isOwner || isSales) { %>
         <li>
             <a href="<%=request.getContextPath()%>/admin/order">
@@ -64,7 +62,6 @@
         </li>
         <% } %>
 
-        <%-- Sản phẩm: OWNER + WAREHOUSE --%>
         <% if (isOwner || isWarehouse) { %>
         <li class="menu-item-has-children">
             <a href="#" class="sidebar-link">
@@ -83,7 +80,6 @@
         </li>
         <% } %>
 
-        <%-- Nhập hàng: OWNER + WAREHOUSE --%>
         <% if (isOwner || isWarehouse) { %>
         <li>
             <a href="<%=request.getContextPath()%>/admin/restock">
@@ -92,7 +88,6 @@
         </li>
         <% } %>
 
-        <%-- Khách hàng: chỉ OWNER --%>
         <% if (isOwner) { %>
         <li>
             <a href="<%=request.getContextPath()%>/admin/users">
@@ -101,7 +96,6 @@
         </li>
         <% } %>
 
-        <%-- Nội dung: chỉ OWNER --%>
         <% if (isOwner) { %>
         <li class="menu-item-has-children">
             <a href="#" class="sidebar-link">
@@ -116,7 +110,6 @@
         </li>
         <% } %>
 
-        <%-- Nhân viên: chỉ OWNER --%>
         <% if (isOwner) { %>
         <li>
             <a href="<%=request.getContextPath()%>/admin/staff">
