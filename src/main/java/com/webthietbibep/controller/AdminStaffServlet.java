@@ -91,7 +91,7 @@ public class AdminStaffServlet extends HttpServlet {
         u.setEmail(request.getParameter("email"));
         u.setPhone(request.getParameter("phone"));
         u.setRole(request.getParameter("role"));
-        u.setPassword_hash(PasswordUtil.hashPassword(rawPassword));
+        u.setPassword_hash(PasswordUtil.hash(rawPassword));
         u.setCreate_at(LocalDateTime.now());
         u.setVerify_token("");
         u.setIs_verified(true);
@@ -116,7 +116,7 @@ public class AdminStaffServlet extends HttpServlet {
 
         String newPassword = request.getParameter("password");
         if (newPassword != null && !newPassword.isBlank()) {
-            u.setPassword_hash(PasswordUtil.hashPassword(newPassword));
+            u.setPassword_hash(PasswordUtil.hash(newPassword));
         }
 
         userDAO.updateStaff(u);
