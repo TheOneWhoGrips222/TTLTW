@@ -16,14 +16,14 @@ import java.util.*;
 @WebServlet("/payment/vnpay")
 public class VnPayPaymentServlet extends HttpServlet {
 
-    private static final String TMN_CODE = "YOUR_TMN_CODE";
-    private static final String HASH_SECRET = "YOUR_HASH_SECRET";
+    private static final String TMN_CODE = "ICSBUOBM";
+    private static final String HASH_SECRET = "5I57399ZPCTE4FXVXUE809L16IP06FF6";
 
     private static final String PAY_URL =
             "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 
     private static final String RETURN_URL =
-            "https://yourdomain.com/payment/vnpay-return";
+            "https://shopdungcunhabep.id.vn/demo-1.0-SNAPSHOT/payment/vnpay-return";
 
     @Override
     protected void doGet(HttpServletRequest req,
