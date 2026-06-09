@@ -279,4 +279,44 @@ public class OrdersDAO extends BaseDao {
                         .list()
         );
     }
+
+    // check nếu thanh toán online thanh cong
+    public void updatePaymentSuccess(
+            int orderId,
+            String transactionNo){
+
+        String sql = """
+        UPDATE orders
+        SET
+            payment_status='PAID',
+            payment_time=NOW(),
+            transaction_no=:txn,
+            status='CHO_XAC_NHAN'
+        WHERE order_id=:id
+    """;
+
+        get().useHandle(h ->
+                h.createUpdate(sql)
+                        .bind("txn",transactionNo)
+                        .bind("id",orderId)
+                        .execute()
+        );
+    }
+
+    //check nếu thanh toan thất bại
+    public void updatePaymentFail(
+            int orderId){
+
+        String sql = """
+        UPDATE orders
+        SET payment_status='FAILED'
+        WHERE order_id=:id
+    """;
+
+        get().useHandle(h ->
+                h.createUpdate(sql)
+                        .bind("id",orderId)
+                        .execute()
+        );
+    }
 }
