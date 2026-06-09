@@ -1,13 +1,18 @@
 package com.webthietbibep.controller;
 
 import com.webthietbibep.dao.OrdersDAO;
-
+import com.webthietbibep.utils.VNPayConfig;
+import com.webthietbibep.utils.VnPayUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @WebServlet("/payment/vnpay-return")
 public class VnPayReturnServlet extends HttpServlet {
@@ -17,45 +22,149 @@ public class VnPayReturnServlet extends HttpServlet {
                          HttpServletResponse resp)
             throws ServletException, IOException {
 
-        String txnRef =
-                req.getParameter("vnp_TxnRef");
+        try {
 
-        String responseCode =
-                req.getParameter("vnp_ResponseCode");
+            Map<String,String> fields =
+                    new HashMap<>();
 
-        String transactionNo =
-                req.getParameter("vnp_TransactionNo");
+            Enumeration<String> params =
+                    req.getParameterNames();
 
-        if(txnRef == null){
+            while(params.hasMoreElements()) {
+
+                String fieldName =
+                        params.nextElement();
+
+                String fieldValue =
+                        req.getParameter(fieldName);
+
+                if(fieldValue != null
+                        && fieldValue.length() > 0) {
+
+                    fields.put(
+                            fieldName,
+                            fieldValue
+                    );
+                }
+            }
+
+            String vnpSecureHash =
+                    fields.remove("vnp_SecureHash");
+
+            fields.remove("vnp_SecureHashType");
+
+            List<String> fieldNames =
+                    new ArrayList<>(fields.keySet());
+
+            Collections.sort(fieldNames);
+
+            StringBuilder hashData =
+                    new StringBuilder();
+
+            Iterator<String> itr =
+                    fieldNames.iterator();
+
+            while(itr.hasNext()) {
+
+                String fieldName =
+                        itr.next();
+
+                String fieldValue =
+                        fields.get(fieldName);
+
+                hashData.append(fieldName);
+                hashData.append("=");
+
+                hashData.append(
+                        URLEncoder.encode(
+                                fieldValue,
+                                StandardCharsets.US_ASCII
+                        )
+                );
+
+                if(itr.hasNext()) {
+                    hashData.append("&");
+                }
+            }
+
+            String signValue =
+                    VnPayUtil.hmacSHA512(
+                            VNPayConfig.HASH_SECRET,
+                            hashData.toString()
+                    );
+
+            System.out.println("========== RETURN DEBUG ==========");
+            System.out.println("HASH DATA = " + hashData);
+            System.out.println("VNP HASH  = " + vnpSecureHash);
+            System.out.println("MY HASH   = " + signValue);
+            System.out.println("==================================");
+
+            if(!signValue.equalsIgnoreCase(vnpSecureHash)) {
+
+                System.out.println("INVALID SIGNATURE");
+
+                resp.sendRedirect(
+                        req.getContextPath()
+                                + "/payment-fail.jsp"
+                );
+                return;
+            }
+
+            String txnRef =
+                    req.getParameter("vnp_TxnRef");
+
+            String responseCode =
+                    req.getParameter("vnp_ResponseCode");
+
+            String transactionNo =
+                    req.getParameter("vnp_TransactionNo");
+
+            if(txnRef == null) {
+
+                resp.sendRedirect(
+                        req.getContextPath()
+                                + "/payment-fail.jsp"
+                );
+
+                return;
+            }
+
+            int orderId =
+                    Integer.parseInt(txnRef);
+
+            OrdersDAO dao =
+                    new OrdersDAO();
+
+            if("00".equals(responseCode)) {
+
+                dao.updatePaymentSuccess(
+                        orderId,
+                        transactionNo
+                );
+
+                resp.sendRedirect(
+                        req.getContextPath()
+                                + "/payment-success.jsp"
+                );
+
+            } else {
+
+                dao.updatePaymentFail(orderId);
+
+                resp.sendRedirect(
+                        req.getContextPath()
+                                + "/payment-fail.jsp"
+                );
+            }
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
             resp.sendRedirect(
-                    req.getContextPath() +
-                            "/checkout?error");
-            return;
-        }
-
-        int orderId =
-                Integer.parseInt(txnRef);
-
-        OrdersDAO dao = new OrdersDAO();
-
-        if("00".equals(responseCode)){
-
-            dao.updatePaymentSuccess(
-                    orderId,
-                    transactionNo
+                    req.getContextPath()
+                            + "/payment-fail.jsp"
             );
-
-            resp.sendRedirect(
-                    req.getContextPath()
-                            + "/payment-success.jsp");
-
-        } else {
-
-            dao.updatePaymentFail(orderId);
-
-            resp.sendRedirect(
-                    req.getContextPath()
-                            + "/payment-fail.jsp");
         }
     }
 }
