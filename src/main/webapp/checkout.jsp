@@ -105,16 +105,40 @@
             <div class="voucher-section" style="margin-top: 20px; padding-bottom: 15px; border-bottom: 1px solid #ddd;">
                 <h3 style="font-size: 1.1rem; margin-bottom: 10px; color: black; font-family: 'Manrope', sans-serif;">Mã giảm giá</h3>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 15px; border: 1px solid #ddd; border-radius: 6px; background-color: #fcfcfc;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <i class="fa-solid fa-ticket" style="color: var(--primary-color); font-size: 1.2rem;"></i>
+                <div style="display: flex; flex-direction: column; gap: 10px; padding: 12px 15px; border: 1px solid #ddd; border-radius: 6px; background-color: #fcfcfc;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
 
-                        <span style="font-family: 'Inter', sans-serif; color: #555; font-size: 0.95rem;">Chưa chọn mã giảm giá nào</span>
+
+                            <c:if test="${empty sessionScope.chosseFS && empty sessionScope.chosseD}">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i class="fa-solid fa-ticket" style="color: var(--primary-color); font-size: 1.2rem;"></i>
+                                    <span style="font-family: 'Inter', sans-serif; color: #555; font-size: 0.95rem;">Chưa chọn mã giảm giá nào</span>
+                                </div>
+                            </c:if>
+
+
+                            <c:if test="${not empty sessionScope.chosseFS}">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="background-color: #0088ff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; font-family: 'Inter', sans-serif; white-space: nowrap; display: inline-block;">Freeship</span>
+                                    <span style="font-family: 'Inter', sans-serif; color: #333; font-size: 0.95rem; font-weight: 500;">${sessionScope.chosseFS.title}</span>
+                                </div>
+                            </c:if>
+
+
+                            <c:if test="${not empty sessionScope.chosseD}">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="background-color: #22c55e; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; font-family: 'Inter', sans-serif; white-space: nowrap; display: inline-block;">Giảm giá</span>
+                                    <span style="font-family: 'Inter', sans-serif; color: #333; font-size: 0.95rem; font-weight: 500;">${sessionScope.chosseD.title}</span>
+                                </div>
+                            </c:if>
+
+                        </div>
+
+                        <button type="button" onclick="window.location.href='select-voucher'" style="padding: 8px 15px; border-radius: 6px; border: 1px solid var(--primary-color); cursor: pointer; color: var(--primary-color); background-color: white; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.3s; white-space: nowrap; margin-left: 15px;">
+                            Thay đổi
+                        </button>
                     </div>
-
-                    <button type="button" style="padding: 8px 15px; border-radius: 6px; border: 1px solid var(--primary-color); cursor: pointer; color: var(--primary-color); background-color: white; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.3s;">
-                        Chọn mã
-                    </button>
                 </div>
             </div>
 
