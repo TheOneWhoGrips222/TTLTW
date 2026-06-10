@@ -85,10 +85,20 @@ public class VnPayReturnServlet extends HttpServlet {
 
             if ("00".equals(responseCode)) {
                 dao.updatePaymentSuccess(orderId, transactionNo);
-                resp.sendRedirect(req.getContextPath() + "/payment-success.jsp");
+
+                resp.sendRedirect(
+                        req.getContextPath()
+                                + "/payment?orderId=" + orderId
+                                + "&result=success");
+
             } else {
+
                 dao.updatePaymentFail(orderId);
-                resp.sendRedirect(req.getContextPath() + "/payment-fail.jsp");
+
+                resp.sendRedirect(
+                        req.getContextPath()
+                                + "/payment?orderId=" + orderId
+                                + "&result=fail");
             }
 
         } catch (Exception e) {
