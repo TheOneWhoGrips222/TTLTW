@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Chọn Mã Giảm Giá</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/main.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/index.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/Header.css">
@@ -48,7 +48,12 @@
                                     <div class="v-info">
                                         <h4>${v.discountType == "freeship"?"FREE SHIP": "Giảm " + v.discountFormat}</h4>
                                         <p>${v.title}</p>
+                        <c:if test="${v.minOrderValue > 0}">
                                         <p>Đơn Tối Thiểu ${v.minvalueFormat}</p>
+                        </c:if>
+                        <c:if test="${v.maxValueDiscount > 0}">
+                                        <p>Giảm tối đa : ${v.maxValueFormat}</p>
+                        </c:if>
                                         <c:if test="${!v.validVoucher}">
                                             <small style="color: red; display: block;">Chưa đạt giá trị đơn hàng tối thiểu</small>
                                         </c:if>

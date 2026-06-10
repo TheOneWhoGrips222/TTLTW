@@ -49,7 +49,12 @@
                                     <h3 class="voucher-title">Giảm ngay ${v.discountFormat} </h3>
                                     <p class="voucher-desc">${v.description}</p>
                                     <p class="voucher-condition">
-                                        <i class="fa-solid fa-circle-info"></i> Đơn tối thiểu: ${v.minvalueFormat}
+                                        <c:if test="${v.minOrderValue > 0}">
+                                            <i class="fa-solid fa-circle-info"></i> Đơn tối thiểu: ${v.minvalueFormat}
+                                        </c:if>
+                                        <c:if test="${v.maxValueDiscount > 0}">
+                                            <br><i class="fa-solid fa-circle-info"></i> Giảm tối đa: ${v.maxValueFormat}
+                                        </c:if>
                                     </p>
                                 </div>
                                 <div class="voucher-action">
@@ -103,12 +108,9 @@
                 if (response.redirected) {
                     buttonElement.innerText = originalText;
                     buttonElement.disabled = false;
-
-
                     window.location.href = response.url;
                     return;
                 }
-
 
                 buttonElement.innerText = "Đã lấy";
                 buttonElement.classList.add("success");

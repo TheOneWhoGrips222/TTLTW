@@ -103,6 +103,13 @@
                                            value="${oldVoucher.id > 0 ? plainMinOrderValue : '0'}" placeholder="Tối thiểu">
                                 </div>
                             </div>
+
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label>Giảm tối đa (đối với mã %)</label>
+                                <fmt:formatNumber var="plainMaxValueDiscount" value="${oldVoucher.maxValueDiscount}" pattern="#"/>
+                                <input type="number" name="maxValueDiscount" class="form-control" min="0"
+                                       value="${oldVoucher.id > 0 ? plainMaxValueDiscount : '0'}" placeholder="Nhập số tiền giảm tối đa...">
+                            </div>
                         </div>
 
                         <div class="admin-card">

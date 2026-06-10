@@ -45,7 +45,8 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     position: relative;
     overflow: hidden;
-    height: 150px;
+    height: auto !important;
+    min-height: 150px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -118,8 +119,9 @@
     flex-grow: 1;
     padding: 20px;
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
     background: #fff;
 }
 
@@ -127,6 +129,7 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+    flex: 1;
 }
 
 .voucher-code-tag {
@@ -145,18 +148,29 @@
     font-weight: 700;
     color: #333;
     margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .voucher-desc {
     font-size: 0.85rem;
     color: #666;
     margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .voucher-condition {
     font-size: 0.85rem;
     color: #888;
     margin: 0;
+    margin-top: auto;
 }
 
 .voucher-expiry {
@@ -170,7 +184,6 @@
     flex-direction: column;
     align-items: flex-end;
     justify-content: space-between;
-    height: 100%;
     padding-left: 15px;
 }
 

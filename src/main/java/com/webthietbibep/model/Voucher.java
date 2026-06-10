@@ -23,12 +23,13 @@ public class Voucher implements Serializable {
     private int status;
     private boolean isCollection;
     private boolean isValidVoucher;
+    private double maxValueDiscount;
 
 
     public Voucher() {
     }
 
-    public Voucher(int id, String code, String title, String description, int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status) {
+    public Voucher(int id, String code, String title, String description, int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status,double maxValueDiscount) {
         this.id = id;
         this.code = code;
         this.title = title;
@@ -40,6 +41,15 @@ public class Voucher implements Serializable {
         this.quantity = quantity;
         this.endDate = endDate;
         this.status = status;
+        this.maxValueDiscount = maxValueDiscount;
+    }
+
+    public double getMaxValueDiscount() {
+        return maxValueDiscount;
+    }
+
+    public void setMaxValueDiscount(double maxValueDiscount) {
+        this.maxValueDiscount = maxValueDiscount;
     }
 
     public boolean isValidVoucher() {
@@ -165,6 +175,10 @@ public class Voucher implements Serializable {
     public String getMinvalueFormat() {
         NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
         return vn.format(this.minOrderValue) + " đ";
+    }
+    public String getMaxValueFormat() {
+        NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
+        return vn.format(this.maxValueDiscount) + " đ";
     }
     public boolean isExpired() {
         if (this.endDate == null) {

@@ -43,6 +43,7 @@ public class AdminAddVoucher extends HttpServlet {
         String minOrderValueRaw = request.getParameter("minOrderValue");
         String quantityRaw = request.getParameter("quantity");
         String statusRaw = request.getParameter("status");
+        String maxValue = request.getParameter("maxValueDiscount");
 
         Voucher v = new Voucher();
         v.setId(voucherId);
@@ -55,7 +56,7 @@ public class AdminAddVoucher extends HttpServlet {
         v.setMinOrderValue((minOrderValueRaw != null && !minOrderValueRaw.isEmpty()) ? Double.parseDouble(minOrderValueRaw) : 0);
         v.setQuantity((quantityRaw != null && !quantityRaw.isEmpty()) ? Integer.parseInt(quantityRaw) : 0);
         v.setStatus((statusRaw != null && !statusRaw.isEmpty()) ? Integer.parseInt(statusRaw) : 0);
-
+v.setMaxValueDiscount((maxValue != null && !maxValue.isEmpty()) ? Double.parseDouble(maxValue) : 0);
         v.setEndDate(LocalDateTime.now().plusDays(7));
 
         VoucherService vs = new VoucherService();

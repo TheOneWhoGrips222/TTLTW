@@ -9,7 +9,7 @@ import java.util.List;
 public class VoucherDao extends BaseDao {
     public List<Voucher> getListVoucher(int lastId, int pageSize) {
         return get().withHandle(h -> {
-            return h.createQuery("SELECT id, code, title, description, category_id, discountType, discountValue, minOrderValue, quantity, endDate, status FROM vouchers WHERE id > :lastId AND status = 1 AND quantity > 0 AND endDate >= NOW() ORDER BY id ASC LIMIT :pageSize")
+            return h.createQuery("SELECT id, code, title, description, category_id, discountType, discountValue, minOrderValue, quantity, endDate, status,maxValueDiscount FROM vouchers WHERE id > :lastId AND status = 1 AND quantity > 0 AND endDate >= NOW() ORDER BY id ASC LIMIT :pageSize")
                     .bind("lastId", lastId)
                     .bind("pageSize", pageSize)
                     .mapToBean(Voucher.class)
@@ -38,7 +38,7 @@ public class VoucherDao extends BaseDao {
 
     public List<Voucher> getFilterVoucherAdmin(String filter, String search, int page, int pageSize) {
         return get().withHandle(h -> {
-            StringBuilder query = new StringBuilder("SELECT id, code, title, discountType, quantity, endDate, status FROM vouchers WHERE 1=1");
+            StringBuilder query = new StringBuilder("SELECT id, code, title, discountType, quantity, endDate, status,maxValueDiscount FROM vouchers WHERE 1=1");
             String searchParam = (search == null) ? "" : search;
 
             if ("act".equals(filter)) {
@@ -92,7 +92,7 @@ public class VoucherDao extends BaseDao {
         });
     }
     public boolean updateVoucher(Voucher voucher) {
-        String sql = "UPDATE vouchers Set code = UPPER(:code) , title = :title, description = :description,category_id = :category_id,discountType = :discountType,discountValue = :discountValue , minOrderValue = :minOrderValue,quantity = :quantity, endDate = :endDate, status = :status  WHERE id = :id ";
+        String sql = "UPDATE vouchers Set code = UPPER(:code) , title = :title, description = :description,category_id = :category_id,discountType = :discountType,discountValue = :discountValue , minOrderValue = :minOrderValue,quantity = :quantity, endDate = :endDate, status = :status ,maxValueDiscount = :maxValueDiscount  WHERE id = :id ";
         return get().withHandle(h -> {
             return h.createUpdate(sql)
                     .bindBean(voucher)
