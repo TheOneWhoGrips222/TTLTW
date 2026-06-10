@@ -70,7 +70,12 @@
                                     <h3 class="voucher-title">${listU.title}</h3>
                                     <p class="voucher-desc">${listU.description}</p>
                                     <p class="voucher-condition">
+                                        <c:if test="${listU.minOrderValue > 0}">
                                         <i class="fa-solid fa-circle-info"></i> Đơn tối thiểu: ${listU.minvalueFormat}
+                                        </c:if>
+                                        <c:if test="${listU.maxValueDiscount > 0}">
+                                            <br><i class="fa-solid fa-circle-info"></i> Giảm tối đa: ${listU.maxValueFormat}
+                                        </c:if>
                                     </p>
                                 </div>
                                 <div class="voucher-action">
@@ -86,9 +91,9 @@
                                     </c:if>
                                     <c:if test="${listU.status == 0 && !listU.expired}">
                                         <a href="products">
-                                        <button class="btn-get-voucher" style="background-color: #1677ff;" onclick="location.href='index'">
-                                            Dùng ngay
-                                        </button>
+                                            <button class="btn-get-voucher" style="background-color: #1677ff;" onclick="location.href='index'">
+                                                Dùng ngay
+                                            </button>
                                         </a>
                                     </c:if>
                                     <div class="voucher-expiry">Hạn dùng: ${listU.dateFormat}</div>

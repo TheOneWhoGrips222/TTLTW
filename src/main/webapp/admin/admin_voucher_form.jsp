@@ -82,8 +82,10 @@
                             <div class="form-group">
                                 <label>Loại ưu đãi</label>
                                 <select name="discountType" class="form-control" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100%;">
-                                    <option value="cố định" ${oldVoucher.discountType == 'cố định' ? 'selected' : ''}>Giảm thẳng (đ)</option>
-                                    <option value="phần trăm" ${oldVoucher.discountType == 'phần trăm' ? 'selected' : ''}>Phần trăm (%)</option>
+                                    <option value="cash" ${oldVoucher.discountType == 'cash' ? 'selected' : ''}>Giảm cố định (đ)</option>
+                                    <option value="percent" ${oldVoucher.discountType == 'percent' ? 'selected' : ''}>Phần trăm (%)</option>
+                                    <option value="freeship" ${oldVoucher.discountType == 'freeship' ? 'selected' : ''}>Free Ship</option>
+                                    <option value="ship" ${oldVoucher.discountType == 'ship' ? 'selected' : ''}>Giảm phí Ship</option>
                                 </select>
                             </div>
 
@@ -100,6 +102,13 @@
                                     <input type="number" name="minOrderValue" class="form-control" required min="0"
                                            value="${oldVoucher.id > 0 ? plainMinOrderValue : '0'}" placeholder="Tối thiểu">
                                 </div>
+                            </div>
+
+                            <div class="form-group" style="margin-top: 15px;">
+                                <label>Giảm tối đa (đối với mã %)</label>
+                                <fmt:formatNumber var="plainMaxValueDiscount" value="${oldVoucher.maxValueDiscount}" pattern="#"/>
+                                <input type="number" name="maxValueDiscount" class="form-control" min="0"
+                                       value="${oldVoucher.id > 0 ? plainMaxValueDiscount : '0'}" placeholder="Nhập số tiền giảm tối đa...">
                             </div>
                         </div>
 

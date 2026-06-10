@@ -95,7 +95,11 @@
             </a>
         </li>
         <% } %>
-
+        <li>
+            <a href="${pageContext.request.contextPath}/admin/admin-voucher">
+                <i class="fa-solid fa-ticket"></i>Quản lý Voucher
+            </a>
+        </li>
         <% if (isOwner) { %>
         <li class="menu-item-has-children">
             <a href="#" class="sidebar-link">

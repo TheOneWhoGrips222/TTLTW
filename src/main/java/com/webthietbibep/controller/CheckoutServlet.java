@@ -75,6 +75,9 @@ public class CheckoutServlet extends HttpServlet {
         if (chosseD != null) {
             if ("percent".equals(chosseD.getDiscountType())) {
                 discount = productTotal * (chosseD.getDiscountValue() / 100.0);
+                if(chosseD.getMaxValueDiscount() > 0 && discount > chosseD.getMaxValueDiscount()){
+                    discount = chosseD.getMaxValueDiscount();
+                }
             } else {
                 discount = chosseD.getDiscountValue();
             }
@@ -144,6 +147,9 @@ public class CheckoutServlet extends HttpServlet {
             if (chosseD != null) {
                 if ("percent".equals(chosseD.getDiscountType())) {
                     discount = productTotal * (chosseD.getDiscountValue() / 100.0);
+                    if(chosseD.getMaxValueDiscount() > 0 && discount > chosseD.getMaxValueDiscount()){
+                        discount = chosseD.getMaxValueDiscount();
+                    }
                 } else {
                     discount = chosseD.getDiscountValue();
                 }
@@ -190,6 +196,9 @@ public class CheckoutServlet extends HttpServlet {
             if (chosseD != null) {
                 if ("percent".equals(chosseD.getDiscountType())) {
                     discount = productTotal * (chosseD.getDiscountValue() / 100.0);
+                    if(chosseD.getMaxValueDiscount() > 0 && discount > chosseD.getMaxValueDiscount()){
+                        discount = chosseD.getMaxValueDiscount();
+                    }
                 } else {
                     discount = chosseD.getDiscountValue();
                 }

@@ -23,12 +23,13 @@ public class Voucher implements Serializable {
     private int status;
     private boolean isCollection;
     private boolean isValidVoucher;
+    private double maxValueDiscount;
 
 
     public Voucher() {
     }
 
-    public Voucher(int id, String code, String title, String description, int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status) {
+    public Voucher(int id, String code, String title, String description, int category_id, String discountType, double discountValue, double minOrderValue, int quantity, LocalDateTime endDate, int status,double maxValueDiscount) {
         this.id = id;
         this.code = code;
         this.title = title;
@@ -40,6 +41,15 @@ public class Voucher implements Serializable {
         this.quantity = quantity;
         this.endDate = endDate;
         this.status = status;
+        this.maxValueDiscount = maxValueDiscount;
+    }
+
+    public double getMaxValueDiscount() {
+        return maxValueDiscount;
+    }
+
+    public void setMaxValueDiscount(double maxValueDiscount) {
+        this.maxValueDiscount = maxValueDiscount;
     }
 
     public boolean isValidVoucher() {
@@ -147,12 +157,15 @@ public class Voucher implements Serializable {
     }
 
     public String getDiscountFormat() {
-        if ("phần trăm".equalsIgnoreCase(this.discountType)) {
+        if ("percent".equalsIgnoreCase(this.discountType)) {
             return String.format("%.0f", discountValue) + " %";
         }
-        else if("freeship".equalsIgnoreCase(this.discountType)) {
+        else if("ship".equalsIgnoreCase(this.discountType)) {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
-            return "Giảm " + vn.format(this.discountValue) + " đ";
+            return "Giảm ship " + vn.format(this.discountValue) + " đ";
+        }
+        else if("freeship".equalsIgnoreCase(this.discountType)) {
+            return "Free Ship";
         }
         else {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
@@ -162,6 +175,10 @@ public class Voucher implements Serializable {
     public String getMinvalueFormat() {
         NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
         return vn.format(this.minOrderValue) + " đ";
+    }
+    public String getMaxValueFormat() {
+        NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
+        return vn.format(this.maxValueDiscount) + " đ";
     }
     public boolean isExpired() {
         if (this.endDate == null) {
@@ -181,7 +198,7 @@ public class Voucher implements Serializable {
             return false;
         }
 
-        if (!"freeship".equals(this.discountType) && this.category_id != 0) {
+        if (!"ship".equals(this.discountType) && !"freeship".equals(this.discountType) && this.category_id != 0) {
             boolean hasCategory = false;
             if (cartItems != null) {
                 for (CartItem item : cartItems) {
