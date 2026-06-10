@@ -17,9 +17,10 @@
 
 <main>
     <form action="${pageContext.request.contextPath}/select-voucher" method="POST">
+        <input type="hidden" name="mode" value="${param.mode != null ? param.mode : mode}">
         <div class="voucher-page-container">
             <div class="voucher-header">
-                <button type="button" class="btn-back" onclick="window.location.href='checkout.jsp'">
+                <button type="button" class="btn-back" onclick="window.location.href='checkout?mode=${param.mode != null ? param.mode : mode}'">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                 </button>
                 <h2>Chọn Mã Giảm Giá</h2>
@@ -83,7 +84,12 @@
                                     <div class="v-info">
                                         <h4>Giảm ${v.discountFormat}</h4>
                                         <p>${v.title}</p>
-                                        <p>Đơn Tối Thiểu ${v.minvalueFormat} </p>
+                                        <c:if test="${v.minOrderValue > 0}">
+                                            <p>Đơn Tối Thiểu ${v.minvalueFormat}</p>
+                                        </c:if>
+                                        <c:if test="${v.maxValueDiscount > 0}">
+                                            <p>Giảm tối đa : ${v.maxValueFormat}</p>
+                                        </c:if>
                                         <c:if test="${!v.validVoucher}">
                                             <small style="color: red; display: block;">Chưa đạt giá trị đơn hàng tối thiểu</small>
                                         </c:if>
