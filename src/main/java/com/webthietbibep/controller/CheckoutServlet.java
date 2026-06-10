@@ -35,10 +35,10 @@ public class CheckoutServlet extends HttpServlet {
             return;
         }
 
-
         String mode = req.getParameter("mode");
-
         Cart cart = null;
+        double productTotal = 0;
+
         if ("buynow".equals(mode)) {
             Product product = (Product) req.getSession().getAttribute("buyNowProduct");
             Integer quantity = (Integer) req.getSession().getAttribute("buyNowQuantity");
@@ -48,11 +48,11 @@ public class CheckoutServlet extends HttpServlet {
                 return;
             }
 
-            double total = product.getPrice() * quantity;
+            productTotal = product.getPrice() * quantity;
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
-            String buyNowTotalFormatted = vn.format(total) + " đ";
+            String buyNowTotalFormatted = vn.format(productTotal) + " đ";
 
-            req.setAttribute("buyNowTotal", total);
+            req.setAttribute("buyNowTotal", productTotal);
             req.setAttribute("buyNowTotalFormatted", buyNowTotalFormatted);
             req.setAttribute("buyNowProduct", product);
             req.setAttribute("buyNowQuantity", quantity);
@@ -63,15 +63,30 @@ public class CheckoutServlet extends HttpServlet {
                 resp.sendRedirect("cart");
                 return;
             }
+            productTotal = cart.getTotal();
             req.setAttribute("cart", cart);
             req.setAttribute("mode", "cart");
         }
 
-        req.setAttribute("addresses",
-                addressDAO.findByUserId(user.getUser_id()));
-        req.getRequestDispatcher("/checkout.jsp").forward(req, resp);
+        Voucher chosseFS = (Voucher) req.getSession().getAttribute("chosseFS");
+        Voucher chosseD = (Voucher) req.getSession().getAttribute("chosseD");
 
+        double discount = 0;
+        if (chosseD != null) {
+            if ("percent".equals(chosseD.getDiscountType())) {
+                discount = productTotal * (chosseD.getDiscountValue() / 100.0);
+            } else {
+                discount = chosseD.getDiscountValue();
+            }
+        }
+
+        req.setAttribute("discount", discount);
+        req.setAttribute("chosseFS", chosseFS);
+        req.setAttribute("chosseD", chosseD);
+        req.setAttribute("addresses", addressDAO.findByUserId(user.getUser_id()));
+        req.getRequestDispatcher("/checkout.jsp").forward(req, resp);
     }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws IOException, ServletException {
@@ -83,7 +98,6 @@ public class CheckoutServlet extends HttpServlet {
         }
 
         String mode = req.getParameter("mode");
-
         String addressIdStr = req.getParameter("addressId");
 
         if (addressIdStr == null || addressIdStr.isEmpty()) {
@@ -94,19 +108,11 @@ public class CheckoutServlet extends HttpServlet {
         int addressId = Integer.parseInt(addressIdStr);
         String payment = req.getParameter("paymentMethod");
 
-
         double shippingFee = 0;
-
         String shippingFeeStr = req.getParameter("shippingFee");
 
-        System.out.println("shippingFeeStr = " + shippingFeeStr);
-        if (shippingFeeStr != null
-                && !shippingFeeStr.isEmpty()) {
-
-            shippingFee =
-                    Double.parseDouble(
-                            shippingFeeStr
-                    );
+        if (shippingFeeStr != null && !shippingFeeStr.isEmpty()) {
+            shippingFee = Double.parseDouble(shippingFeeStr);
         }
 
         Order order = new Order();
@@ -119,11 +125,12 @@ public class CheckoutServlet extends HttpServlet {
             order.setStatus("CHO_XAC_NHAN");
         }
 
-
+        Voucher chosseFS = (Voucher) req.getSession().getAttribute("chosseFS");
+        Voucher chosseD = (Voucher) req.getSession().getAttribute("chosseD");
+        double productTotal = 0;
         int orderId;
 
         if ("buynow".equals(mode)) {
-
             Product product = (Product) req.getSession().getAttribute("buyNowProduct");
             Integer quantity = (Integer) req.getSession().getAttribute("buyNowQuantity");
 
@@ -131,10 +138,35 @@ public class CheckoutServlet extends HttpServlet {
                 resp.sendRedirect("products");
                 return;
             }
+            productTotal = product.getPrice() * quantity;
 
-            order.setTotal_amount(product.getPrice() * quantity + shippingFee);
+            double discount = 0;
+            if (chosseD != null) {
+                if ("percent".equals(chosseD.getDiscountType())) {
+                    discount = productTotal * (chosseD.getDiscountValue() / 100.0);
+                } else {
+                    discount = chosseD.getDiscountValue();
+                }
+            }
+
+            double discountShipping = 0;
+            if (chosseFS != null) {
+                if ("freeship".equals(chosseFS.getDiscountType())) {
+                    discountShipping = shippingFee;
+                } else {
+                    discountShipping = chosseFS.getDiscountValue();
+                    if (discountShipping > shippingFee) {
+                        discountShipping = shippingFee;
+                    }
+                }
+            }
+
+            double total = productTotal + shippingFee - discount - discountShipping;
+            if (total < 0) {
+                total = 0;
+            }
+            order.setTotal_amount(total);
             orderId = ordersDAO.insert(order);
-
 
             OrderItem oi = new OrderItem();
             oi.setOrder_id(orderId);
@@ -146,16 +178,40 @@ public class CheckoutServlet extends HttpServlet {
             req.getSession().removeAttribute("buyNowProduct");
             req.getSession().removeAttribute("buyNowQuantity");
 
-        }
-        else {
-
+        } else {
             Cart cart = (Cart) req.getSession().getAttribute("cart");
             if (cart == null || cart.getItems().isEmpty()) {
                 resp.sendRedirect("cart");
                 return;
             }
+            productTotal = cart.getTotal();
 
-            order.setTotal_amount(cart.getTotal() + shippingFee);
+            double discount = 0;
+            if (chosseD != null) {
+                if ("percent".equals(chosseD.getDiscountType())) {
+                    discount = productTotal * (chosseD.getDiscountValue() / 100.0);
+                } else {
+                    discount = chosseD.getDiscountValue();
+                }
+            }
+
+            double discountShipping = 0;
+            if (chosseFS != null) {
+                if ("freeship".equals(chosseFS.getDiscountType())) {
+                    discountShipping = shippingFee;
+                } else {
+                    discountShipping = chosseFS.getDiscountValue();
+                    if (discountShipping > shippingFee) {
+                        discountShipping = shippingFee;
+                    }
+                }
+            }
+
+            double total = productTotal + shippingFee - discount - discountShipping;
+            if (total < 0) {
+                total = 0;
+            }
+            order.setTotal_amount(total);
             orderId = ordersDAO.insert(order);
 
             for (CartItem ci : cart.getItems()) {
@@ -170,17 +226,13 @@ public class CheckoutServlet extends HttpServlet {
             req.getSession().removeAttribute("cart");
         }
 
+        req.getSession().removeAttribute("chosseFS");
+        req.getSession().removeAttribute("chosseD");
 
         if ("BANK".equals(payment)) {
-            resp.sendRedirect(
-                    req.getContextPath()
-                            + "/payment/vnpay?orderId="
-                            + orderId
-            );
+            resp.sendRedirect(req.getContextPath() + "/payment/vnpay?orderId=" + orderId);
         } else {
             resp.sendRedirect("orders");
         }
-
     }
-
 }

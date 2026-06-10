@@ -1,6 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" isELIgnored="false" %>
+<%@ page import="java.text.NumberFormat" %>
+<%@ page import="java.util.Locale" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -146,12 +149,29 @@
             <div class="order-summary">
                 <div>
                     <span>Tạm tính</span>
+                    <c:set var="gocTotal" value="${mode == 'buynow' ? buyNowTotal : cart.total}" />
                     <c:choose>
-                        <c:when test="${mode == 'buynow'}">
-                            <span id="temp-total" data-value="${buyNowTotal}">${buyNowTotalFormatted}</span>
+                        <c:when test="${discount > 0}">
+                            <span>
+                                <span style="color: #a8a8a8; text-decoration: line-through; margin-right: 8px;">
+                                    <fmt:formatNumber value="${gocTotal}" type="number"/> đ
+                                </span>
+                                <span id="temp-total" data-value="${gocTotal}" style="color: #ff424e; font-weight: bold;">
+                                    <fmt:formatNumber value="${gocTotal - discount}" type="number"/> đ
+                                </span>
+                            </span>
                         </c:when>
                         <c:otherwise>
-                            <span id="temp-total" data-value="${cart.total}">${cart.formatTotal}</span>
+                            <span id="temp-total" data-value="${gocTotal}">
+                                <c:choose>
+                                    <c:when test="${mode == 'buynow'}">
+                                        ${buyNowTotalFormatted}
+                                    </c:when>
+                                    <c:otherwise>
+                                        ${cart.formatTotal}
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
                         </c:otherwise>
                     </c:choose>
                 </div>
@@ -161,13 +181,20 @@
                 </div>
                 <div class="total">
                     <span>Tổng cộng</span>
-                    <span id="total-amount">
+                    <span id="total-amount" style="color: #ff424e; font-weight: bold;">
                      <c:choose>
-                         <c:when test="${mode == 'buynow'}">
-                             ${buyNowTotalFormatted}
+                         <c:when test="${discount > 0}">
+                             <fmt:formatNumber value="${gocTotal - discount}" type="number"/> đ
                          </c:when>
                          <c:otherwise>
-                             ${cart.formatTotal}
+                             <c:choose>
+                                 <c:when test="${mode == 'buynow'}">
+                                     ${buyNowTotalFormatted}
+                                 </c:when>
+                                 <c:otherwise>
+                                     ${cart.formatTotal}
+                                 </c:otherwise>
+                             </c:choose>
                          </c:otherwise>
                      </c:choose>
                 </span>
