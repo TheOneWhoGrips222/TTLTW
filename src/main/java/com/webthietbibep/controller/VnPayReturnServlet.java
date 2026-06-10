@@ -103,7 +103,7 @@ public class VnPayReturnServlet extends HttpServlet {
 
         } catch (Exception e) {
             e.printStackTrace();
-            resp.sendRedirect(req.getContextPath() + "/payment-fail.jsp");
+            resp.sendRedirect(req.getContextPath() + "/payment");
         }
     }
 }

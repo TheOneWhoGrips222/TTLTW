@@ -162,17 +162,43 @@ public class OrdersDAO extends BaseDao {
     }
 
     public Order getOrderById(int orderId) {
+
         String sql = """
-            SELECT
-                o.order_id, o.user_id, o.address_id, o.total_amount,
-                o.status, o.payment_method, o.created_at, o.note, o.voucher_id, o.ghn_order_code,
-                u.full_name AS userName,
-                CONCAT_WS(', ', ua.address_detail, ua.ward, ua.district, ua.province) AS addressDetail
-            FROM orders o
-            JOIN users u ON o.user_id = u.user_id
-            LEFT JOIN user_addresses ua ON o.address_id = ua.address_id
-            WHERE o.order_id = :id
-        """;
+        SELECT
+            o.order_id,
+            o.user_id,
+            o.address_id,
+            o.total_amount,
+            o.status,
+            o.payment_method,
+            o.created_at,
+            o.note,
+            o.voucher_id,
+            o.ghn_order_code,
+
+            o.payment_status,
+            o.payment_time,
+            o.transaction_no,
+
+            u.full_name AS userName,
+            CONCAT_WS(
+                ', ',
+                ua.address_detail,
+                ua.ward,
+                ua.district,
+                ua.province
+            ) AS addressDetail
+
+        FROM orders o
+        JOIN users u
+            ON o.user_id = u.user_id
+
+        LEFT JOIN user_addresses ua
+            ON o.address_id = ua.address_id
+
+        WHERE o.order_id = :id
+    """;
+
         return JDBIConnector.get().withHandle(handle ->
                 handle.createQuery(sql)
                         .bind("id", orderId)
