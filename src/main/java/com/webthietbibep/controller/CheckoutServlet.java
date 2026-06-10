@@ -172,7 +172,11 @@ public class CheckoutServlet extends HttpServlet {
 
 
         if ("BANK".equals(payment)) {
-            resp.sendRedirect("payment?orderId=" + orderId);
+            resp.sendRedirect(
+                    req.getContextPath()
+                            + "/payment/vnpay?orderId="
+                            + orderId
+            );
         } else {
             resp.sendRedirect("orders");
         }
