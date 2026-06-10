@@ -82,8 +82,10 @@
                             <div class="form-group">
                                 <label>Loại ưu đãi</label>
                                 <select name="discountType" class="form-control" required style="padding: 8px; border-radius: 4px; border: 1px solid #ccc; width: 100%;">
-                                    <option value="cố định" ${oldVoucher.discountType == 'cố định' ? 'selected' : ''}>Giảm thẳng (đ)</option>
-                                    <option value="phần trăm" ${oldVoucher.discountType == 'phần trăm' ? 'selected' : ''}>Phần trăm (%)</option>
+                                    <option value="cash" ${oldVoucher.discountType == 'cash' ? 'selected' : ''}>Giảm cố định (đ)</option>
+                                    <option value="percent" ${oldVoucher.discountType == 'percent' ? 'selected' : ''}>Phần trăm (%)</option>
+                                    <option value="freeship" ${oldVoucher.discountType == 'freeship' ? 'selected' : ''}>Free Ship</option>
+                                    <option value="ship" ${oldVoucher.discountType == 'ship' ? 'selected' : ''}>Giảm phí Ship</option>
                                 </select>
                             </div>
 

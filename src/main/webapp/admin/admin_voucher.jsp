@@ -90,7 +90,23 @@
                                 <td>#${v.id}</td>
                                 <td>${v.code}</td>
                                 <td>${v.title}</td>
-                                <td>${v.discountType}</td>
+                                <td><c:choose>
+                                    <c:when test="${v.discountType == 'percent'}">
+                                        Phần trăm (%)
+                                    </c:when>
+                                    <c:when test="${v.discountType == 'cash'}">
+                                        Giảm cố định (đ)
+                                    </c:when>
+                                    <c:when test="${v.discountType == 'freeship'}">
+                                        Free Ship
+                                    </c:when>
+                                    <c:when test="${v.discountType == 'ship'}">
+                                        Giảm phí Ship
+                                    </c:when>
+                                    <c:otherwise>
+                                        Không xác định
+                                    </c:otherwise>
+                                </c:choose></td>
                                 <td>${v.quantity}</td>
                                 <td>${v.endDate}</td>
                                 <td ><span class="status ${v.status == 1 ? 'status-published' : 'status-draft'}">${v.status == 1? "Hoạt động" : "Tạm dừng"}</span></td>

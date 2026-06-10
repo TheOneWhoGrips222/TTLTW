@@ -147,12 +147,15 @@ public class Voucher implements Serializable {
     }
 
     public String getDiscountFormat() {
-        if ("phần trăm".equalsIgnoreCase(this.discountType)) {
+        if ("percent".equalsIgnoreCase(this.discountType)) {
             return String.format("%.0f", discountValue) + " %";
         }
-        else if("freeship".equalsIgnoreCase(this.discountType)) {
+        else if("ship".equalsIgnoreCase(this.discountType)) {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
-            return "Giảm " + vn.format(this.discountValue) + " đ";
+            return "Giảm ship " + vn.format(this.discountValue) + " đ";
+        }
+        else if("freeship".equalsIgnoreCase(this.discountType)) {
+            return "Free Ship";
         }
         else {
             NumberFormat vn = NumberFormat.getInstance(new Locale("vi", "VN"));
@@ -181,7 +184,7 @@ public class Voucher implements Serializable {
             return false;
         }
 
-        if (!"freeship".equals(this.discountType) && this.category_id != 0) {
+        if (!"ship".equals(this.discountType) && !"freeship".equals(this.discountType) && this.category_id != 0) {
             boolean hasCategory = false;
             if (cartItems != null) {
                 for (CartItem item : cartItems) {
