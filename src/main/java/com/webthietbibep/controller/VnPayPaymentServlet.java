@@ -19,11 +19,6 @@ import java.util.*;
 @WebServlet("/payment/vnpay")
 public class VnPayPaymentServlet extends HttpServlet {
 
-    private static final String TMN_CODE = VNPayConfig.TMN_CODE;
-    private static final String HASH_SECRET = VNPayConfig.HASH_SECRET;
-    private static final String PAY_URL = VNPayConfig.PAY_URL;
-    private static final String RETURN_URL = VNPayConfig.RETURN_URL;
-
     @Override
     protected void doGet(HttpServletRequest req,
                          HttpServletResponse resp)
@@ -34,88 +29,63 @@ public class VnPayPaymentServlet extends HttpServlet {
             int orderId =
                     Integer.parseInt(req.getParameter("orderId"));
 
-            OrdersDAO ordersDAO = new OrdersDAO();
-
-            Order order =
-                    ordersDAO.getOrderById(orderId);
+            OrdersDAO dao = new OrdersDAO();
+            Order order = dao.getOrderById(orderId);
 
             if (order == null) {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                resp.sendError(404);
                 return;
             }
 
-            System.out.println("========== ORDER ==========");
-            System.out.println("ORDER ID = " + order.getOrder_id());
-            System.out.println("TOTAL = " + order.getTotal_amount());
-
             long amount =
-                    Math.round(order.getTotal_amount() * 100);
+                    Math.round(order.getTotal_amount()) * 100L;
 
-            System.out.println("VNP_AMOUNT = " + amount);
-
-            String txnRef =
-                    String.valueOf(order.getOrder_id());
-
-            Calendar calendar =
-                    Calendar.getInstance(
-                            TimeZone.getTimeZone("Asia/Ho_Chi_Minh")
-                    );
+            Calendar cal =
+                    Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 
             String createDate =
                     new SimpleDateFormat("yyyyMMddHHmmss")
-                            .format(calendar.getTime());
+                            .format(cal.getTime());
 
-            calendar.add(Calendar.MINUTE, 15);
+            cal.add(Calendar.MINUTE, 15);
 
             String expireDate =
                     new SimpleDateFormat("yyyyMMddHHmmss")
-                            .format(calendar.getTime());
+                            .format(cal.getTime());
 
-            Map<String, String> params =
+            Map<String, String> vnpParams =
                     new HashMap<>();
 
-            params.put("vnp_Version", "2.1.0");
-            params.put("vnp_Command", "pay");
-            params.put("vnp_TmnCode", TMN_CODE);
+            vnpParams.put("vnp_Version", "2.1.0");
+            vnpParams.put("vnp_Command", "pay");
+            vnpParams.put("vnp_TmnCode", VNPayConfig.TMN_CODE);
+            vnpParams.put("vnp_Amount", String.valueOf(amount));
+            vnpParams.put("vnp_CurrCode", "VND");
 
-            params.put("vnp_Amount",
-                    String.valueOf(amount));
+            vnpParams.put("vnp_TxnRef",
+                    String.valueOf(order.getOrder_id()));
 
-            params.put("vnp_CurrCode", "VND");
+            vnpParams.put("vnp_OrderInfo",
+                    "ThanhToanDonHang" + order.getOrder_id());
 
-            params.put("vnp_TxnRef", txnRef);
+            vnpParams.put("vnp_OrderType", "other");
 
-            params.put(
-                    "vnp_OrderInfo",
-                    "ThanhToanDonHang" + orderId
-            );
+            vnpParams.put("vnp_Locale", "vn");
 
-            params.put("vnp_OrderType", "other");
+            vnpParams.put("vnp_ReturnUrl",
+                    VNPayConfig.RETURN_URL);
 
-            params.put("vnp_Locale", "vn");
+            vnpParams.put("vnp_IpAddr",
+                    req.getRemoteAddr());
 
-            params.put(
-                    "vnp_ReturnUrl",
-                    RETURN_URL
-            );
+            vnpParams.put("vnp_CreateDate",
+                    createDate);
 
-            params.put(
-                    "vnp_IpAddr",
-                    "127.0.0.1"
-            );
-
-            params.put(
-                    "vnp_CreateDate",
-                    createDate
-            );
-
-            params.put(
-                    "vnp_ExpireDate",
-                    expireDate
-            );
+            vnpParams.put("vnp_ExpireDate",
+                    expireDate);
 
             List<String> fieldNames =
-                    new ArrayList<>(params.keySet());
+                    new ArrayList<>(vnpParams.keySet());
 
             Collections.sort(fieldNames);
 
@@ -125,87 +95,88 @@ public class VnPayPaymentServlet extends HttpServlet {
             StringBuilder query =
                     new StringBuilder();
 
-            Iterator<String> itr =
-                    fieldNames.iterator();
+            int i = 0;
 
-            while (itr.hasNext()) {
-
-                String fieldName =
-                        itr.next();
+            for (String fieldName : fieldNames) {
 
                 String fieldValue =
-                        params.get(fieldName);
+                        vnpParams.get(fieldName);
 
                 if (fieldValue != null
                         && !fieldValue.isEmpty()) {
 
-                    // KHI XÂY DỰNG HASHDATA, KHÔNG URLEncoder.encode() FIELDVALUE
-                    hashData.append(fieldName);
-                    hashData.append("=");
-                    hashData.append(fieldValue); // <--- ĐÃ SỬA Ở ĐÂY
+                    if (i == 1) {
+                        hashData.append("&");
+                        query.append("&");
+                    }
 
-                    // KHI XÂY DỰNG QUERY, CÓ URLEncoder.encode() FIELDNAME VÀ FIELDVALUE
+                    hashData.append(
+                            URLEncoder.encode(
+                                    fieldName,
+                                    StandardCharsets.US_ASCII));
+
+                    hashData.append("=");
+
+                    hashData.append(
+                            URLEncoder.encode(
+                                    fieldValue,
+                                    StandardCharsets.US_ASCII));
+
                     query.append(
                             URLEncoder.encode(
                                     fieldName,
-                                    StandardCharsets.UTF_8 // Đã sửa sang UTF_8
-                            )
-                    );
+                                    StandardCharsets.US_ASCII));
 
                     query.append("=");
 
                     query.append(
                             URLEncoder.encode(
                                     fieldValue,
-                                    StandardCharsets.UTF_8 // Đã sửa sang UTF_8
-                            )
-                    );
+                                    StandardCharsets.US_ASCII));
 
-                    if (itr.hasNext()) {
-                        hashData.append("&");
-                        query.append("&");
-                    }
+                    i = 1;
                 }
             }
 
             String secureHash =
                     VnPayUtil.hmacSHA512(
-                            HASH_SECRET,
-                            hashData.toString()
-                    );
+                            VNPayConfig.HASH_SECRET,
+                            hashData.toString());
 
             query.append("&vnp_SecureHash=");
             query.append(secureHash);
 
             String paymentUrl =
-                    PAY_URL + "?" + query;
+                    VNPayConfig.PAY_URL
+                            + "?"
+                            + query;
 
-            System.out.println("\n========== VNPAY DEBUG ==========");
-            System.out.println("TMN_CODE = " + TMN_CODE);
-            System.out.println("RETURN_URL = " + RETURN_URL);
-            System.out.println("SECRET = " + HASH_SECRET);
+            System.out.println("========== VNPAY ==========");
+            System.out.println("ORDER ID = "
+                    + order.getOrder_id());
 
-            System.out.println("\nHASH DATA (RAW):"); // Đổi tên để dễ phân biệt
-            System.out.println(hashData);
+            System.out.println("TOTAL = "
+                    + order.getTotal_amount());
 
-            System.out.println("\nSECURE HASH:");
-            System.out.println(secureHash);
+            System.out.println("AMOUNT = "
+                    + amount);
 
-            System.out.println("\nPAYMENT URL:");
-            System.out.println(paymentUrl);
+            System.out.println("HASH DATA = "
+                    + hashData);
 
-            System.out.println("=================================\n");
+            System.out.println("HASH = "
+                    + secureHash);
+
+            System.out.println("URL = "
+                    + paymentUrl);
+
+            System.out.println("===========================");
 
             resp.sendRedirect(paymentUrl);
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
-            resp.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    e.getMessage()
-            );
+            resp.sendError(500);
         }
     }
 }
