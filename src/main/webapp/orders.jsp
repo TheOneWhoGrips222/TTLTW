@@ -98,6 +98,20 @@
                     </c:forEach>
 
                     <div class="order-footer">
+                        <div class="order-vouchers-line" style="margin-top: 5px; font-size: 14px; color: #555;">
+                            <strong>Mã giảm giá: </strong>
+                            <c:choose>
+                                <c:when test="${not empty orderVouchers[o.order_id]}">
+                                    <c:forEach var="v" items="${orderVouchers[o.order_id]}" varStatus="status">
+                                        <span style="color: #ff424e; font-weight: bold;">${v.code}</span>
+                                        <c:if test="${!status.last}">, </c:if>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <span style="color: #999;">Không có</span>
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
                         <div>
                             Phương thức: <b>${o.payment_method}</b>
                         </div>

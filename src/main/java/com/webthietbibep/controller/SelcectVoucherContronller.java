@@ -106,7 +106,9 @@ public class SelcectVoucherContronller extends HttpServlet {
         Integer buyNowQuantity = (Integer) session.getAttribute("buyNowQuantity");
 
 
-        if ("buynow".equals(mode) || (buyNowProduct != null && buyNowQuantity != null)) {
+
+
+        if ("buynow".equals(mode)) {
             response.sendRedirect("checkout?mode=buynow");
         } else {
             response.sendRedirect("checkout?mode=cart");

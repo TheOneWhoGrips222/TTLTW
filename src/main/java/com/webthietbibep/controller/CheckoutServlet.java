@@ -174,6 +174,13 @@ public class CheckoutServlet extends HttpServlet {
             order.setTotal_amount(total);
             orderId = ordersDAO.insert(order);
 
+            if (chosseD != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseD.getId());
+            }
+            if (chosseFS != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseFS.getId());
+            }
+
             OrderItem oi = new OrderItem();
             oi.setOrder_id(orderId);
             oi.setProduct_id(product.getProduct_id());
@@ -222,6 +229,13 @@ public class CheckoutServlet extends HttpServlet {
             }
             order.setTotal_amount(total);
             orderId = ordersDAO.insert(order);
+
+            if (chosseD != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseD.getId());
+            }
+            if (chosseFS != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseFS.getId());
+            }
 
             for (CartItem ci : cart.getItems()) {
                 OrderItem oi = new OrderItem();

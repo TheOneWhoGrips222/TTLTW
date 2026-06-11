@@ -3,6 +3,7 @@ package com.webthietbibep.dao;
 import com.webthietbibep.db.JDBIConnector;
 import com.webthietbibep.model.Order;
 import com.webthietbibep.model.OrderItem;
+import com.webthietbibep.model.Voucher;
 
 import java.util.List;
 
@@ -345,4 +346,25 @@ public class OrdersDAO extends BaseDao {
                         .execute()
         );
     }
+
+
+    public void saveOrderVoucher(int orderId, int voucherId) {
+        get().useHandle(h -> {
+            int newodId = h.createUpdate("INSERT INTO order_voucher (order_id, voucher_id) VALUES (:orderId, :voucherId)")
+                    .bind("orderId", orderId).bind("voucherId", voucherId)
+                    .executeAndReturnGeneratedKeys("order_voucher_id").mapTo(Integer.class).one();
+
+
+            h.createUpdate("UPDATE orders SET voucher_id = :generatedId WHERE order_id = :orderId")
+                    .bind("generatedId", newodId).bind("orderId", orderId).execute();
+        });
+    }
+
+    public List<Voucher> getVouchersByOrderId(int orderId) {
+        return get().withHandle(h ->
+                h.createQuery("  SELECT v.discountType, v.code FROM orders o JOIN order_voucher ov ON o.voucher_id = ov.order_voucher_id JOIN vouchers v ON ov.voucher_id = v.id WHERE o.order_id = :orderId")
+                        .bind("orderId", orderId).mapToBean(Voucher.class).list()
+        );
+    }
+
 }
