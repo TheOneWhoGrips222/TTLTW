@@ -46,7 +46,16 @@
                             <div class="voucher-right">
                                 <div class="voucher-info">
                                     <span class="voucher-code-tag">Mã: ${v.code}</span>
-                                    <h3 class="voucher-title">Giảm ngay ${v.discountFormat} </h3>
+                                    <h3 class="voucher-title">
+                                        <c:choose>
+                                            <c:when test="${v.discountType == 'freeship' || v.discountType == 'ship'}">
+                                                ${v.discountFormat}
+                                            </c:when>
+                                            <c:otherwise>
+                                                Giảm ngay ${v.discountFormat}
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </h3>
                                     <p class="voucher-desc">${v.description}</p>
                                     <p class="voucher-condition">
                                         <c:if test="${v.minOrderValue > 0}">

@@ -220,7 +220,25 @@
                                 ${order.payment_method == 'COD' ? 'Thanh toán khi nhận (COD)' : 'Chuyển khoản ngân hàng'}
                             </span>
                         </div>
-
+                        <div class="info-row">
+                            <span class="info-label">Voucher:</span>
+                            <span class="info-value" style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
+                                <c:choose>
+                                    <c:when test="${not empty orderVouchers}">
+                                        <c:forEach var="v" items="${orderVouchers}" varStatus="status">
+                                            <span style="font-weight: 600; color: #333;">#${v.id}</span>
+                                            <span style="color: var(--red); font-weight: bold; background: #fff5f5; padding: 2px 6px; border: 1px solid #ffe3e3; border-radius: 4px; font-size: 12px; letter-spacing: 0.5px;">${v.code}</span>
+                                            <c:if test="${not status.last}">
+                                                <span style="margin: 0 4px; color: #ccc;">,</span>
+                                            </c:if>
+                                        </c:forEach>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span style="color: var(--admin-text-light); font-style: italic;">None</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </div>
                         <div class="info-row">
                             <span class="info-label">Ngày đặt hàng:</span>
                             <span class="info-value">

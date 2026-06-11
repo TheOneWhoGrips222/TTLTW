@@ -34,20 +34,28 @@
                 </c:if>
 
                 <c:if test="${!empty listV}">
-                    <div class="voucher-list-title" style="padding-left: 0;">Mã Miễn Phí Vận Chuyển</div>
+                    <div class="voucher-list-title" style="padding-left: 0;">Mã giảm giá phí Vận Chuyển</div>
 
                     <c:forEach items="${listV}" var="v">
-                        <c:if test="${v.discountType == 'freeship'}">
+                        <c:if test="${v.discountType == 'freeship' ||  v.discountType == 'ship'}">
                             <label class="voucher-card ${v.validVoucher ? 'eligible' : 'ineligible'}">
                                 <div class="v-left">
                                     <div class="v-icon-box ${v.validVoucher ? 'freeship' : 'disabled'}">
                                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>
                                     </div>
-                                    <span>Free Ship</span>
+                                    <span>   <c:choose>
+                                        <c:when test="${v.discountType eq 'freeship'}">FREE SHIP</c:when>
+                                        <c:otherwise>Phí vận chuyển </c:otherwise>
+                                    </c:choose></span>
                                 </div>
                                 <div class="v-right">
                                     <div class="v-info">
-                                        <h4>${v.discountType == "freeship"?"FREE SHIP": "Giảm " + v.discountFormat}</h4>
+                                        <h4>
+                                            <c:choose>
+                                                <c:when test="${v.discountType eq 'freeship'}">FREE SHIP</c:when>
+                                                <c:otherwise>${v.discountFormat}</c:otherwise>
+                                            </c:choose>
+                                        </h4>
                                         <p>${v.title}</p>
                         <c:if test="${v.minOrderValue > 0}">
                                         <p>Đơn Tối Thiểu ${v.minvalueFormat}</p>
@@ -72,7 +80,7 @@
                     <div class="voucher-list-title" style="padding-left: 0; padding-top: 10px;">Mã Giảm Giá </div>
 
                     <c:forEach items="${listV}" var="v">
-                        <c:if test="${v.discountType != 'freeship'}">
+                        <c:if test="${v.discountType != 'freeship' && v.discountType != 'ship'}">
                             <label class="voucher-card ${v.validVoucher ? 'eligible' : 'ineligible'}">
                                 <div class="v-left">
                                     <div class="v-icon-box ${v.validVoucher ? 'discount' : 'disabled'}">

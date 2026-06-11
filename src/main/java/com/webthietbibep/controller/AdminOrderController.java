@@ -113,6 +113,7 @@ public class AdminOrderController extends HttpServlet {
             List<OrderItem> items = orderDAO.getOrderItems(orderId);
 
             request.setAttribute("order", order);
+            request.setAttribute("orderVouchers", orderDAO.getVouchersByOrderId(orderId));
             request.setAttribute("items", items);
             request.getRequestDispatcher("/admin/order-detail.jsp").forward(request, response);
 

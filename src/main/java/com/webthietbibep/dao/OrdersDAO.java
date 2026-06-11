@@ -362,7 +362,7 @@ public class OrdersDAO extends BaseDao {
 
     public List<Voucher> getVouchersByOrderId(int orderId) {
         return get().withHandle(h ->
-                h.createQuery("  SELECT v.discountType, v.code FROM orders o JOIN order_voucher ov ON o.voucher_id = ov.order_voucher_id JOIN vouchers v ON ov.voucher_id = v.id WHERE o.order_id = :orderId")
+                h.createQuery(" SELECT v.id, v.discountType, v.code FROM order_voucher ov JOIN vouchers v ON ov.voucher_id = v.id WHERE ov.order_id = :orderId")
                         .bind("orderId", orderId).mapToBean(Voucher.class).list()
         );
     }
