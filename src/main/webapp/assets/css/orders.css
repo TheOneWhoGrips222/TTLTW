@@ -198,3 +198,86 @@
     background: #f5f5f5;
     color: #333;
 }
+.order-vouchers-line {
+    display: inline-flex;
+    gap: 10px;
+    font-size: 0.85rem;
+    margin-right: 15px;
+    vertical-align: middle;
+}
+
+.voucher-badge {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+.voucher-badge.shipping {
+    color: #00bfa5;
+    background: #e0f7f4;
+}
+
+.voucher-badge.discount {
+    color: #ee4d2d;
+    background: #fff1f0;
+}
+
+.voucher-none {
+    color: #999;
+    font-style: italic;
+}
+.order-footer {
+    display: block !important;
+    padding: 16px;
+    background: #fafafa;
+}
+
+.order-vouchers-block {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #eee;
+}
+
+.voucher-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.voucher-badge.shipping {
+    color: #0d47a1 !important;
+    background-color: #e3f2fd !important;
+    border: 1px solid #90caf9 !important;
+}
+
+.voucher-badge.discount {
+    color: #c62828 !important;
+    background-color: #ffebee !important;
+    border: 1px solid #ffcdd2 !important;
+}
+
+.order-footer-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.payment-method-info {
+    font-size: 14px;
+}
+
+.order-footer .total span {
+    font-size: 18px;
+    color: #ee4d2d;
+    font-weight: 500;
+    margin-left: 6px;
+}

@@ -138,7 +138,7 @@
 
                         </div>
 
-                        <button type="button" onclick="window.location.href='select-voucher?mode=${mode}'" style="padding: 8px 15px; border-radius: 6px; border: 1px solid var(--primary-color); cursor: pointer; color: var(--primary-color); background-color: white; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.3s; white-space: nowrap; margin-left: 15px;">
+                        <button type="button" onclick="window.location.href='select-voucher?mode=${not empty param.mode ? param.mode : 'cart'}'" style="padding: 8px 15px; border-radius: 6px; border: 1px solid var(--primary-color); cursor: pointer; color: var(--primary-color); background-color: white; font-weight: 600; font-family: 'Inter', sans-serif; transition: all 0.3s; white-space: nowrap; margin-left: 15px;">
                             Thay đổi
                         </button>
                     </div>

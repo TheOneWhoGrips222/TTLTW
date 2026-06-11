@@ -6,6 +6,7 @@ import com.webthietbibep.dao.ProductDAO;
 import com.webthietbibep.model.Order;
 import com.webthietbibep.model.Product;
 import com.webthietbibep.model.User;
+import com.webthietbibep.model.Voucher;
 import com.webthietbibep.services.GhnOrderService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -51,7 +52,7 @@ public class OrderServlet extends HttpServlet {
 
 
         Map<Integer, List<Product>> orderProducts = new LinkedHashMap<>();
-
+        Map<Integer, List<Voucher>> orderVouchers = new LinkedHashMap<>();
         for (var o : orders) {
             var items = itemDAO.getByOrder(o.getOrder_id());
             List<Product> products = new ArrayList<>();
@@ -62,10 +63,13 @@ public class OrderServlet extends HttpServlet {
                 products.add(p);
             }
             orderProducts.put(o.getOrder_id(), products);
+            List<Voucher> vouchers = orderDAO.getVouchersByOrderId(o.getOrder_id());
+            orderVouchers.put(o.getOrder_id(), vouchers);
         }
 
         req.setAttribute("orders", orders);
         req.setAttribute("orderProducts", orderProducts);
+        req.setAttribute("orderVouchers", orderVouchers);
         req.getRequestDispatcher("/orders.jsp").forward(req, resp);
     }
     private void syncGhnOrders() {

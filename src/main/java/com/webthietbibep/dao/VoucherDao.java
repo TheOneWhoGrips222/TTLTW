@@ -114,5 +114,10 @@ public class VoucherDao extends BaseDao {
             return h.createQuery(sql).bind("id", id).mapToBean(Voucher.class).stream().findFirst().orElse(null);
         });
     }
-
+    public boolean removeVoucherFromUser(int userId, int voucherId) {
+          String sql = "UPDATE user_vouchers SET status = 1 WHERE user_id = :userId AND voucher_id = :voucherId";
+        return get().withHandle(h -> {
+            return h.createUpdate(sql).bind("userId", userId).bind("voucherId", voucherId).execute() > 0;
+        });
+    }
 }

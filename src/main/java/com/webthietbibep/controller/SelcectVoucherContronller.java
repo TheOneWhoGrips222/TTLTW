@@ -29,13 +29,13 @@ public class SelcectVoucherContronller extends HttpServlet {
             return;
         }
 
-        // 2. KIỂM TRA MODE ĐỂ TÍNH TỔNG TIỀN PHÙ HỢP
+
         String mode = request.getParameter("mode");
         double cartTotal = 0;
         List<CartItem> cartItems = null;
 
         if ("buynow".equals(mode)) {
-            // Chế độ mua ngay: Lấy từ session sản phẩm mua ngay
+
             Product buyNowProduct = (Product) session.getAttribute("buyNowProduct");
             Integer buyNowQuantity = (Integer) session.getAttribute("buyNowQuantity");
 
@@ -44,8 +44,14 @@ public class SelcectVoucherContronller extends HttpServlet {
                 return;
             }
             cartTotal = buyNowProduct.getPrice() * buyNowQuantity;
+            cartItems = new java.util.ArrayList<>();
+            CartItem oneItem = new CartItem();
+            oneItem.setProduct(buyNowProduct);
+            oneItem.setQuantity(buyNowQuantity);
+            oneItem.setPrice(buyNowProduct.getPrice());
+            cartItems.add(oneItem);
         } else {
-            // Chế độ giỏ hàng bình thường
+
             Cart cart = (Cart) session.getAttribute("cart");
             if (cart == null || cart.getItems().isEmpty()) {
                 response.sendRedirect("cart");
@@ -55,7 +61,7 @@ public class SelcectVoucherContronller extends HttpServlet {
             cartItems = cart.getItems();
         }
 
-        // 3. LẤY DANH SÁCH VOUCHER VÀ KIỂM TRA ĐIỀU KIỆN HỢP LỆ
+
         VoucherService vs = new VoucherService();
         List<Voucher> listV = vs.getUserSelectVoucher(user.getUser_id());
         for (Voucher v : listV) {
@@ -64,7 +70,7 @@ public class SelcectVoucherContronller extends HttpServlet {
         }
 
         request.setAttribute("listV", listV);
-        request.setAttribute("mode", mode); // Gửi thêm mode sang JSP để form POST nhận diện được nếu cần
+        request.setAttribute("mode", mode);
 
         request.getRequestDispatcher("select_voucher.jsp").forward(request, response);
     }
@@ -77,7 +83,6 @@ public class SelcectVoucherContronller extends HttpServlet {
         String idFreeShip = request.getParameter("idF");
         String idDiscount = request.getParameter("discount");
 
-        // Xử lý lưu voucher Freeship
         if (idFreeShip != null && !idFreeShip.isEmpty()) {
             int idFS = Integer.parseInt(idFreeShip);
             Voucher v = vs.getVoucherByID(idFS);
@@ -86,7 +91,7 @@ public class SelcectVoucherContronller extends HttpServlet {
             session.removeAttribute("chosseFS");
         }
 
-        // Xử lý lưu voucher Giảm giá
+
         if (idDiscount != null && !idDiscount.isEmpty()) {
             int idD = Integer.parseInt(idDiscount);
             Voucher vd = vs.getVoucherByID(idD);
@@ -95,16 +100,18 @@ public class SelcectVoucherContronller extends HttpServlet {
             session.removeAttribute("chosseD");
         }
 
-        // 4. KIỂM TRA ĐỂ REDIRECT VỀ ĐÚNG TRANG CHECKOUT
+
         String mode = request.getParameter("mode");
         Product buyNowProduct = (Product) session.getAttribute("buyNowProduct");
         Integer buyNowQuantity = (Integer) session.getAttribute("buyNowQuantity");
 
-        // Nếu tham số mode gửi lên là buynow hoặc kiểm tra thấy dữ liệu buynow trong session tồn tại
-        if ("buynow".equals(mode) || (buyNowProduct != null && buyNowQuantity != null)) {
+
+
+
+        if ("buynow".equals(mode)) {
             response.sendRedirect("checkout?mode=buynow");
         } else {
-            response.sendRedirect("checkout");
+            response.sendRedirect("checkout?mode=cart");
         }
     }
 }

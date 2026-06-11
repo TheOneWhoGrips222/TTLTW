@@ -31,6 +31,7 @@
                 <li><a href="addresses">Địa chỉ</a></li>
                 <li><a href="change-password">Đổi mật khẩu</a></li>
                 <li class="active"><a href="orders">Đơn mua</a></li>
+                <li><a href="user-voucher">Voucher</a></li>
             </ul>
         </aside>
 
@@ -98,46 +99,63 @@
                     </c:forEach>
 
                     <div class="order-footer">
-                        <div>
-                            Phương thức: <b>${o.payment_method}</b>
-                        </div>
 
-                        <div class="total">
-                            Thành tiền:
-                            <span>${o.formattedTotal}</span>
+                        <c:if test="${not empty orderVouchers[o.order_id]}">
+                            <div class="order-vouchers-block">
+                                <c:forEach var="v" items="${orderVouchers[o.order_id]}">
+                                    <c:choose>
+                                        <c:when test="${v.discountType eq 'freeship' or v.discountType eq 'ship'}">
+                                            <span class="voucher-badge shipping">
+                                                <i class="fa-solid fa-truck-fast"></i> Giảm phí Vận chuyển: ${v.code}
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="voucher-badge discount">
+                                                <i class="fa-solid fa-ticket"></i> Giảm giá: ${v.code}
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:forEach>
+                            </div>
+                        </c:if>
 
-                        </div>
+                        <div class="order-footer-bottom-row">
 
-                        <div class="actions">
-                            <c:if test="${o.status eq 'CHO_THANH_TOAN'}">
-                                <a href="payment?orderId=${o.order_id}" class="btn-primary">
-                                    Thanh toán ngay
-                                </a>
+                            <div class="payment-method-info">
+                                Phương thức: <b>${o.payment_method}</b>
+                            </div>
 
-                                <form action="cancel-order" method="post" style="display:inline">
-                                    <input type="hidden" name="order_id" value="${o.order_id}">
-                                    <button class="btn-cancel">Huỷ đơn</button>
-                                </form>
-                            </c:if>
+                            <div class="total">
+                                Thành tiền: <span>${o.formattedTotal}</span>
+                            </div>
 
+                            <div class="actions">
+                                <c:if test="${o.status eq 'CHO_THANH_TOAN'}">
+                                    <a href="payment?orderId=${o.order_id}" class="btn-primary">
+                                        Thanh toán ngay
+                                    </a>
+                                    <form action="cancel-order" method="post" style="display:inline">
+                                        <input type="hidden" name="order_id" value="${o.order_id}">
+                                        <button class="btn-cancel">Huỷ đơn</button>
+                                    </form>
+                                </c:if>
 
+                                <c:if test="${o.status eq 'HOAN_THANH'}">
+                                    <button class="btn-cancel">Mua lại</button>
+                                    <button class="btn-cancel" style="margin-left: 5px;">Đánh giá</button>
+                                </c:if>
 
-                            <c:if test="${o.status eq 'HOAN_THANH'}">
-                                <button>Mua lại</button>
-                                <button>Đánh giá</button>
-                            </c:if>
+                                <c:if test="${o.status eq 'CHO_XAC_NHAN'}">
+                                    <form action="${pageContext.request.contextPath}/cancel-order" method="post" style="display:inline">
+                                        <input type="hidden" name="order_id" value="${o.order_id}">
+                                        <button class="btn-cancel">Huỷ đơn</button>
+                                    </form>
+                                </c:if>
 
-                            <c:if test="${o.status eq 'CHO_XAC_NHAN'}">
-                                <form action="${pageContext.request.contextPath}/cancel-order" method="post" style="display:inline">
-                                    <input type="hidden" name="order_id" value="${o.order_id}">
-                                    <button class="btn-cancel">Huỷ đơn</button>
-                                </form>
-                            </c:if>
-
-
-                            <c:if test="${o.status eq 'DA_HUY'}">
-                                <span class="cancel">Đã bị huỷ</span>
-                            </c:if>
+                                <c:if test="${o.status eq 'DA_HUY'}">
+                                    <span class="cancel" style="color: #999;">Đã bị huỷ</span>
+                                </c:if>
+                            </div>
 
                         </div>
                     </div>
