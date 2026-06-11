@@ -43,6 +43,9 @@
             <span class="role-badge role-OWNER">Chủ</span>
             <% } %>
         </h3>
+        <div style="display:flex;justify-content:flex-end;margin-top:4px;">
+            <%@ include file="/admin/common/notification_bell.jsp" %>
+        </div>
     </div>
     <ul class="sidebar-menu">
 

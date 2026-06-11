@@ -14,11 +14,7 @@ import java.io.PrintWriter;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/**
- * API endpoint cho tính năng thông báo admin.
- * GET /admin/notifications        → JSON danh sách thông báo
- * GET /admin/notifications?count=1 → JSON { "count": N }
- */
+
 @WebServlet(name = "AdminNotificationServlet", urlPatterns = "/admin/notifications")
 public class AdminNotificationServlet extends HttpServlet {
 
@@ -29,7 +25,6 @@ public class AdminNotificationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // Kiểm tra quyền
         User user = (User) req.getSession().getAttribute("user");
         if (user == null) {
             resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -43,7 +38,6 @@ public class AdminNotificationServlet extends HttpServlet {
         String contextPath = req.getContextPath();
         PrintWriter out = resp.getWriter();
 
-        // Chỉ lấy số lượng (cho badge)
         String countOnly = req.getParameter("count");
         if ("1".equals(countOnly)) {
             int count = dao.countUnread(contextPath);
@@ -51,7 +45,6 @@ public class AdminNotificationServlet extends HttpServlet {
             return;
         }
 
-        // Lấy danh sách đầy đủ
         List<Notification> notifications = dao.getAll(contextPath, MAX_NOTIFICATIONS);
         out.print(toJson(notifications));
     }
