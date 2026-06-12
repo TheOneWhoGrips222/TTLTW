@@ -51,6 +51,9 @@ public class VoucherService {
 public boolean removeUserVoucher(int userId, int voucherId) {
        return vd.removeVoucherFromUser(userId, voucherId);
 }
+    public boolean returnUserVoucher(int userId, int voucherId) {
+        return vd.returnUserVoucher(userId, voucherId);
+    }
     public List<Voucher> getUserSelectVoucher(int userID) {
         return uv.getUserSelectVoucher(userID);
     }
