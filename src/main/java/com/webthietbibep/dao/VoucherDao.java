@@ -122,4 +122,6 @@ public class VoucherDao extends BaseDao {
     }
     public boolean returnUserVoucher(int userId, int voucherId) {
         return get().withHandle(h -> h.createUpdate("UPDATE user_vouchers SET status = 0 WHERE user_id = :userId AND voucher_id = :voucherId").bind("userId", userId).bind("voucherId", voucherId).execute() > 0); }
+    public boolean subVoucherQuantity(int voucherId) {
+        return get().withHandle(h -> h.createUpdate("UPDATE vouchers SET quantity = quantity - 1 WHERE id = :id AND quantity > 0").bind("id", voucherId).execute() > 0); }
 }

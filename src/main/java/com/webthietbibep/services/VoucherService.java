@@ -57,4 +57,7 @@ public boolean removeUserVoucher(int userId, int voucherId) {
     public List<Voucher> getUserSelectVoucher(int userID) {
         return uv.getUserSelectVoucher(userID);
     }
-}
+    public boolean subVoucherQuantity(int voucherId) {
+        return vd.subVoucherQuantity(voucherId);
+    }
+    }

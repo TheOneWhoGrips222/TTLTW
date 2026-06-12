@@ -35,6 +35,7 @@ public class GetVoucherContronller extends HttpServlet {
         }
         VoucherService vs = new VoucherService();
         vs.getVoucher(id,user.getUser_id());
+        vs.subVoucherQuantity(id);
         response.setStatus(HttpServletResponse.SC_OK);
 
     }
