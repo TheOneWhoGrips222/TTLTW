@@ -7,6 +7,7 @@ import com.webthietbibep.dao.OrdersDAO;
 import com.webthietbibep.dao.UserAddressDAO;
 import com.webthietbibep.model.*;
 import com.webthietbibep.services.GhnOrderService;
+import com.webthietbibep.services.VoucherService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -24,7 +25,7 @@ public class CheckoutServlet extends HttpServlet {
     private final OrdersDAO ordersDAO = new OrdersDAO();
     private final OrderItemDAO itemDAO = new OrderItemDAO();
     private final GhnOrderService ghnService = new GhnOrderService();
-
+    private final VoucherService vs = new  VoucherService();
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -174,6 +175,13 @@ public class CheckoutServlet extends HttpServlet {
             order.setTotal_amount(total);
             orderId = ordersDAO.insert(order);
 
+            if (chosseD != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseD.getId());
+            }
+            if (chosseFS != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseFS.getId());
+            }
+
             OrderItem oi = new OrderItem();
             oi.setOrder_id(orderId);
             oi.setProduct_id(product.getProduct_id());
@@ -223,6 +231,13 @@ public class CheckoutServlet extends HttpServlet {
             order.setTotal_amount(total);
             orderId = ordersDAO.insert(order);
 
+            if (chosseD != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseD.getId());
+            }
+            if (chosseFS != null) {
+                ordersDAO.saveOrderVoucher(orderId, chosseFS.getId());
+            }
+
             for (CartItem ci : cart.getItems()) {
                 OrderItem oi = new OrderItem();
                 oi.setOrder_id(orderId);
@@ -234,7 +249,8 @@ public class CheckoutServlet extends HttpServlet {
 
             req.getSession().removeAttribute("cart");
         }
-
+        if (chosseD != null) { vs.removeUserVoucher(user.getUser_id(), chosseD.getId()); }
+        if (chosseFS != null) { vs.removeUserVoucher(user.getUser_id(), chosseFS.getId()); }
         req.getSession().removeAttribute("chosseFS");
         req.getSession().removeAttribute("chosseD");
 
