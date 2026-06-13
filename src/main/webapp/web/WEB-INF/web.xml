@@ -8,8 +8,7 @@
     <display-name>WebThietBiBep</display-name>
 
     <context-param>
-        <param-name>geminiApiKey</param-name>
-        <param-value>AQ.Ab8RN6JHSSvT-fb52FSdcA8xTY1sJg3RiznenP18PADq4DLZSg</param-value>
+        <param-name>groqApiKey</param-name>
+        <param-value>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</param-value>
     </context-param>
-
 </web-app>

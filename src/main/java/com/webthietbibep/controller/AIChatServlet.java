@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 public class AIChatServlet extends HttpServlet {
 
     private String getApiKey() {
-        String key = System.getenv("GEMINI_API_KEY");
+        String key = System.getenv("GROQ_API_KEY");
         if (key == null || key.isBlank()) {
-            key = getServletContext().getInitParameter("geminiApiKey");
+            key = getServletContext().getInitParameter("groqApiKey");
         }
         return (key != null) ? key.trim() : null;
     }
@@ -73,46 +73,32 @@ public class AIChatServlet extends HttpServlet {
                 ? "Bạn là trợ lý quản trị của cửa hàng thiết bị bếp WebThietBiBep. Trả lời ngắn gọn, chuyên nghiệp bằng tiếng Việt."
                 : "Bạn là tư vấn viên của cửa hàng thiết bị bếp WebThietBiBep. Trả lời ngắn gọn, thân thiện bằng tiếng Việt.";
 
-        String aiReply = callGeminiWithRetry(systemPrompt, message, history);
+        String aiReply = callGroqAPI(systemPrompt, message);
         response.getWriter().write("{\"reply\":" + escapeJson(aiReply) + "}");
     }
 
-    // Tự động thử lại tối đa 3 lần nếu bị 429
-    private String callGeminiWithRetry(String systemPrompt, String userMessage, String historyJson)
-            throws IOException {
-        int[] delays = {0, 5000, 15000}; // thử ngay, sau 5s, sau 15s
-        for (int i = 0; i < delays.length; i++) {
-            if (delays[i] > 0) {
-                try { Thread.sleep(delays[i]); } catch (InterruptedException ignored) {}
-            }
-            String result = callGeminiAPI(systemPrompt, userMessage, historyJson);
-            // Nếu không phải lỗi 429 thì trả về luôn
-            if (!result.startsWith("__429__")) return result;
-            System.out.println("[AIChatServlet] 429 - thử lại lần " + (i + 1) + " sau " + delays[i] + "ms");
-        }
-        return "⚠️ Hệ thống AI đang bận, vui lòng thử lại sau vài giây.";
-    }
-
-    private String callGeminiAPI(String systemPrompt, String userMessage, String historyJson)
-            throws IOException {
+    private String callGroqAPI(String systemPrompt, String userMessage) throws IOException {
 
         String apiKey = getApiKey();
         if (apiKey == null || apiKey.isBlank()) {
-            return "⚠️ Chưa cấu hình Gemini API Key. Kiểm tra web.xml.";
+            return "⚠️ Chưa cấu hình Groq API Key. Kiểm tra web.xml.";
         }
 
         String body = "{"
-                + "\"contents\":[{\"role\":\"user\",\"parts\":[{\"text\":" + escapeJson(userMessage) + "}]}],"
-                + "\"systemInstruction\":{\"parts\":[{\"text\":" + escapeJson(systemPrompt) + "}]},"
-                + "\"generationConfig\":{\"maxOutputTokens\":200}"
+                + "\"model\":\"llama-3.3-70b-versatile\","
+                + "\"messages\":["
+                + "{\"role\":\"system\",\"content\":" + escapeJson(systemPrompt) + "},"
+                + "{\"role\":\"user\",\"content\":" + escapeJson(userMessage) + "}"
+                + "],"
+                + "\"max_tokens\":300,"
+                + "\"temperature\":0.7"
                 + "}";
 
-        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
-
-        URL url = new URL(endpoint);
+        URL url = new URL("https://api.groq.com/openai/v1/chat/completions");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+        conn.setRequestProperty("Content-Type", "application/jsson; charset=UTF-8");
+        conn.setRequestProperty("Authorization", "Bearer " + apiKey);
         conn.setDoOutput(true);
         conn.setConnectTimeout(15000);
         conn.setReadTimeout(30000);
@@ -128,24 +114,20 @@ public class AIChatServlet extends HttpServlet {
             responseStr = br.lines().collect(Collectors.joining());
         }
 
-        if (status == 429) {
-            System.err.println("[AIChatServlet] 429 Rate limit: " + responseStr);
-            return "__429__"; // signal để retry
-        }
-
         if (status != 200) {
-            System.err.println("[AIChatServlet] Lỗi Gemini HTTP " + status + ": " + responseStr);
-            return "⚠️ Lỗi kết nối AI (HTTP " + status + "). Vui lòng kiểm tra console của Server.";
+            System.err.println("[AIChatServlet] Lỗi Groq HTTP " + status + ": " + responseStr);
+            return "⚠️ Lỗi kết nối AI (HTTP " + status + "). Vui lòng thử lại.";
         }
 
-        return extractGeminiText(responseStr);
+        return extractGroqText(responseStr);
     }
 
-    private String extractGeminiText(String json) {
+    private String extractGroqText(String json) {
         try {
-            int idx = json.indexOf("\"text\":");
+            // Tìm "content": "..." trong response Groq
+            int idx = json.indexOf("\"content\":");
             if (idx == -1) return "Không nhận được phản hồi từ AI.";
-            int start = json.indexOf("\"", idx + 7) + 1;
+            int start = json.indexOf("\"", idx + 10) + 1;
             int end = start;
             boolean esc = false;
             while (end < json.length()) {
