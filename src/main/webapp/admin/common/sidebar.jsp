@@ -50,6 +50,13 @@
     <ul class="sidebar-menu">
 
         <% if (isOwner) { %>
+        <% if (isOwner || isSales) { %>
+        <li>
+            <a href="<%=request.getContextPath()%>/admin/ai-assistant">
+                <i class="fa-solid fa-robot"></i><span>Trợ lý AI</span>
+            </a>
+        </li>
+        <% } %>
         <li>
             <a href="<%=request.getContextPath()%>/admin/dashboard">
                 <i class="fa-solid fa-chart-line"></i><span>Tổng quan</span>
@@ -126,7 +133,9 @@
         <% } %>
 
     </ul>
-
+    <a href="<%=request.getContextPath()%>/admin/admin_ai_assistant.jsp">
+        <i class="fa-solid fa-robot"></i><span>Trợ lý AI</span>
+    </a>
     <div class="sidebar-footer">
         <a href="<%=request.getContextPath()%>/Home" class="btn-home">
             <i class="fa-solid fa-house"></i><span>Trang chủ</span>

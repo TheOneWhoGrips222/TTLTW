@@ -5,4 +5,11 @@
                              https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
+    <display-name>WebThietBiBep</display-name>
+
+    <context-param>
+        <param-name>geminiApiKey</param-name>
+        <param-value>AQ.Ab8RN6JHSSvT-fb52FSdcA8xTY1sJg3RiznenP18PADq4DLZSg</param-value>
+    </context-param>
+
 </web-app>
