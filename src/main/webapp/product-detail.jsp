@@ -127,6 +127,32 @@
 <div class="product-comments">
   <h2>Bình luận sản phẩm</h2>
 
+  <div class="review-section">
+
+    <h2>Đánh giá khách hàng</h2>
+
+    <c:forEach var="r" items="${reviews}">
+
+      <div class="review-item">
+
+        <strong>${r.username}</strong>
+
+        <div class="stars">
+
+          <c:forEach begin="1" end="${r.rating}">
+            ★
+          </c:forEach>
+
+        </div>
+
+        <p>${r.comment}</p>
+
+      </div>
+
+    </c:forEach>
+
+  </div>
+
   <c:choose>
     <c:when test="${not empty sessionScope.user and hasPurchased}">
       <form action="${pageContext.request.contextPath}/product-comment" method="post">

@@ -109,7 +109,7 @@
                                         <c:choose>
 
                                             <c:when test="${reviewedMap[reviewKey]}">
-                            <span style="color:green;font-weight:bold">
+                            <span style="color:#555;font-weight:bold">
                                 Đã đánh giá
                             </span>
                                             </c:when>

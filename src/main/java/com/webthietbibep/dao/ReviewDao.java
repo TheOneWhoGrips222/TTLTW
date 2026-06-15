@@ -49,5 +49,24 @@ public class ReviewDao extends BaseDao {
                         .one() > 0
         );
     }
-    
+    public List<Review> getByProductId(int productId){
+
+        String sql = """
+        SELECT r.*,
+               u.username
+        FROM reviews r
+        JOIN users u
+             ON r.user_id = u.user_id
+        WHERE r.product_id = :pid
+        ORDER BY r.created_at DESC
+    """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .bind("pid", productId)
+                        .mapToBean(Review.class)
+                        .list()
+        );
+    }
+
 }

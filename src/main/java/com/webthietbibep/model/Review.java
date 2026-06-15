@@ -1,8 +1,9 @@
 package com.webthietbibep.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Review {
+public class Review implements Serializable {
 
     private int review_id;
     private int user_id;
@@ -12,6 +13,7 @@ public class Review {
     private String comment;
     private LocalDateTime created_at;
 
+    private String username;
     public Review() {
     }
 
@@ -69,5 +71,12 @@ public class Review {
 
     public void setCreated_at(LocalDateTime created_at) {
         this.created_at = created_at;
+    }
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

@@ -3,6 +3,7 @@ package com.webthietbibep.controller;
 import com.webthietbibep.dao.OrderItemDAO;
 import com.webthietbibep.dao.OrdersDAO;
 import com.webthietbibep.dao.ProductDAO;
+import com.webthietbibep.dao.ReviewDao;
 import com.webthietbibep.model.Order;
 import com.webthietbibep.model.Product;
 import com.webthietbibep.model.User;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ public class OrderServlet extends HttpServlet {
     private OrdersDAO orderDAO = new OrdersDAO();
     private OrderItemDAO itemDAO = new OrderItemDAO();
     private ProductDAO productDAO = new ProductDAO();
+    private ReviewDao reviewDAO = new ReviewDao();
 
     private GhnOrderService ghnService = new GhnOrderService();
 
@@ -35,6 +38,7 @@ public class OrderServlet extends HttpServlet {
 
         orderDAO.cancelExpiredOrders();
         syncGhnOrders();
+
         User user = (User) req.getSession().getAttribute("user");
         if (user == null) {
             resp.sendRedirect("login");
@@ -47,31 +51,70 @@ public class OrderServlet extends HttpServlet {
         if (status == null || status.isBlank()) {
             orders = orderDAO.getOrdersByUser(user.getUser_id());
         } else {
-            orders = orderDAO.getOrdersByUserAndStatus(user.getUser_id(), status);
+            orders = orderDAO.getOrdersByUserAndStatus(
+                    user.getUser_id(),
+                    status
+            );
         }
-
 
         Map<Integer, List<Product>> orderProducts = new LinkedHashMap<>();
         Map<Integer, List<Voucher>> orderVouchers = new LinkedHashMap<>();
-        for (var o : orders) {
+
+        Map<String, Boolean> reviewedMap = new HashMap<>();
+
+        for (Order o : orders) {
+
             var items = itemDAO.getByOrder(o.getOrder_id());
+
             List<Product> products = new ArrayList<>();
 
             for (var i : items) {
+
                 Product p = productDAO.getById(i.getProduct_id());
-                p.setPrice(i.getPrice_at_purchase()); // giá lúc mua
-                products.add(p);
+
+                if (p != null) {
+
+                    p.setPrice(i.getPrice_at_purchase());
+
+                    products.add(p);
+
+                    boolean reviewed = reviewDAO.hasReviewed(
+                            user.getUser_id(),
+                            p.getProduct_id(),
+                            o.getOrder_id()
+                    );
+
+                    String key =
+                            o.getOrder_id()
+                                    + "_"
+                                    + p.getProduct_id();
+
+                    reviewedMap.put(key, reviewed);
+                }
             }
+
             orderProducts.put(o.getOrder_id(), products);
-            List<Voucher> vouchers = orderDAO.getVouchersByOrderId(o.getOrder_id());
-            orderVouchers.put(o.getOrder_id(), vouchers);
+
+            List<Voucher> vouchers =
+                    orderDAO.getVouchersByOrderId(
+                            o.getOrder_id()
+                    );
+
+            orderVouchers.put(
+                    o.getOrder_id(),
+                    vouchers
+            );
         }
 
         req.setAttribute("orders", orders);
         req.setAttribute("orderProducts", orderProducts);
         req.setAttribute("orderVouchers", orderVouchers);
-        req.getRequestDispatcher("/orders.jsp").forward(req, resp);
+        req.setAttribute("reviewedMap", reviewedMap);
+
+        req.getRequestDispatcher("/orders.jsp")
+                .forward(req, resp);
     }
+
     private void syncGhnOrders() {
 
         try {
@@ -109,9 +152,7 @@ public class OrderServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
     }
 
@@ -139,6 +180,4 @@ public class OrderServlet extends HttpServlet {
                 return null;
         }
     }
-
 }
-
