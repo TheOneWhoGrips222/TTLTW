@@ -3,6 +3,7 @@ package com.webthietbibep.controller;
 import com.webthietbibep.dao.OrdersDAO;
 import com.webthietbibep.dao.ProductDAO;
 import com.webthietbibep.dao.ReviewDao;
+import com.webthietbibep.model.Order;
 import com.webthietbibep.model.Review;
 import com.webthietbibep.model.User;
 import jakarta.servlet.ServletException;
@@ -26,6 +27,13 @@ public class ReviewServlet extends HttpServlet {
             HttpServletResponse resp)
             throws ServletException, IOException {
 
+        User user = (User) req.getSession().getAttribute("user");
+
+        if(user == null){
+            resp.sendRedirect("login");
+            return;
+        }
+
         int productId =
                 Integer.parseInt(req.getParameter("productId"));
 
@@ -37,10 +45,15 @@ public class ReviewServlet extends HttpServlet {
                 productDAO.getById(productId)
         );
 
-        req.setAttribute(
-                "order",
-                ordersDAO.getOrderById(orderId)
-        );
+        Order order = ordersDAO.getOrderById(orderId);
+
+        if(order == null ||
+                order.getUser_id() != user.getUser_id()){
+            resp.sendRedirect("orders");
+            return;
+        }
+
+        req.setAttribute("order", order);
 
         req.getRequestDispatcher("/review.jsp")
                 .forward(req, resp);
