@@ -76,5 +76,10 @@ public class CartItem implements Serializable {
     public String getFormattedTotal(){
         return Format(this.price * this.quantity);
     }
-
+    public void setProduct_id(int product_id) {
+        if (this.product == null) {
+            this.product = new com.webthietbibep.model.Product();
+        }
+        this.product.setProduct_id(product_id);
+    }
 }

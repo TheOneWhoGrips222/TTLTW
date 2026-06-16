@@ -2,6 +2,8 @@ package com.webthietbibep.controller.cart;
 
 import com.webthietbibep.cart.Cart;
 import com.webthietbibep.model.Combo;
+import com.webthietbibep.model.User;
+import com.webthietbibep.services.CartService;
 import com.webthietbibep.services.ComboService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -24,6 +26,16 @@ public class UpdateCartItemCombo extends HttpServlet {
         int id =  Integer.parseInt(request.getParameter("id"));
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            response.sendRedirect("login");
+            return;
+        }
+        CartService cs = new CartService();
+        Integer cartId = cs.getCartIdByUserId(user.getUser_id());
+        if (cartId == null) {
+            cartId = cs.createCart(user.getUser_id());
+        }
         Cart cart = (Cart)session.getAttribute("cart");
         ComboService comboService = new ComboService();
         Combo combo = comboService.getCombo(id);
@@ -37,11 +49,13 @@ public class UpdateCartItemCombo extends HttpServlet {
                 }
                 else {
                     cart.getData2().get(id).setQuantity(curQuantity + 1);
+                    cs.updateComboQuantity(cartId, id, curQuantity + 1);
                     session.removeAttribute("message");
                 }
             }
             else  if("down".equals(action) && curQuantity>1){
                 cart.getData2().get(id).setQuantity(curQuantity-1);
+                cs.updateComboQuantity(cartId, id, curQuantity - 1);
                 session.removeAttribute("message");
             }
             session.setAttribute("cart",cart);
