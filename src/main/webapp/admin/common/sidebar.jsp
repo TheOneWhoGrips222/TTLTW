@@ -91,10 +91,15 @@
         <% } %>
 
         <% if (isOwner || isWarehouse) { %>
-        <li>
-            <a href="<%=request.getContextPath()%>/admin/restock">
-                <i class="fa-solid fa-boxes-stacked"></i><span>Đề xuất nhập hàng</span>
+        <li class="menu-item-has-children">
+            <a href="#" class="sidebar-link">
+                <i class="fa-solid fa-truck-ramp-box"></i><span>Quản lý Nhập hàng</span>
+                <i class="fa-solid fa-chevron-down toggle-icon"></i>
             </a>
+            <ul class="submenu">
+                <li><a href="<%=request.getContextPath()%>/admin/restock"><i class="fa-solid fa-boxes-stacked"></i> Đề xuất nhập hàng</a></li>
+                <li><a href="<%=request.getContextPath()%>/admin/import-history"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử nhập hàng</a></li>
+            </ul>
         </li>
         <% } %>
 

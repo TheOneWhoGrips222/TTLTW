@@ -9,6 +9,6 @@
 
     <context-param>
         <param-name>groqApiKey</param-name>
-        <param-value>key</param-value>
+        <param-value>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</param-value>
     </context-param>
 </web-app>

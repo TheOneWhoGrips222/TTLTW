@@ -38,6 +38,23 @@
         .btn-export.csv{border-color:#10b981;color:#10b981}.btn-export.csv:hover{background:#ecfdf5}
         .btn-export.excel{border-color:#2563eb;color:#2563eb}.btn-export.excel:hover{background:#eff6ff}
         .btn-export.pdf{border-color:#ef4444;color:#ef4444}.btn-export.pdf:hover{background:#fef2f2}
+        .btn-import{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;border:none;background:#4f46e5;color:#fff;cursor:pointer;font-size:.82rem;font-weight:600;transition:background .15s}
+        .btn-import:hover{background:#4338ca}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal-box{background:#fff;border-radius:16px;padding:28px 32px;width:440px;max-width:95vw;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+        .modal-box h3{margin:0 0 20px;font-size:1.1rem;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px}
+        .form-row{margin-bottom:14px}
+        .form-row label{display:block;font-size:.82rem;font-weight:600;color:#374151;margin-bottom:5px}
+        .form-row input,.form-row select,.form-row textarea{width:100%;padding:8px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:.875rem;box-sizing:border-box}
+        .form-row textarea{resize:vertical;height:70px}
+        .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+        .btn-cancel{padding:8px 18px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;font-size:.875rem;color:#6b7280}
+        .btn-submit{padding:8px 20px;border-radius:8px;border:none;background:#4f46e5;color:#fff;cursor:pointer;font-size:.875rem;font-weight:600}
+        .btn-submit:hover{background:#4338ca}
+        .toast{position:fixed;bottom:28px;right:28px;background:#10b981;color:#fff;padding:12px 20px;border-radius:10px;font-size:.9rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.15);z-index:2000;display:none}
+        .toast.show{display:block;animation:slideUp .3s ease}
+        @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     </style>
 </head>
 <body>
@@ -49,13 +66,22 @@
                 <h2><i class="fa-solid fa-boxes-stacked" style="color:#4f46e5;margin-right:8px;"></i>Đề xuất nhập hàng</h2>
             </div>
             <div class="admin-header-actions">
-                <a href="${pageContext.request.contextPath}/admin/restock" class="btn-secondary">
+                <a href="${pageContext.request.contextPath}/admin/import-history" class="btn-secondary">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Lịch sử nhập hàng
+                </a>
+                <a href="${pageContext.request.contextPath}/admin/restock" class="btn-secondary" style="margin-left:8px;">
                     <i class="fa-solid fa-rotate-right"></i> Làm mới
                 </a>
             </div>
         </header>
 
         <div class="admin-content">
+
+            <c:if test="${importSuccess}">
+                <div class="toast show" id="successToast">
+                    <i class="fa-solid fa-check-circle"></i> Nhập kho thành công! Tồn kho đã được cập nhật.
+                </div>
+            </c:if>
 
             <div class="restock-stats">
                 <div class="restock-stat-card">
@@ -92,13 +118,13 @@
                 <table class="admin-table" id="restockTable">
                     <thead>
                     <tr>
-                        <th width="30%">Sản phẩm</th>
-                        <th width="10%" style="text-align:center;">Tồn kho</th>
-                        <th width="13%" style="text-align:center;">TB bán/ngày</th>
-                        <th width="14%" style="text-align:center;">Dự kiến hết</th>
-                        <th width="14%" style="text-align:center;">Đề xuất nhập</th>
-                        <th width="13%" style="text-align:center;">Mức độ</th>
-                        <th width="6%"  style="text-align:center;">Chi tiết</th>
+                        <th width="28%">Sản phẩm</th>
+                        <th width="9%"  style="text-align:center;">Tồn kho</th>
+                        <th width="12%" style="text-align:center;">TB bán/ngày</th>
+                        <th width="12%" style="text-align:center;">Dự kiến hết</th>
+                        <th width="13%" style="text-align:center;">Đề xuất nhập</th>
+                        <th width="11%" style="text-align:center;">Mức độ</th>
+                        <th width="15%" style="text-align:center;">Thao tác</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -115,6 +141,7 @@
                             <c:forEach var="s" items="${suggestions}">
                                 <tr class="restock-row"
                                     data-urgency="${s.urgencyLevel}"
+                                    data-id="${s.productId}"
                                     data-name="${s.productName}"
                                     data-stock="${s.stockQuantity}"
                                     data-avg="${s.avgSoldPerDay}"
@@ -155,8 +182,13 @@
                                             <c:otherwise><span class="badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Sắp hết</span></c:otherwise>
                                         </c:choose>
                                     </td>
-                                    <td style="text-align:center;">
-                                        <a href="${pageContext.request.contextPath}/admin/product-save?action=edit&id=${s.productId}" class="btn-view" title="Xem sản phẩm">
+                                    <td style="text-align:center;display:flex;gap:6px;justify-content:center;padding:8px 0;">
+                                        <button class="btn-import"
+                                                onclick="openImportModal(${s.productId}, '${s.productName}', ${s.suggestedQuantity})"
+                                                title="Ghi nhận nhập kho">
+                                            <i class="fa-solid fa-truck-ramp-box"></i> Nhập kho
+                                        </button>
+                                        <a href="${pageContext.request.contextPath}/admin/product-save?action=edit&id=${s.productId}" class="btn-view" title="Chỉnh sửa sản phẩm">
                                             <i class="fa-solid fa-pen"></i>
                                         </a>
                                     </td>
@@ -167,18 +199,63 @@
                     </tbody>
                 </table>
                 <p style="font-size:.8rem;color:#9ca3af;margin-top:12px;text-align:right;">
-                    * Dựa trên dữ liệu đơn hoàn thành trong 30 ngày gần nhất.
-                    Ngưỡng cần gấp: tồn kho &le; TB 7 ngày &times; 2.
-                    Ngưỡng sắp hết: tồn kho &le; TB 14 ngày &times; 2.
+                    * Dựa trên lịch sử bán hàng thực tế (bảng <code>product_sold_history</code>).
+                    Đề xuất = nhu cầu 30 ngày × 1,5 − tồn kho − đã nhập gần đây.
+                    Ngưỡng gấp: tồn ≤ TB 7 ngày × 2 | Ngưỡng sắp hết: tồn ≤ TB 14 ngày × 2.
                 </p>
             </div>
         </div>
     </main>
 </div>
 
+<div class="modal-overlay" id="importModal">
+    <div class="modal-box">
+        <h3><i class="fa-solid fa-truck-ramp-box" style="color:#4f46e5;"></i> Ghi nhận nhập kho</h3>
+        <form method="post" action="${pageContext.request.contextPath}/admin/import-history">
+            <input type="hidden" id="modalProductId" name="productId">
+
+            <div class="form-row">
+                <label>Sản phẩm</label>
+                <input type="text" id="modalProductName" readonly style="background:#f9fafb;color:#6b7280;">
+            </div>
+
+            <div class="form-row">
+                <label>Số lượng nhập <span style="color:#ef4444;">*</span></label>
+                <input type="number" name="quantity" id="modalQuantity" min="1" required placeholder="Nhập số lượng">
+            </div>
+
+            <div class="form-row">
+                <label>Nhà cung cấp</label>
+                <select name="supplierId">
+                    <option value="">-- Chọn nhà cung cấp --</option>
+                    <c:forEach var="sup" items="${suppliers}">
+                        <option value="${sup.supplier_id}">${sup.company_name}</option>
+                    </c:forEach>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Đơn giá nhập (VNĐ)</label>
+                <input type="number" name="unitPrice" min="0" step="1000" placeholder="Để trống nếu chưa có">
+            </div>
+
+            <div class="form-row">
+                <label>Ghi chú</label>
+                <textarea name="note" placeholder="Ghi chú lô hàng, điều kiện,..."></textarea>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeImportModal()">Hủy</button>
+                <button type="submit" class="btn-submit"><i class="fa-solid fa-check"></i> Xác nhận nhập kho</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="toast" id="successToast2"></div>
+
 <script>
     let curFilter = 'all';
-
     function filterTable(urgency, btn) {
         curFilter = urgency;
         document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -187,6 +264,26 @@
             row.style.display = (urgency === 'all' || row.dataset.urgency === urgency) ? '' : 'none';
         });
     }
+
+    function openImportModal(productId, productName, suggestedQty) {
+        document.getElementById('modalProductId').value   = productId;
+        document.getElementById('modalProductName').value = productName;
+        document.getElementById('modalQuantity').value    = suggestedQty;
+        document.getElementById('importModal').classList.add('open');
+    }
+    function closeImportModal() {
+        document.getElementById('importModal').classList.remove('open');
+    }
+    document.getElementById('importModal').addEventListener('click', function(e) {
+        if (e.target === this) closeImportModal();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const t = document.getElementById('successToast');
+        if (t && t.classList.contains('show')) {
+            setTimeout(() => t.style.opacity = '0', 3000);
+        }
+    });
 
     const RESTOCK_HEADERS = ['Sản phẩm','Tồn kho','TB bán/ngày','Dự kiến hết (ngày)','Đề xuất nhập','Mức độ'];
     function getRestockRows() {
