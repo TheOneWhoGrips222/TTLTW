@@ -56,7 +56,11 @@ public class CartController extends HttpServlet {
             List<CartItem> items = cartService.getCartItems(cartId);
             if (items != null) {
                 for (CartItem item : items) {
-                    Product p = ps.getProduct(item.getProduct() != null ? item.getProduct().getProduct_id() : 0);
+                    int pId = item.getProduct().getProduct_id();
+                    if (pId == 0 && item.getProduct() != null) {
+                        pId = item.getProduct().getProduct_id();
+                    }
+                    Product p = ps.getProduct(pId);
                     if (p != null) {
                         item.setProduct(p);
                         item.setPrice(p.getPrice());
@@ -69,7 +73,11 @@ public class CartController extends HttpServlet {
             List<CartItemCombo> comboItems = cartService.getCartItemCombos(cartId);
             if (comboItems != null) {
                 for (CartItemCombo cItem : comboItems) {
-                    Combo c = cs.getCombo(cItem.getCombo() != null ? cItem.getCombo().getId() : 0);
+                    int cId = cItem.getCombo().getId();
+                    if (cId == 0 && cItem.getCombo() != null) {
+                        cId = cItem.getCombo().getId();
+                    }
+                    Combo c = cs.getCombo(cId);
                     if (c != null) {
                         cItem.setCombo(c);
                         cItem.setPrice(c.getDiscountprice());
@@ -79,8 +87,6 @@ public class CartController extends HttpServlet {
             }
 
             session.setAttribute("cart", cart);
-        } else {
-            cart.removeTimeOut();
         }
 
         Map<Integer, String> data = new HashMap<>();

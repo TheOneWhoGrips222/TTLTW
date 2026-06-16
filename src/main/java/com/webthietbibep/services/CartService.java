@@ -17,22 +17,28 @@ public class CartService {
         return cartDao.createCart(userId);
     }
 
-
-
-    public int insertProduct(int cartId, int productId, int quantity, long time) {
-        return cartDao.insertProduct(cartId, productId, quantity, time);
+    public Integer checkProductCart(int cartId, int productId) {
+        return cartDao.checkProductCart(cartId, productId);
     }
 
-    public int insertCombo(int cartId, int comboId, int quantity, long time) {
-        return cartDao.insertCombo(cartId, comboId, quantity, time);
+    public Integer checkComboCart(int cartId, int comboId) {
+        return cartDao.checkComboCart(cartId, comboId);
     }
 
-    public int updateProductQuantity(int cartId, int productId, int quantity, long time) {
-        return cartDao.updateProductQuantity(cartId, productId, quantity, time);
+    public int insertProduct(int cartId, int productId, int quantity) {
+        return cartDao.insertProduct(cartId, productId, quantity);
     }
 
-    public int updateComboQuantity(int cartId, int comboId, int quantity, long time) {
-        return cartDao.updateComboQuantity(cartId, comboId, quantity, time);
+    public int insertCombo(int cartId, int comboId, int quantity) {
+        return cartDao.insertCombo(cartId, comboId, quantity);
+    }
+
+    public int updateProductQuantity(int cartId, int productId, int quantity) {
+        return cartDao.updateProductQuantity(cartId, productId, quantity);
+    }
+
+    public int updateComboQuantity(int cartId, int comboId, int quantity) {
+        return cartDao.updateComboQuantity(cartId, comboId, quantity);
     }
 
     public int deleteProduct(int cartId, int productId) {
@@ -50,6 +56,7 @@ public class CartService {
     public int deleteAllCombos(int cartId) {
         return cartDao.deleteAllCombos(cartId);
     }
+
     public List<CartItem> getCartItems(int cartId) {
         return cartDao.getCartItems(cartId);
     }
