@@ -1,0 +1,72 @@
+package com.webthietbibep.dao;
+
+import com.webthietbibep.model.Review;
+
+import java.util.List;
+
+public class ReviewDao extends BaseDao {
+
+    public void insert(Review r) {
+
+        String sql = """
+            INSERT INTO reviews
+            (user_id, product_id, order_id, rating, comment)
+            VALUES
+            (:uid,:pid,:oid,:rating,:comment)
+        """;
+
+        get().useHandle(h ->
+                h.createUpdate(sql)
+                        .bind("uid", r.getUser_id())
+                        .bind("pid", r.getProduct_id())
+                        .bind("oid", r.getOrder_id())
+                        .bind("rating", r.getRating())
+                        .bind("comment", r.getComment())
+                        .execute()
+        );
+    }
+
+    public boolean hasReviewed(
+            int userId,
+            int productId,
+            int orderId
+    ) {
+
+        String sql = """
+            SELECT COUNT(*)
+            FROM reviews
+            WHERE user_id = :uid
+            AND product_id = :pid
+            AND order_id = :oid
+        """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .bind("uid", userId)
+                        .bind("pid", productId)
+                        .bind("oid", orderId)
+                        .mapTo(Integer.class)
+                        .one() > 0
+        );
+    }
+    public List<Review> getByProductId(int productId){
+
+        String sql = """
+        SELECT r.*,
+               u.username
+        FROM reviews r
+        JOIN users u
+             ON r.user_id = u.user_id
+        WHERE r.product_id = :pid
+        ORDER BY r.created_at DESC
+    """;
+
+        return get().withHandle(h ->
+                h.createQuery(sql)
+                        .bind("pid", productId)
+                        .mapToBean(Review.class)
+                        .list()
+        );
+    }
+
+}

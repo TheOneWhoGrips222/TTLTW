@@ -88,13 +88,47 @@
 
                     <c:forEach var="p" items="${orderProducts[o.order_id]}">
                         <div class="order-product">
+
                             <img src="${p.image}" alt="">
+
                             <div class="info">
+
                                 <div class="name">${p.product_name}</div>
+
                                 <div class="price">
                                         ${p.priceFormat}
                                 </div>
+
+                                <c:if test="${o.status eq 'HOAN_THANH'}">
+
+                                    <c:set var="reviewKey"
+                                           value="${o.order_id}_${p.product_id}" />
+
+                                    <div style="margin-top:10px">
+
+                                        <c:choose>
+
+                                            <c:when test="${reviewedMap[reviewKey]}">
+                            <span style="color:#555;font-weight:bold">
+                                Đã đánh giá
+                            </span>
+                                            </c:when>
+
+                                            <c:otherwise>
+                                                <a class="btn-cancel"
+                                                   href="${pageContext.request.contextPath}/review?orderId=${o.order_id}&productId=${p.product_id}">
+                                                    Đánh giá
+                                                </a>
+                                            </c:otherwise>
+
+                                        </c:choose>
+
+                                    </div>
+
+                                </c:if>
+
                             </div>
+
                         </div>
                     </c:forEach>
 
@@ -140,10 +174,6 @@
                                     </form>
                                 </c:if>
 
-                                <c:if test="${o.status eq 'HOAN_THANH'}">
-                                    <button class="btn-cancel">Mua lại</button>
-                                    <button class="btn-cancel" style="margin-left: 5px;">Đánh giá</button>
-                                </c:if>
 
                                 <c:if test="${o.status eq 'CHO_XAC_NHAN'}">
                                     <form action="${pageContext.request.contextPath}/cancel-order" method="post" style="display:inline">

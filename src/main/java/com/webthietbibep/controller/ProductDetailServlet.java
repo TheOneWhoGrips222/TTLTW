@@ -1,9 +1,6 @@
 package com.webthietbibep.controller;
 
-import com.webthietbibep.dao.ProductCommentDAO;
-import com.webthietbibep.dao.ProductDAO;
-import com.webthietbibep.dao.ProductImageDAO;
-import com.webthietbibep.dao.SupplierDAO;
+import com.webthietbibep.dao.*;
 import com.webthietbibep.model.Product;
 import com.webthietbibep.model.Supplier;
 import jakarta.servlet.ServletException;
@@ -47,6 +44,12 @@ public class ProductDetailServlet extends HttpServlet {
             request.setAttribute("comments",       productCommentDAO.getByProductId(id));
             request.setAttribute("relatedProducts", productDAO.getRelatedProducts(product.getCategory_id(), id));
 
+            ReviewDao reviewDAO = new ReviewDao();
+
+            request.setAttribute(
+                    "reviews",
+                    reviewDAO.getByProductId(id)
+            );
             if (product.getSupplier_id() > 0) {
                 Supplier supplier = supplierDAO.getById(product.getSupplier_id());
                 request.setAttribute("supplier", supplier);
