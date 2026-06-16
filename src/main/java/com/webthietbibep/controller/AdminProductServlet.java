@@ -14,6 +14,11 @@ import jakarta.servlet.http.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.List;
 
@@ -75,7 +80,8 @@ public class AdminProductServlet extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
         Product p = new Product();
-        String uploadDir = req.getServletContext().getRealPath("/assets/images/products");
+        String appPath = req.getServletContext().getRealPath("");
+        String uploadDir = appPath + File.separator + "assets" + File.separator + "images" + File.separator + "products";
 
         try {
             String idStr = req.getParameter("product_id");
@@ -101,7 +107,8 @@ public class AdminProductServlet extends HttpServlet {
                 productDAO.update(p);
                 session.setAttribute("msg", "Cập nhật thành công!");
             } else {
-                productDAO.insert(p);
+                int newId = productDAO.insert(p);
+                p.setProduct_id(newId);
             }
 
             Collection<Part> parts = req.getParts();
@@ -140,11 +147,19 @@ public class AdminProductServlet extends HttpServlet {
     }
 
     private String handleFileUpload(Part part, String uploadDir) throws IOException {
-        if (part == null || part.getSize() == 0 || part.getSubmittedFileName().isEmpty()) return null;
-        File dir = new File(uploadDir);
-        if (!dir.exists()) dir.mkdirs();
-        String fileName = System.currentTimeMillis() + "_" + part.getSubmittedFileName();
-        part.write(uploadDir + File.separator + fileName);
+        if (part == null || part.getSize() == 0) return null;
+        String submittedName = part.getSubmittedFileName();
+        if (submittedName == null || submittedName.trim().isEmpty()) return null;
+
+        Path dir = Paths.get(uploadDir);
+        Files.createDirectories(dir);
+
+        String fileName = System.currentTimeMillis() + "_" + Paths.get(submittedName).getFileName().toString();
+        Path dest = dir.resolve(fileName);
+
+        try (InputStream in = part.getInputStream()) {
+            Files.copy(in, dest, StandardCopyOption.REPLACE_EXISTING);
+        }
         return "assets/images/products/" + fileName;
     }
 

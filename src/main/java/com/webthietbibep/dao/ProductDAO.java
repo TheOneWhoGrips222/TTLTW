@@ -68,7 +68,9 @@ public class ProductDAO extends BaseDao {
         return get().withHandle(handle ->
                 handle.createUpdate(sql)
                         .bindBean(product)
-                        .execute()
+                        .executeAndReturnGeneratedKeys("product_id")
+                        .mapTo(Integer.class)
+                        .one()
         );
     }
 

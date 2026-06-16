@@ -222,63 +222,57 @@
                         </div>
                     </div>
 
-                    <form id="productForm" action="${pageContext.request.contextPath}/admin/product-save"
-                          method="post" enctype="multipart/form-data" class="admin-form-layout">
-
-                        <div class="col-sidebar">
-                            <div class="admin-card">
-                                <h3>Ảnh đại diện (Chính)</h3>
-                                <div class="form-group">
-                                    <label>Cách 1: Upload từ máy</label>
-                                    <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewMainFile(this)">
-                                </div>
-                                <div class="form-group">
-                                    <label>Cách 2: Hoặc nhập Link URL</label>
-                                    <input type="text" class="form-control" name="image" id="imgInput"
-                                           value="${product.image}" onchange="previewImage()" placeholder="https://example.com/image.jpg">
-                                </div>
-
-                                <div class="image-upload-area">
-                                    <div id="previewContainer" style="${not empty product.image ? '' : 'display:none'}">
-                                        <img src="${product.image}" id="imgPreview">
-                                    </div>
-                                </div>
+                    <div class="col-sidebar">
+                        <div class="admin-card">
+                            <h3>Ảnh đại diện (Chính)</h3>
+                            <div class="form-group">
+                                <label>Cách 1: Upload từ máy</label>
+                                <input type="file" name="imageFile" class="form-control" accept="image/*" onchange="previewMainFile(this)">
+                            </div>
+                            <div class="form-group">
+                                <label>Cách 2: Hoặc nhập Link URL</label>
+                                <input type="text" class="form-control" name="image" id="imgInput"
+                                       value="${product.image}" onchange="previewImage()" placeholder="https://example.com/image.jpg">
                             </div>
 
-                            <div class="admin-card">
-                                <h3>Thư viện ảnh (Product Images)</h3>
-
-                                <div class="existing-images" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
-                                    <c:forEach items="${extraImages}" var="img">
-                                    </c:forEach>
-                                    <div class="existing-images">
-                                        <c:forEach items="${extraImages}" var="img">
-                                            <div class="image-item" id="img-container-${img.image_id}">
-                                                <img src="${img.image_url.startsWith('http') ? img.image_url : pageContext.request.contextPath.concat('/').concat(img.image_url)}">
-                                                <button type="button" class="btn-delete-img" onclick="deleteExtraImage(${img.image_id})">
-                                                    <i class="fa-solid fa-xmark"></i>
-                                                </button>
-                                            </div>
-                                        </c:forEach>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Upload nhiều ảnh (Giữ Ctrl để chọn)</label>
-                                    <input type="file" name="extraImageFiles" class="form-control" multiple accept="image/*">
-                                </div>
-
-                                <div class="form-group">
-                                    <label>Hoặc thêm Link ảnh thủ công</label>
-                                    <div id="urlContainer">
-                                    </div>
-                                    <button type="button" onclick="addUrlInput()" class="btn-secondary" style="margin-top: 5px; font-size: 0.8rem;">
-                                        <i class="fa-solid fa-plus"></i> Thêm ô nhập Link
-                                    </button>
+                            <div class="image-upload-area">
+                                <div id="previewContainer" style="${not empty product.image ? '' : 'display:none'}">
+                                    <img src="${product.image.startsWith('http') ? product.image : pageContext.request.contextPath.concat('/').concat(product.image)}" id="imgPreview">
                                 </div>
                             </div>
                         </div>
-                    </form>
+
+                        <div class="admin-card">
+                            <h3>Thư viện ảnh (Product Images)</h3>
+
+                            <div class="existing-images" style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
+                                <div class="existing-images">
+                                    <c:forEach items="${extraImages}" var="img">
+                                        <div class="image-item" id="img-container-${img.image_id}">
+                                            <img src="${img.image_url.startsWith('http') ? img.image_url : pageContext.request.contextPath.concat('/').concat(img.image_url)}">
+                                            <button type="button" class="btn-delete-img" onclick="deleteExtraImage(${img.image_id})">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    </c:forEach>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Upload nhiều ảnh (Giữ Ctrl để chọn)</label>
+                                <input type="file" name="extraImageFiles" class="form-control" multiple accept="image/*">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Hoặc thêm Link ảnh thủ công</label>
+                                <div id="urlContainer">
+                                </div>
+                                <button type="button" onclick="addUrlInput()" class="btn-secondary" style="margin-top: 5px; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-plus"></i> Thêm ô nhập Link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
@@ -351,11 +345,12 @@
         const img = document.getElementById('imgPreview');
 
         if(url) {
-            img.src = url;
-            placeholder.style.display = 'none';
+            // Nếu là URL tương đối (không bắt đầu bằng http), thêm contextPath
+            img.src = url.startsWith('http') ? url : '${pageContext.request.contextPath}/' + url;
+            if(placeholder) placeholder.style.display = 'none';
             container.style.display = 'block';
         } else {
-            placeholder.style.display = 'flex'; // hoặc block tùy css của bạn
+            if(placeholder) placeholder.style.display = 'flex';
             container.style.display = 'none';
         }
     }

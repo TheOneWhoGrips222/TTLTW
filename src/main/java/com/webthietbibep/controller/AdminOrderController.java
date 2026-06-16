@@ -142,9 +142,6 @@ public class AdminOrderController extends HttpServlet {
         }
         String oldStatus = currentOrder.getStatus();
 
-        // 0) Nếu đơn đang được XÁC NHẬN GIAO HÀNG lần đầu (CHO_XAC_NHAN -> VAN_CHUYEN),
-        //    trừ tồn kho tương ứng số lượng sản phẩm trong đơn TRƯỚC khi đổi trạng thái.
-        //    Nếu không đủ hàng, dừng lại và báo lỗi, không đổi trạng thái.
         if ("CHO_XAC_NHAN".equals(oldStatus) && "VAN_CHUYEN".equals(newStatus)) {
             try {
                 boolean ok = restockDAO.deductStockForOrder(orderId);
@@ -165,12 +162,10 @@ public class AdminOrderController extends HttpServlet {
             }
         }
 
-        // 1) Cập nhật trạng thái - không để lỗi GHN làm hỏng việc đổi trạng thái
         int result = orderDAO.updateStatus(orderId, newStatus);
 
         String ghnWarning = null;
 
-        // 2) Tạo đơn GHN (nếu cần) - lỗi ở bước này KHÔNG được rollback trạng thái đã đổi
         if ("VAN_CHUYEN".equals(newStatus)) {
             try {
                 Order order = orderDAO.getOrderById(orderId);

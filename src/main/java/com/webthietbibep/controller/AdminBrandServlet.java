@@ -53,15 +53,12 @@ public class AdminBrandServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         try {
-            // Dùng getParameter() cho text fields — hoạt động đúng với @MultipartConfig
-            // KHÔNG dùng getPart() cho text fields để tránh ảnh hưởng đến file Part
             String action       = request.getParameter("action");
             String brandName    = request.getParameter("brand_name");
             String logoUrl      = request.getParameter("logo_url");
             String existingLogo = request.getParameter("existing_logo");
             String brandIdStr   = request.getParameter("brand_id");
 
-            // Chỉ dùng getPart() cho file upload
             String logo = saveFileLogo(request, logoUrl);
 
             if ("insert".equals(action)) {
@@ -102,7 +99,6 @@ public class AdminBrandServlet extends HttpServlet {
 
             if (ct.contains("jpeg") || ct.contains("png") || ct.contains("svg")) {
 
-                // Lấy đường dẫn thư mục webapp đang chạy
                 Path uploadDir = getUploadDir();
                 if (uploadDir == null) {
                     System.err.println("[BrandUpload] ERROR: Cannot resolve upload directory");
@@ -122,7 +118,6 @@ public class AdminBrandServlet extends HttpServlet {
             }
         }
 
-        // Không có file → dùng URL nếu hợp lệ
         if (logoUrl != null && !logoUrl.isBlank()
                 && (logoUrl.startsWith("http://") || logoUrl.startsWith("https://"))) {
             return logoUrl.trim();
@@ -131,14 +126,8 @@ public class AdminBrandServlet extends HttpServlet {
         return null;
     }
 
-    /**
-     * Lấy thư mục lưu ảnh upload.
-     * Dùng getRealPath của một resource đã biết tồn tại (/assets/css)
-     * để tránh trường hợp getRealPath("/") trả về null hoặc sai.
-     */
     private Path getUploadDir() {
         try {
-            // Cách 1: dùng getRealPath của folder css đã chắc chắn tồn tại
             String cssPath = getServletContext().getRealPath("/assets/css");
             if (cssPath != null) {
                 // cssPath = .../assets/css  →  đi lên 2 cấp = webapp root
