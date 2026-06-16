@@ -97,6 +97,7 @@
                 <i class="fa-solid fa-chevron-down toggle-icon"></i>
             </a>
             <ul class="submenu">
+                <li><a href="<%=request.getContextPath()%>/admin/import"><i class="fa-solid fa-dolly"></i> Nhập hàng</a></li>
                 <li><a href="<%=request.getContextPath()%>/admin/restock"><i class="fa-solid fa-boxes-stacked"></i> Đề xuất nhập hàng</a></li>
                 <li><a href="<%=request.getContextPath()%>/admin/import-history"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử nhập hàng</a></li>
             </ul>

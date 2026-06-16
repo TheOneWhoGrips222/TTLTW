@@ -33,6 +33,8 @@ public class AdminAuthorizationFilter implements Filter {
             "/admin/categories",
             "/admin/suppliers",
             "/admin/restock",
+            "/admin/import",
+            "/admin/import-history",
             "/admin/ecosystems",
             "/admin/combo-list",
             "/admin/combo-save",

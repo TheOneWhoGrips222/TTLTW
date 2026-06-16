@@ -50,7 +50,9 @@ public class ProductSearchApiServlet extends HttpServlet {
 
                 json.append("\"product_name\":\"").append(safeName).append("\",");
                 json.append("\"image\":\"").append(safeImage).append("\",");
-                json.append("\"price_format\":\"").append(priceFmt).append(" đ\"");
+                json.append("\"price_format\":\"").append(priceFmt).append(" đ\",");
+                json.append("\"price\":").append(p.getPrice()).append(",");
+                json.append("\"stock_quantity\":").append(p.getStock_quantity());
                 json.append("}");
 
                 if (i < products.size() - 1) {
