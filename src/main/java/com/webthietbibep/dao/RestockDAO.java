@@ -258,6 +258,52 @@ public class RestockDAO extends BaseDao {
         );
     }
 
+    /**
+     * Trừ tồn kho cho tất cả sản phẩm trong đơn hàng (gọi khi đơn được admin xác nhận giao hàng).
+     * Đồng thời cộng vào sold_quantity để thống kê. Dùng transaction để đảm bảo toàn vẹn dữ liệu,
+     * và chặn tồn kho âm bằng điều kiện stock_quantity >= quantity trong WHERE.
+     *
+     * @return true nếu tất cả sản phẩm đều đủ hàng và đã trừ thành công; false nếu có sản phẩm
+     *         không đủ tồn kho (khi đó không sản phẩm nào trong đơn bị trừ - rollback toàn bộ).
+     */
+    public boolean deductStockForOrder(int orderId) {
+        return get().inTransaction(h -> {
+
+            List<Map<String, Object>> items = h.createQuery("""
+                        SELECT product_id, quantity
+                        FROM order_items
+                        WHERE order_id = :orderId
+                    """)
+                    .bind("orderId", orderId)
+                    .mapToMap()
+                    .list();
+
+            for (Map<String, Object> item : items) {
+                int productId = toInt(item.get("product_id"));
+                int quantity = toInt(item.get("quantity"));
+
+                int updated = h.createUpdate("""
+                            UPDATE products
+                            SET stock_quantity = stock_quantity - :qty,
+                                sold_quantity   = sold_quantity + :qty
+                            WHERE product_id = :pid
+                              AND stock_quantity >= :qty
+                        """)
+                        .bind("qty", quantity)
+                        .bind("pid", productId)
+                        .execute();
+
+                if (updated == 0) {
+                    // Không đủ tồn kho cho sản phẩm này -> hủy toàn bộ transaction
+                    throw new IllegalStateException(
+                            "Khong du ton kho cho product_id=" + productId + " (can " + quantity + ")");
+                }
+            }
+
+            return true;
+        });
+    }
+
     private List<ImportHistory> mapImportRows(List<Map<String, Object>> rows) {
         List<ImportHistory> list = new ArrayList<>();
         for (Map<String, Object> row : rows) {

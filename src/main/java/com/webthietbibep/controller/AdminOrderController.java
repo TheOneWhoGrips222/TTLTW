@@ -125,36 +125,98 @@ public class AdminOrderController extends HttpServlet {
     }
 
     private void updateOrderStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        int orderId;
+        String newStatus;
         try {
-            int orderId = Integer.parseInt(request.getParameter("order_id"));
-            String newStatus = request.getParameter("status");
+            orderId = Integer.parseInt(request.getParameter("order_id"));
+            newStatus = request.getParameter("status");
+        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/admin/order?error=invalid_id");
+            return;
+        }
 
-            if ("VAN_CHUYEN".equals(newStatus)) {
+        Order currentOrder = orderDAO.getOrderById(orderId);
+        if (currentOrder == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/order?error=not_found");
+            return;
+        }
+        String oldStatus = currentOrder.getStatus();
+
+        // 0) Nếu đơn đang được XÁC NHẬN GIAO HÀNG lần đầu (CHO_XAC_NHAN -> VAN_CHUYEN),
+        //    trừ tồn kho tương ứng số lượng sản phẩm trong đơn TRƯỚC khi đổi trạng thái.
+        //    Nếu không đủ hàng, dừng lại và báo lỗi, không đổi trạng thái.
+        if ("CHO_XAC_NHAN".equals(oldStatus) && "VAN_CHUYEN".equals(newStatus)) {
+            try {
+                boolean ok = restockDAO.deductStockForOrder(orderId);
+                if (!ok) {
+                    String msg = URLEncoder.encode("Khong du hang trong kho de xac nhan don nay!", StandardCharsets.UTF_8);
+                    response.sendRedirect(request.getContextPath() + "/admin/order?action=detail&id=" + orderId + "&msg=" + msg);
+                    return;
+                }
+            } catch (IllegalStateException e) {
+                String msg = URLEncoder.encode("Khong du ton kho de xac nhan don nay: " + e.getMessage(), StandardCharsets.UTF_8);
+                response.sendRedirect(request.getContextPath() + "/admin/order?action=detail&id=" + orderId + "&msg=" + msg);
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+                String msg = URLEncoder.encode("Loi khi tru ton kho: " + e.getMessage(), StandardCharsets.UTF_8);
+                response.sendRedirect(request.getContextPath() + "/admin/order?action=detail&id=" + orderId + "&msg=" + msg);
+                return;
+            }
+        }
+
+        // 1) Cập nhật trạng thái - không để lỗi GHN làm hỏng việc đổi trạng thái
+        int result = orderDAO.updateStatus(orderId, newStatus);
+
+        String ghnWarning = null;
+
+        // 2) Tạo đơn GHN (nếu cần) - lỗi ở bước này KHÔNG được rollback trạng thái đã đổi
+        if ("VAN_CHUYEN".equals(newStatus)) {
+            try {
                 Order order = orderDAO.getOrderById(orderId);
 
-                if (order.getGhn_order_code() == null || order.getGhn_order_code().isEmpty()) {
+                if (order == null) {
+                    ghnWarning = "Khong tim thay don hang.";
+                } else if (order.getGhn_order_code() == null || order.getGhn_order_code().isEmpty()) {
+
                     UserAddress address = addressDAO.findById(order.getAddress_id());
-                    String ghnCode = ghnService.createOrder(order, address);
-                    orderDAO.saveGhnCode(orderId, ghnCode);
-                    System.out.println("Created GHN order: " + ghnCode);
+
+                    if (address == null) {
+                        ghnWarning = "Don hang chua co dia chi giao hang hop le.";
+                    } else if (address.getDistrict_id() <= 0 || address.getWard_code() == null || address.getWard_code().isEmpty()) {
+                        ghnWarning = "Dia chi giao hang thieu thong tin Quan/Phuong (district_id hoac ward_code).";
+                    } else {
+                        String ghnCode = ghnService.createOrder(order, address);
+                        orderDAO.saveGhnCode(orderId, ghnCode);
+                        System.out.println("Created GHN order: " + ghnCode);
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                ghnWarning = "Doi trang thai thanh cong nhung tao don GHN loi: " + e.getMessage();
             }
-
-            int result = orderDAO.updateStatus(orderId, newStatus);
-
-            if ("HOAN_THANH".equals(newStatus)) {
-                restockDAO.recordSoldItems(orderId);
-            }
-
-            String message = (result > 0) ? "Cập nhật thành công!" : "Cập nhật thất bại!";
-            String encodedMsg = URLEncoder.encode(message, StandardCharsets.UTF_8);
-
-            response.sendRedirect(request.getContextPath() + "/admin/order?action=detail&id=" + orderId + "&msg=" + encodedMsg);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/admin/order?error=system_error");
         }
+
+        if ("HOAN_THANH".equals(newStatus)) {
+            try {
+                restockDAO.recordSoldItems(orderId);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        String message;
+        if (result <= 0) {
+            message = "Cập nhật thất bại!";
+        } else if (ghnWarning != null) {
+            message = "Cập nhật trạng thái thành công, nhưng đồng bộ GHN lỗi: " + ghnWarning;
+        } else {
+            message = "Cập nhật thành công!";
+        }
+
+        String encodedMsg = URLEncoder.encode(message, StandardCharsets.UTF_8);
+
+        response.sendRedirect(request.getContextPath() + "/admin/order?action=detail&id=" + orderId + "&msg=" + encodedMsg);
     }
 
     private void syncGhnOrders() {
