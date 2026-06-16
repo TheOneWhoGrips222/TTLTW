@@ -53,10 +53,21 @@ public class AdminProductListServlet extends HttpServlet {
 
         int offset = (page - 1) * recordsPerPage;
 
+        String search = request.getParameter("search");
 
-        List<Product> list = productDAO.findAll(recordsPerPage, offset);
+        List<Product> list;
+        int totalRecords;
 
-        int totalRecords = productDAO.countAll();
+        if (search != null && !search.trim().isEmpty()) {
+            search = search.trim();
+            list = productDAO.searchByNamePaged(search, recordsPerPage, offset);
+            totalRecords = productDAO.countByName(search);
+            request.setAttribute("searchKeyword", search);
+        } else {
+            list = productDAO.findAll(recordsPerPage, offset);
+            totalRecords = productDAO.countAll();
+        }
+
         int totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
         request.setAttribute("listProducts", list);

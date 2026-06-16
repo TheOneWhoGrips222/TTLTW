@@ -20,6 +20,15 @@
             <div class="header-left">
                 <h2>Danh sách Sản phẩm</h2>
             </div>
+            <form method="get" action="${pageContext.request.contextPath}/admin/products" class="admin-search-box">
+                <input type="text" name="search" placeholder="Tìm theo tên sản phẩm..." value="${searchKeyword}" />
+                <button type="submit" title="Tìm kiếm"><i class="fa-solid fa-magnifying-glass"></i></button>
+                <c:if test="${not empty searchKeyword}">
+                    <a href="${pageContext.request.contextPath}/admin/products" class="btn-clear-search" title="Xóa tìm kiếm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </a>
+                </c:if>
+            </form>
             <div class="admin-header-actions">
                 <a href="${pageContext.request.contextPath}/admin/product-save?action=new" class="btn-primary">
                     <i class="fa-solid fa-plus"></i> Thêm Sản phẩm
@@ -99,7 +108,7 @@
                 <div class="pagination">
 
                     <c:if test="${currentPage > 1}">
-                        <a href="?page=${currentPage - 1}" class="page-link">&laquo;</a>
+                        <a href="?page=${currentPage - 1}${not empty searchKeyword ? '&search='.concat(searchKeyword) : ''}" class="page-link">&laquo;</a>
                     </c:if>
 
                     <c:forEach begin="1" end="${totalPages}" var="i">
@@ -108,21 +117,62 @@
                                 <span class="page-link active">${i}</span>
                             </c:when>
                             <c:otherwise>
-                                <a href="?page=${i}" class="page-link">${i}</a>
+                                <a href="?page=${i}${not empty searchKeyword ? '&search='.concat(searchKeyword) : ''}" class="page-link">${i}</a>
                             </c:otherwise>
                         </c:choose>
                     </c:forEach>
 
                     <c:if test="${currentPage < totalPages}">
-                        <a href="?page=${currentPage + 1}" class="page-link">&raquo;</a>
+                        <a href="?page=${currentPage + 1}${not empty searchKeyword ? '&search='.concat(searchKeyword) : ''}" class="page-link">&raquo;</a>
                     </c:if>
                 </div>
             </c:if>
         </div>
-            </div>
+        </div>
     </main>
 </div>
 <style>
+    .admin-search-box {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        max-width: 360px;
+        margin: 0 20px;
+    }
+
+    .admin-search-box input[type="text"] {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    .admin-search-box input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary-color, #007bff);
+    }
+
+    .admin-search-box button {
+        border: none;
+        background: var(--primary-color, #007bff);
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .admin-search-box .btn-clear-search {
+        color: #999;
+        padding: 8px;
+        text-decoration: none;
+    }
+
+    .admin-search-box .btn-clear-search:hover {
+        color: var(--red, #dc2626);
+    }
+
     .pagination-container {
         display: flex;
         justify-content: center;
@@ -151,7 +201,7 @@
     }
 
     .page-link.active {
-        background-color: var(--primary-color, #007bff); /* Hoặc màu chủ đạo của bạn */
+        background-color: var(--primary-color, #007bff);
         color: white;
         border: 1px solid var(--primary-color, #007bff);
     }

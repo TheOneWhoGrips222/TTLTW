@@ -247,4 +247,23 @@ public class ProductDAO extends BaseDao {
                         .list()
         );
     }
+
+    public int countByName(String keyword) {
+        return get().withHandle(h ->
+                h.createQuery("SELECT COUNT(*) FROM products WHERE product_name LIKE :keyword")
+                        .bind("keyword", "%" + keyword + "%")
+                        .mapTo(Integer.class).one()
+        );
+    }
+
+    public List<Product> searchByNamePaged(String keyword, int limit, int offset) {
+        return get().withHandle(h ->
+                h.createQuery("SELECT * FROM products WHERE product_name LIKE :keyword ORDER BY product_id DESC LIMIT :limit OFFSET :offset")
+                        .bind("keyword", "%" + keyword + "%")
+                        .bind("limit", limit)
+                        .bind("offset", offset)
+                        .mapToBean(Product.class)
+                        .list()
+        );
+    }
 }
