@@ -11,7 +11,6 @@ public class CartItemCombo implements Serializable {
     private int quantity;
     private double price;
     private long time = System.currentTimeMillis();
-    private boolean checkBox = true;
     public CartItemCombo() {
     }
 
@@ -41,13 +40,6 @@ public class CartItemCombo implements Serializable {
         return price;
     }
 
-    public boolean isCheckBox() {
-        return checkBox;
-    }
-
-    public void setCheckBox(boolean checkBox) {
-        this.checkBox = checkBox;
-    }
 
     public long getTime() {
         return time;
@@ -66,5 +58,12 @@ public class CartItemCombo implements Serializable {
     }
     public void upQuantity(int q){
         this.quantity += q ;
+    }
+
+    public void setCombo_id(int combo_id) {
+        if (this.combo == null) {
+            this.combo = new com.webthietbibep.model.Combo();
+        }
+        this.combo.setId(combo_id);
     }
 }
