@@ -36,7 +36,9 @@ public class ChartDataApiServlet extends HttpServlet {
                     .append("\"date\":\"").append(escape(d.getDate())).append("\",")
                     .append("\"value\":").append(d.getValue()).append(",")
                     .append("\"orderCount\":").append(d.getOrderCount()).append(",")
-                    .append("\"productsSold\":").append(d.getProductsSold())
+                    .append("\"productsSold\":").append(d.getProductsSold()).append(",")
+                    .append("\"periodStart\":\"").append(escape(d.getPeriodStart())).append("\",")
+                    .append("\"periodEnd\":\"").append(escape(d.getPeriodEnd())).append("\"")
                     .append("}");
         }
         json.append("]");

@@ -17,6 +17,7 @@ public class AdminAuthorizationFilter implements Filter {
     private static final Set<String> OWNER_ONLY = new HashSet<>(Arrays.asList(
             "/admin/dashboard",
             "/admin/chart-data",
+            "/admin/period-detail",
             "/admin/users",
             "/admin/staff",
             "/admin/banners",

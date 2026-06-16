@@ -43,6 +43,25 @@
         .product-img{width:46px;height:46px;object-fit:cover;border-radius:8px}
         .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
         .section-header h3{margin:0;font-size:1.05rem}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:none;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .detail-modal-box{background:#fff;border-radius:16px;padding:26px 28px;width:700px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.18)}
+        .detail-modal-box h3{margin:0;font-size:1.1rem;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px}
+        .detail-modal-box .detail-sub{margin:4px 0 18px;font-size:.85rem;color:#6b7280}
+        .detail-close{padding:6px 10px;border-radius:8px;border:1px solid #e5e7eb;background:#fff;cursor:pointer;color:#6b7280}
+        .detail-close:hover{background:#f3f4f6}
+        .detail-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+        .detail-summary .box{background:#f9fafb;border-radius:10px;padding:12px 14px;border:1px solid #f0f0f0}
+        .detail-summary .box p{margin:0;font-size:.75rem;color:#6b7280}
+        .detail-summary .box h4{margin:4px 0 0;font-size:1.05rem;color:#111827}
+        .detail-modal-box h5{margin:18px 0 10px;font-size:.9rem;color:#374151;display:flex;align-items:center;gap:6px}
+        .detail-table{width:100%;border-collapse:collapse;font-size:.85rem}
+        .detail-table th{text-align:left;color:#6b7280;font-weight:600;padding:8px 6px;border-bottom:1px solid #e5e7eb}
+        .detail-table td{padding:8px 6px;border-bottom:1px solid #f3f4f6;color:#111827;vertical-align:middle}
+        .detail-table img{width:34px;height:34px;object-fit:cover;border-radius:6px}
+        .detail-empty{text-align:center;color:#9ca3af;padding:16px;font-size:.85rem}
+        #pdLoading{display:none;text-align:center;padding:20px;color:#6b7280;font-size:.85rem}
+        #pdLoading.show{display:block}
     </style>
 </head>
 <body>
@@ -142,9 +161,42 @@
     </main>
 </div>
 
+<div class="modal-overlay" id="periodDetailModal">
+    <div class="detail-modal-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+            <h3 id="pdTitle"><i class="fa-solid fa-circle-info" style="color:#4f46e5;"></i> Chi tiết</h3>
+            <button class="detail-close" onclick="closePeriodDetail()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <p class="detail-sub" id="pdSub"></p>
+
+        <div class="detail-summary">
+            <div class="box"><p>Doanh thu</p><h4 id="pdRevenue">-</h4></div>
+            <div class="box"><p>Số đơn</p><h4 id="pdOrderCount">-</h4></div>
+            <div class="box"><p>SP bán được</p><h4 id="pdProductsSold">-</h4></div>
+        </div>
+
+        <h5><i class="fa-solid fa-box" style="color:#4f46e5;"></i> Sản phẩm đã bán trong kỳ</h5>
+        <table class="detail-table">
+            <thead><tr><th width="8%"></th><th>Tên sản phẩm</th><th width="16%">Số lượng</th><th width="24%">Doanh thu</th></tr></thead>
+            <tbody id="pdProductBody"></tbody>
+        </table>
+
+        <h5><i class="fa-solid fa-receipt" style="color:#4f46e5;"></i> Đơn hàng trong kỳ</h5>
+        <table class="detail-table">
+            <thead><tr><th width="10%">Mã đơn</th><th>Khách hàng</th><th width="22%">Thời gian</th><th width="20%">Thanh toán</th><th width="18%">Tổng tiền</th></tr></thead>
+            <tbody id="pdOrderBody"></tbody>
+        </table>
+
+        <div id="pdLoading"><i class="fa-solid fa-spinner fa-spin"></i> Đang tải...</div>
+    </div>
+</div>
+
+
 <script>
     const CTX = document.getElementById('revenueChart').getContext('2d');
     const API = '${pageContext.request.contextPath}/admin/chart-data';
+    const API_PERIOD_DETAIL = '${pageContext.request.contextPath}/admin/period-detail';
+    const CTX_PATH = '${pageContext.request.contextPath}';
     let chart   = null;
     let curMode = 'day';
     let chartData = [];
@@ -179,6 +231,12 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: { mode: 'index', intersect: false },
+                onHover: (evt, elements) => {
+                    evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+                },
+                onClick: (evt, elements) => {
+                    if (elements.length) openPeriodDetail(elements[0].index);
+                },
                 plugins: {
                     legend: { display: false },
                     tooltip: {
@@ -253,6 +311,89 @@
     function exportTopCSV()   { exportCSV(TOP_HEADERS, topRows(), 'top-san-pham-ban-chay'); }
     function exportTopExcel() { exportExcel(TOP_HEADERS, topRows(), 'top-san-pham-ban-chay', 'Top sản phẩm'); }
     function exportTopPDF()   { exportPDF(TOP_HEADERS, topRows(), 'top-san-pham-ban-chay', 'Top 5 sản phẩm bán chạy'); }
+
+    function fmtDateVN(iso) {
+        if (!iso) return '';
+        const [y, m, d] = iso.split('-');
+        return d + '/' + m + '/' + y;
+    }
+
+    function escapeHtml(s) {
+        if (s === null || s === undefined) return '';
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function productImgSrc(img) {
+        if (!img) return '';
+        return (img.startsWith('http://') || img.startsWith('https://')) ? img : (CTX_PATH + '/' + img);
+    }
+
+    function openPeriodDetail(index) {
+        const d = chartData[index];
+        if (!d || !d.periodStart || !d.periodEnd) return;
+
+        document.getElementById('pdTitle').innerHTML =
+            '<i class="fa-solid fa-circle-info" style="color:#4f46e5;"></i> Chi tiết kỳ: ' + escapeHtml(d.date);
+        document.getElementById('pdSub').textContent = (d.periodStart === d.periodEnd)
+            ? 'Ngày ' + fmtDateVN(d.periodStart)
+            : 'Từ ' + fmtDateVN(d.periodStart) + ' đến ' + fmtDateVN(d.periodEnd);
+        document.getElementById('pdRevenue').textContent = fmtMoney(d.value);
+        document.getElementById('pdOrderCount').textContent = d.orderCount;
+        document.getElementById('pdProductsSold').textContent = d.productsSold;
+
+        document.getElementById('pdProductBody').innerHTML = '';
+        document.getElementById('pdOrderBody').innerHTML = '';
+        document.getElementById('pdLoading').classList.add('show');
+        document.getElementById('periodDetailModal').classList.add('open');
+
+        fetch(API_PERIOD_DETAIL + '?from=' + encodeURIComponent(d.periodStart) + '&to=' + encodeURIComponent(d.periodEnd))
+            .then(r => r.json())
+            .then(renderPeriodDetail)
+            .catch(e => {
+                console.error(e);
+                document.getElementById('pdProductBody').innerHTML = '<tr><td colspan="4" class="detail-empty">Không tải được dữ liệu.</td></tr>';
+                document.getElementById('pdOrderBody').innerHTML = '';
+            })
+            .finally(() => document.getElementById('pdLoading').classList.remove('show'));
+    }
+
+    function renderPeriodDetail(data) {
+        const pBody = document.getElementById('pdProductBody');
+        if (!data.products || !data.products.length) {
+            pBody.innerHTML = '<tr><td colspan="4" class="detail-empty">Không có sản phẩm nào được bán trong kỳ này.</td></tr>';
+        } else {
+            pBody.innerHTML = data.products.map(p =>
+                '<tr>' +
+                '<td><img src="' + productImgSrc(p.productImage) + '" onerror="this.style.visibility=\'hidden\'"></td>' +
+                '<td>' + escapeHtml(p.productName) + '</td>' +
+                '<td><strong>' + p.totalSold + '</strong></td>' +
+                '<td>' + fmtMoney(p.totalRevenue) + '</td>' +
+                '</tr>'
+            ).join('');
+        }
+
+        const oBody = document.getElementById('pdOrderBody');
+        if (!data.orders || !data.orders.length) {
+            oBody.innerHTML = '<tr><td colspan="5" class="detail-empty">Không có đơn hàng nào trong kỳ này.</td></tr>';
+        } else {
+            oBody.innerHTML = data.orders.map(o =>
+                '<tr>' +
+                '<td>#' + o.orderId + '</td>' +
+                '<td>' + escapeHtml(o.customerName) + '</td>' +
+                '<td>' + escapeHtml(o.createdAt) + '</td>' +
+                '<td>' + escapeHtml(o.paymentMethod) + (o.paymentStatus ? ' · ' + escapeHtml(o.paymentStatus) : '') + '</td>' +
+                '<td>' + fmtMoney(o.totalAmount) + '</td>' +
+                '</tr>'
+            ).join('');
+        }
+    }
+
+    function closePeriodDetail() {
+        document.getElementById('periodDetailModal').classList.remove('open');
+    }
+    document.getElementById('periodDetailModal').addEventListener('click', function(e) {
+        if (e.target === this) closePeriodDetail();
+    });
 
     (function() {
         const today = new Date().toISOString().slice(0,10);

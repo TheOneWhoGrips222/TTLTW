@@ -5,6 +5,8 @@ public class ChartData {
     private double value;
     private int    orderCount;
     private int    productsSold;
+    private String periodStart;
+    private String periodEnd;
 
     public ChartData() {}
 
@@ -24,4 +26,10 @@ public class ChartData {
 
     public int  getProductsSold()      { return productsSold; }
     public void setProductsSold(int p) { this.productsSold = p; }
+
+    public String getPeriodStart()         { return periodStart; }
+    public void   setPeriodStart(String s) { this.periodStart = s; }
+
+    public String getPeriodEnd()           { return periodEnd; }
+    public void   setPeriodEnd(String e)   { this.periodEnd = e; }
 }

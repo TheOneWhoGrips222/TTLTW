@@ -1,6 +1,7 @@
 package com.webthietbibep.dao;
 
 import com.webthietbibep.model.ChartData;
+import com.webthietbibep.model.PeriodOrder;
 import com.webthietbibep.model.TopProduct;
 
 import java.util.ArrayList;
@@ -79,7 +80,9 @@ public class StatsDAO extends BaseDao {
                 "    " + labelExpr + "              AS label, " +
                 "    COALESCE(SUM(o.total_amount),0) AS revenue, " +
                 "    COUNT(DISTINCT o.order_id)       AS order_count, " +
-                "    COALESCE(SUM(oi.quantity),0)     AS products_sold " +
+                "    COALESCE(SUM(oi.quantity),0)     AS products_sold, " +
+                "    MIN(DATE(o.created_at))          AS period_start, " +
+                "    MAX(DATE(o.created_at))          AS period_end " +
                 "FROM orders o " +
                 "LEFT JOIN order_items oi ON o.order_id = oi.order_id " +
                 "WHERE o.status = 'HOAN_THANH' AND " + dateFilter + " " +
@@ -104,9 +107,55 @@ public class StatsDAO extends BaseDao {
             cd.setValue(toDouble(row.get("revenue")));
             cd.setOrderCount(toInt(row.get("order_count")));
             cd.setProductsSold(toInt(row.get("products_sold")));
+            cd.setPeriodStart(row.get("period_start") == null ? null : row.get("period_start").toString());
+            cd.setPeriodEnd(row.get("period_end") == null ? null : row.get("period_end").toString());
             result.add(cd);
         }
         return result;
+    }
+
+    public List<TopProduct> getProductsByDateRange(String fromDate, String toDate) {
+        String sql = """
+            SELECT
+                p.product_name AS productName,
+                p.image        AS productImage,
+                SUM(oi.quantity) AS totalSold,
+                SUM(oi.quantity * oi.price_at_purchase) AS totalRevenue
+            FROM order_items oi
+            JOIN orders o   ON oi.order_id  = o.order_id
+            JOIN products p ON oi.product_id = p.product_id
+            WHERE o.status = 'HOAN_THANH'
+              AND DATE(o.created_at) BETWEEN :from AND :to
+            GROUP BY p.product_id, p.product_name, p.image
+            ORDER BY totalSold DESC
+        """;
+        return get().withHandle(h -> h.createQuery(sql)
+                .bind("from", fromDate)
+                .bind("to", toDate)
+                .mapToBean(TopProduct.class)
+                .list());
+    }
+
+    public List<PeriodOrder> getOrdersByDateRange(String fromDate, String toDate) {
+        String sql = """
+            SELECT
+                o.order_id        AS orderId,
+                u.full_name       AS customerName,
+                o.created_at      AS createdAt,
+                o.total_amount    AS totalAmount,
+                o.payment_method  AS paymentMethod,
+                o.payment_status  AS paymentStatus
+            FROM orders o
+            JOIN users u ON o.user_id = u.user_id
+            WHERE o.status = 'HOAN_THANH'
+              AND DATE(o.created_at) BETWEEN :from AND :to
+            ORDER BY o.created_at DESC
+        """;
+        return get().withHandle(h -> h.createQuery(sql)
+                .bind("from", fromDate)
+                .bind("to", toDate)
+                .mapToBean(PeriodOrder.class)
+                .list());
     }
 
     private double toDouble(Object o) {
