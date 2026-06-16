@@ -29,6 +29,18 @@
                     </a>
                 </c:if>
             </form>
+            <form method="get" action="${pageContext.request.contextPath}/admin/products" class="admin-sort-box">
+                <input type="hidden" name="search" value="${searchKeyword}" />
+                <select name="sortBy" onchange="this.form.submit()">
+                    <option value="" ${empty sortBy ? 'selected' : ''}>Sắp xếp theo</option>
+                    <option value="stock" ${sortBy=='stock' ? 'selected' : ''}>Tồn kho</option>
+                    <option value="price" ${sortBy=='price' ? 'selected' : ''}>Giá tiền</option>
+                </select>
+                <select name="sortDir" onchange="this.form.submit()">
+                    <option value="asc" ${sortDir=='asc' ? 'selected' : ''}>Tăng dần</option>
+                    <option value="desc" ${sortDir=='desc' || empty sortDir ? 'selected' : ''}>Giảm dần</option>
+                </select>
+            </form>
             <div class="admin-header-actions">
                 <a href="${pageContext.request.contextPath}/admin/product-save?action=new" class="btn-primary">
                     <i class="fa-solid fa-plus"></i> Thêm Sản phẩm
@@ -105,10 +117,15 @@
                 </table>
             </div> <div class="pagination-container">
             <c:if test="${totalPages > 1}">
+                <c:set var="extraParams" value="" />
+                <c:if test="${not empty searchKeyword}"><c:set var="extraParams" value="${extraParams}&search=${searchKeyword}" /></c:if>
+                <c:if test="${not empty sortBy}"><c:set var="extraParams" value="${extraParams}&sortBy=${sortBy}" /></c:if>
+                <c:if test="${not empty sortDir}"><c:set var="extraParams" value="${extraParams}&sortDir=${sortDir}" /></c:if>
+
                 <div class="pagination">
 
                     <c:if test="${currentPage > 1}">
-                        <a href="?page=${currentPage - 1}${not empty searchKeyword ? '&search='.concat(searchKeyword) : ''}" class="page-link">&laquo;</a>
+                        <a href="?page=${currentPage - 1}${extraParams}" class="page-link">&laquo;</a>
                     </c:if>
 
                     <c:forEach begin="1" end="${totalPages}" var="i">
@@ -117,13 +134,13 @@
                                 <span class="page-link active">${i}</span>
                             </c:when>
                             <c:otherwise>
-                                <a href="?page=${i}${not empty searchKeyword ? '&search='.concat(searchKeyword) : ''}" class="page-link">${i}</a>
+                                <a href="?page=${i}${extraParams}" class="page-link">${i}</a>
                             </c:otherwise>
                         </c:choose>
                     </c:forEach>
 
                     <c:if test="${currentPage < totalPages}">
-                        <a href="?page=${currentPage + 1}${not empty searchKeyword ? '&search='.concat(searchKeyword) : ''}" class="page-link">&raquo;</a>
+                        <a href="?page=${currentPage + 1}${extraParams}" class="page-link">&raquo;</a>
                     </c:if>
                 </div>
             </c:if>
@@ -171,6 +188,27 @@
 
     .admin-search-box .btn-clear-search:hover {
         color: var(--red, #dc2626);
+    }
+
+    .admin-sort-box {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-right: 16px;
+    }
+
+    .admin-sort-box select {
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        background: #fff;
+        cursor: pointer;
+    }
+
+    .admin-sort-box select:focus {
+        outline: none;
+        border-color: var(--primary-color, #007bff);
     }
 
     .pagination-container {

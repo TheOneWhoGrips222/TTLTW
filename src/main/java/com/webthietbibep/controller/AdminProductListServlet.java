@@ -54,17 +54,19 @@ public class AdminProductListServlet extends HttpServlet {
         int offset = (page - 1) * recordsPerPage;
 
         String search = request.getParameter("search");
+        String sortBy = request.getParameter("sortBy");
+        String sortDir = request.getParameter("sortDir");
 
         List<Product> list;
         int totalRecords;
 
         if (search != null && !search.trim().isEmpty()) {
             search = search.trim();
-            list = productDAO.searchByNamePaged(search, recordsPerPage, offset);
+            list = productDAO.searchByNamePaged(search, recordsPerPage, offset, sortBy, sortDir);
             totalRecords = productDAO.countByName(search);
             request.setAttribute("searchKeyword", search);
         } else {
-            list = productDAO.findAll(recordsPerPage, offset);
+            list = productDAO.findAll(recordsPerPage, offset, sortBy, sortDir);
             totalRecords = productDAO.countAll();
         }
 
@@ -73,6 +75,8 @@ public class AdminProductListServlet extends HttpServlet {
         request.setAttribute("listProducts", list);
         request.setAttribute("currentPage", page);
         request.setAttribute("totalPages", totalPages);
+        request.setAttribute("sortBy", sortBy);
+        request.setAttribute("sortDir", sortDir);
 
         request.getRequestDispatcher("/admin/admin_product_list.jsp").forward(request, response);
     }

@@ -220,8 +220,13 @@ public class ProductDAO extends BaseDao {
     }
 
     public List<Product> findAll(int limit, int offset) {
+        return findAll(limit, offset, null, null);
+    }
+
+    public List<Product> findAll(int limit, int offset, String sortBy, String sortDir) {
+        String orderClause = buildOrderClause(sortBy, sortDir);
         return get().withHandle(h ->
-                h.createQuery("SELECT * FROM products ORDER BY product_id DESC LIMIT :limit OFFSET :offset")
+                h.createQuery("SELECT * FROM products ORDER BY " + orderClause + " LIMIT :limit OFFSET :offset")
                         .bind("limit", limit)
                         .bind("offset", offset)
                         .mapToBean(Product.class)
@@ -257,13 +262,31 @@ public class ProductDAO extends BaseDao {
     }
 
     public List<Product> searchByNamePaged(String keyword, int limit, int offset) {
+        return searchByNamePaged(keyword, limit, offset, null, null);
+    }
+
+    public List<Product> searchByNamePaged(String keyword, int limit, int offset, String sortBy, String sortDir) {
+        String orderClause = buildOrderClause(sortBy, sortDir);
         return get().withHandle(h ->
-                h.createQuery("SELECT * FROM products WHERE product_name LIKE :keyword ORDER BY product_id DESC LIMIT :limit OFFSET :offset")
+                h.createQuery("SELECT * FROM products WHERE product_name LIKE :keyword ORDER BY " + orderClause + " LIMIT :limit OFFSET :offset")
                         .bind("keyword", "%" + keyword + "%")
                         .bind("limit", limit)
                         .bind("offset", offset)
                         .mapToBean(Product.class)
                         .list()
         );
+    }
+
+    private String buildOrderClause(String sortBy, String sortDir) {
+        String column;
+        if ("stock".equals(sortBy)) {
+            column = "stock_quantity";
+        } else if ("price".equals(sortBy)) {
+            column = "price";
+        } else {
+            return "product_id DESC";
+        }
+        String direction = "asc".equalsIgnoreCase(sortDir) ? "ASC" : "DESC";
+        return column + " " + direction;
     }
 }
