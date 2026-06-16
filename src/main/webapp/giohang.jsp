@@ -242,7 +242,7 @@
                     undoCell.style.borderRadius = '8px';
 
 
-                    undoCell.innerHTML = '<i class="fa fa-info-circle mr-2"></i> Sản phẩm sẽ bị xóa sau <span class="undo-countdown" style="font-weight: 800; color: #b45309;">60</span> giây. ' +
+                    undoCell.innerHTML = '<i class="fa fa-info-circle mr-2"></i> Xóa sau <span class="undo-countdown" style="font-weight: 800; color: #b45309;">10</span> giây. ' +
                         '<button class="undo-trigger-btn" style="' +
                         'margin-left: 20px; ' +
                         'background-color: #dbeafe; ' +
@@ -259,7 +259,7 @@
 
                     row.appendChild(undoCell);
 
-                    let timeLeft = 60;
+                    let timeLeft = 10;
                     let countdownDisplay = undoCell.querySelector('.undo-countdown');
                     let undoBtn = undoCell.querySelector('.undo-trigger-btn');
 
@@ -286,7 +286,7 @@
                         delete activeTimeouts[storageId];
                         delete activeIntervals[storageId];
                         executeFormAjax(btn);
-                    }, 60000);
+                    }, 10000);
 
                     undoBtn.addEventListener('click', function(ue) {
                         ue.preventDefault();

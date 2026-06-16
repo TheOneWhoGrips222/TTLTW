@@ -57,6 +57,11 @@ public class CartService {
         return cartDao.deleteAllCombos(cartId);
     }
 
+    public void deleteAll(int cartId){
+        cartDao.deleteAllCombos(cartId);
+        cartDao.deleteAllProducts(cartId);
+    }
+
     public List<CartItem> getCartItems(int cartId) {
         return cartDao.getCartItems(cartId);
     }
