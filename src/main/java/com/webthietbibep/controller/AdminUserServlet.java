@@ -1,7 +1,11 @@
 package com.webthietbibep.controller;
 
+import com.webthietbibep.dao.OrdersDAO;
+import com.webthietbibep.dao.UserAddressDAO;
 import com.webthietbibep.dao.UserDAO;
+import com.webthietbibep.model.Order;
 import com.webthietbibep.model.User;
+import com.webthietbibep.model.UserAddress;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +20,8 @@ import java.util.List;
 public class AdminUserServlet extends HttpServlet {
 
     private UserDAO userDAO = new UserDAO();
+    private UserAddressDAO userAddressDAO = new UserAddressDAO();
+    private OrdersDAO ordersDAO = new OrdersDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -31,6 +37,9 @@ public class AdminUserServlet extends HttpServlet {
                 break;
             case "delete":
                 deleteUser(request, response);
+                break;
+            case "view":
+                showUserDetail(request, response);
                 break;
             default:
                 listUsers(request, response);
@@ -80,6 +89,37 @@ public class AdminUserServlet extends HttpServlet {
         request.getRequestDispatcher("/admin/admin_user_form.jsp").forward(request, response);
     }
 
+        private void showUserDetail(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+
+        User user = userDAO.findById(id);
+        if (user == null) {
+            response.sendRedirect(request.getContextPath() + "/admin/users?message=notfound");
+            return;
+        }
+
+        List<UserAddress> addresses = userAddressDAO.findByUserId(id);
+        List<Order> orders = ordersDAO.getOrdersByUser(id);
+
+        // Tính tổng chi tiêu
+        double totalSpent = orders.stream()
+                .filter(o -> "HOAN_THANH".equals(o.getStatus()))
+                .mapToDouble(Order::getTotal_amount)
+                .sum();
+
+        long completedOrders = orders.stream()
+                .filter(o -> "HOAN_THANH".equals(o.getStatus()))
+                .count();
+
+        request.setAttribute("user", user);
+        request.setAttribute("addresses", addresses);
+        request.setAttribute("orders", orders);
+        request.setAttribute("totalSpent", totalSpent);
+        request.setAttribute("completedOrders", completedOrders);
+
+        request.getRequestDispatcher("/admin/admin_user_detail.jsp").forward(request, response);
+    }
+
     private void insertUser(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String username = request.getParameter("username");
         String fullName = request.getParameter("full_name");
@@ -90,7 +130,7 @@ public class AdminUserServlet extends HttpServlet {
 
         if (userDAO.existsUsername(username)) {
             request.setAttribute("error", "Tên đăng nhập đã tồn tại!");
-            request.setAttribute("user", new User(0, username, fullName, email, phone, "", null, role,null,true));
+            request.setAttribute("user", new User(0, username, fullName, email, phone, "", null, role, null, true));
             request.getRequestDispatcher("/admin/admin_user_form.jsp").forward(request, response);
             return;
         }
@@ -102,8 +142,6 @@ public class AdminUserServlet extends HttpServlet {
         newUser.setPhone(phone);
         newUser.setRole(role);
         newUser.setCreate_at(LocalDateTime.now());
-
-
         newUser.setPassword_hash(password);
 
         userDAO.insert(newUser);
@@ -126,17 +164,15 @@ public class AdminUserServlet extends HttpServlet {
         user.setRole(role);
 
         if (password != null && !password.trim().isEmpty()) {
-            // TODO: Mã hóa mật khẩu mới nếu có nhập
             user.setPassword_hash(password);
         } else {
-            user.setPassword_hash(""); // Báo hiệu cho DAO là không update pass
+            user.setPassword_hash("");
         }
 
         userDAO.update(user);
         response.sendRedirect(request.getContextPath() + "/admin/users?message=updated");
     }
 
-    // 6. Xử lý xóa
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         int id = Integer.parseInt(request.getParameter("id"));
         userDAO.delete(id);

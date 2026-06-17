@@ -112,6 +112,11 @@
                                     ${u.create_at}
                             </td>
                             <td class="text-right">
+                                <a href="${pageContext.request.contextPath}/admin/users?action=view&id=${u.user_id}"
+                                   class="btn-action" title="Xem chi tiết"
+                                   style="color:#6366f1; border-color:#e0e7ff; background:#eef2ff;">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
                                 <a href="${pageContext.request.contextPath}/admin/users?action=edit&id=${u.user_id}"
                                    class="btn-action edit" title="Sửa">
                                     <i class="fa-solid fa-pen"></i>
