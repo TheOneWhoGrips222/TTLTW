@@ -34,35 +34,56 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const updateUI = (result) => {
-
         if (result.fee === -1) {
-
             shippingFeeEl.textContent = result.message;
-
             shippingFeeInput.value = 0;
-
-            totalAmountEl.textContent =
-                tempTotalEl.textContent;
-
+            totalAmountEl.textContent = tempTotalEl.textContent;
             return;
         }
 
-        shippingFeeEl.textContent =
-            formatCurrency(result.fee);
+        const fsTypeEl = document.getElementById('fs-type');
+        const fsValueEl = document.getElementById('fs-value');
 
-        shippingFeeInput.value =
-            result.fee;
+        const fsType = fsTypeEl ? fsTypeEl.value : '';
+        const fsValue = fsValueEl ? parseFloat(fsValueEl.value) || 0 : 0;
 
-        const tempTotalValue =
-            parseFloat(tempTotalEl.dataset.value);
+        let finalShippingFee = result.fee;
+        let discountShipping = 0;
 
-        const newTotal =
-            tempTotalValue + result.fee;
+        if (fsType) {
+            if (fsType === 'freeship') {
+                discountShipping = result.fee;
+            } else {
+                discountShipping = fsValue;
+                if (discountShipping > result.fee) {
+                    discountShipping = result.fee;
+                }
+            }
+            finalShippingFee = result.fee - discountShipping;
+        }
 
-        totalAmountEl.textContent =
-            formatCurrency(newTotal);
+        if (discountShipping > 0) {
+            shippingFeeEl.innerHTML = `
+                <span style="color: #a8a8a8; text-decoration: line-through; margin-right: 8px;">
+                    ${formatCurrency(result.fee)}
+                </span>
+                <span style="color: #ff424e; font-weight: bold;">
+                    ${finalShippingFee === 0 ? 'Miễn phí' : formatCurrency(finalShippingFee)}
+                </span>
+            `;
+        } else {
+            shippingFeeEl.textContent = formatCurrency(result.fee);
+        }
+
+        shippingFeeInput.value = result.fee;
+
+        const tempTotalValue = parseFloat(tempTotalEl.dataset.value);
+        let newTotal = tempTotalValue + finalShippingFee;
+
+        if (newTotal < 0) newTotal = 0;
+
+        totalAmountEl.textContent = formatCurrency(newTotal);
     }
-
 
     const handleAddressChange = async (selectedRadio) => {
         if (!selectedRadio) return;
