@@ -59,7 +59,7 @@
                 <p>Hoặc đăng nhập với</p>
 
                 <div class="social_buttons">
-                    <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=1088784303202-apea2bsp1bn1af9ibqn8cqtm46bq3s62.apps.googleusercontent.com&redirect_uri=http://localhost:8080/demo_war/login-google&response_type=code&scope=openid%20email%20profile"
+                    <a href="https://accounts.google.com/o/oauth2/v2/auth?client_id=589351883704-jp4b7012h2eedbcjauqm55s52bbu6gt7.apps.googleusercontent.com&redirect_uri=http://localhost:8080/demo_war/login-google&response_type=code&scope=openid%20email%20profile"
                        class="google_btn">
 
                         <i class="fa-brands fa-google"></i> Google

@@ -12,9 +12,9 @@ import java.nio.charset.StandardCharsets;
 
 public class GoogleUtils {
 
-  private static final String CLIENT_ID = "";
+  private static final String CLIENT_ID = "589351883704-jp4b7012h2eedbcjauqm55s52bbu6gt7.apps.googleusercontent.com";
 
-   private static final String CLIENT_SECRET = "";
+   private static final String CLIENT_SECRET = "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";
 
    private static final String REDIRECT_URI = "http://localhost:8080/demo_war/login-google";
 

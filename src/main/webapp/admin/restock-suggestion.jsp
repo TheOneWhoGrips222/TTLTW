@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/pdf-vn-font.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/export-utils.js"></script>
     <style>
         .restock-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}

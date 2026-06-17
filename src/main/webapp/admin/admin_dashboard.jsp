@@ -11,6 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/js/pdf-vn-font.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/export-utils.js"></script>
     <style>
         .dashboard-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:28px}
@@ -165,7 +166,10 @@
     <div class="detail-modal-box">
         <div style="display:flex;align-items:center;justify-content:space-between;">
             <h3 id="pdTitle"><i class="fa-solid fa-circle-info" style="color:#4f46e5;"></i> Chi tiết</h3>
-            <button class="detail-close" onclick="closePeriodDetail()"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <button class="btn-export pdf" id="pdExportBtn" onclick="exportCurrentPeriodPDF()"><i class="fa-solid fa-file-pdf"></i> Xuất PDF</button>
+                <button class="detail-close" onclick="closePeriodDetail()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
         </div>
         <p class="detail-sub" id="pdSub"></p>
 
@@ -328,9 +332,14 @@
         return (img.startsWith('http://') || img.startsWith('https://')) ? img : (CTX_PATH + '/' + img);
     }
 
+    let currentPeriodMeta = null;
+    let currentPeriodData = null;
+
     function openPeriodDetail(index) {
         const d = chartData[index];
         if (!d || !d.periodStart || !d.periodEnd) return;
+        currentPeriodMeta = d;
+        currentPeriodData = null;
 
         document.getElementById('pdTitle').innerHTML =
             '<i class="fa-solid fa-circle-info" style="color:#4f46e5;"></i> Chi tiết kỳ: ' + escapeHtml(d.date);
@@ -343,18 +352,22 @@
 
         document.getElementById('pdProductBody').innerHTML = '';
         document.getElementById('pdOrderBody').innerHTML = '';
+        document.getElementById('pdExportBtn').disabled = true;
         document.getElementById('pdLoading').classList.add('show');
         document.getElementById('periodDetailModal').classList.add('open');
 
         fetch(API_PERIOD_DETAIL + '?from=' + encodeURIComponent(d.periodStart) + '&to=' + encodeURIComponent(d.periodEnd))
             .then(r => r.json())
-            .then(renderPeriodDetail)
+            .then(data => { currentPeriodData = data; renderPeriodDetail(data); })
             .catch(e => {
                 console.error(e);
                 document.getElementById('pdProductBody').innerHTML = '<tr><td colspan="4" class="detail-empty">Không tải được dữ liệu.</td></tr>';
                 document.getElementById('pdOrderBody').innerHTML = '';
             })
-            .finally(() => document.getElementById('pdLoading').classList.remove('show'));
+            .finally(() => {
+                document.getElementById('pdLoading').classList.remove('show');
+                document.getElementById('pdExportBtn').disabled = false;
+            });
     }
 
     function renderPeriodDetail(data) {
@@ -386,6 +399,28 @@
                 '</tr>'
             ).join('');
         }
+    }
+
+    function exportCurrentPeriodPDF() {
+        if (!currentPeriodMeta) return;
+        if (!currentPeriodData) {
+            alert('Dữ liệu chi tiết đang được tải, vui lòng thử lại sau vài giây.');
+            return;
+        }
+        const d = currentPeriodMeta;
+        const sub = (d.periodStart === d.periodEnd)
+            ? 'Ngày ' + fmtDateVN(d.periodStart)
+            : 'Từ ' + fmtDateVN(d.periodStart) + ' đến ' + fmtDateVN(d.periodEnd);
+        exportPeriodDetailPDF({
+            title: 'Báo cáo doanh thu - Kỳ ' + d.date,
+            sub: sub,
+            revenueText: fmtMoney(d.value),
+            orderCountText: d.orderCount,
+            productsSoldText: d.productsSold,
+            products: currentPeriodData.products,
+            orders: currentPeriodData.orders,
+            filename: 'bao-cao-ky-' + d.periodStart + (d.periodStart !== d.periodEnd ? '_' + d.periodEnd : '')
+        });
     }
 
     function closePeriodDetail() {
