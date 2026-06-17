@@ -3,6 +3,7 @@ package com.webthietbibep.controller.cart;
 import com.webthietbibep.cart.Cart;
 import com.webthietbibep.model.Product;
 import com.webthietbibep.model.User;
+import com.webthietbibep.services.CartService;
 import com.webthietbibep.services.ProductService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -29,10 +30,13 @@ public class AddCart extends HttpServlet {
             response.sendRedirect("login");
             return;
         }
-
+        CartService cs = new  CartService();
         String idParam = request.getParameter("id");
 
-
+        Integer cartId = cs.getCartIdByUserId(user.getUser_id());
+        if (cartId == null) {
+            cartId = cs.createCart(user.getUser_id());
+        }
         if (idParam == null) {
             response.sendRedirect("products");
             return;
@@ -83,6 +87,13 @@ public class AddCart extends HttpServlet {
             cart.addItem(product, quantity);
             session.setAttribute("cart", cart);
 
+            int newq = cart.getData().get(id).getQuantity();
+            Integer existP = cs.checkProductCart(cartId, id);
+            if (existP == null) {
+                cs.insertProduct(cartId, id, newq);
+            } else {
+                cs.updateProductQuantity(cartId, id, newq);
+            }
             session.setAttribute("message", "Đã thêm sản phẩm vào giỏ hàng!");
             session.setAttribute("messageType", "success");
         }

@@ -6,6 +6,7 @@ import com.webthietbibep.dao.OrderItemDAO;
 import com.webthietbibep.dao.OrdersDAO;
 import com.webthietbibep.dao.UserAddressDAO;
 import com.webthietbibep.model.*;
+import com.webthietbibep.services.CartService;
 import com.webthietbibep.services.GhnOrderService;
 import com.webthietbibep.services.VoucherService;
 import jakarta.servlet.ServletException;
@@ -246,7 +247,11 @@ public class CheckoutServlet extends HttpServlet {
                 oi.setPrice_at_purchase(ci.getPrice());
                 itemDAO.insert(oi);
             }
-
+            CartService cs = new CartService();
+            Integer cartId = cs.getCartIdByUserId(user.getUser_id());
+            if (cartId != null) {
+                cs.deleteAll(cartId);
+            }
             req.getSession().removeAttribute("cart");
         }
         if (chosseD != null) { vs.removeUserVoucher(user.getUser_id(), chosseD.getId()); }
