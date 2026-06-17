@@ -45,7 +45,7 @@ public class GoogleLoginServlet extends HttpServlet {
         if ("ADMIN".equalsIgnoreCase(user.getRole())) {
             response.sendRedirect(request.getContextPath() + "/admin/dashboard");
         } else {
-            response.sendRedirect(request.getContextPath() + "/home");
+            response.sendRedirect(request.getContextPath() + "/Home");
         }
     }
 }
