@@ -31,6 +31,8 @@
                id="shippingFeeInput"
                value="0">
         <input type="hidden" name="mode" value="${mode}">
+        <input type="hidden" id="fs-type" value="${sessionScope.chosseFS != null ? sessionScope.chosseFS.discountType : ''}">
+        <input type="hidden" id="fs-value" value="${sessionScope.chosseFS != null ? sessionScope.chosseFS.discountValue : 0}">
         <div class="checkout-left">
 
             <h2>Thông tin giao hàng</h2>
@@ -156,13 +158,13 @@
                                 <span style="color: #a8a8a8; text-decoration: line-through; margin-right: 8px;">
                                     <fmt:formatNumber value="${gocTotal}" type="number"/> đ
                                 </span>
-                                <span id="temp-total" data-value="${gocTotal}" style="color: #ff424e; font-weight: bold;">
+                                <span id="temp-total" data-value="${gocTotal - discount}" style="color: #ff424e; font-weight: bold;">
                                     <fmt:formatNumber value="${gocTotal - discount}" type="number"/> đ
                                 </span>
                             </span>
                         </c:when>
                         <c:otherwise>
-                            <span id="temp-total" data-value="${gocTotal}">
+                            <span id="temp-total" data-value="${gocTotal}" style="color: #ff424e; font-weight: bold;">
                                 <c:choose>
                                     <c:when test="${mode == 'buynow'}">
                                         ${buyNowTotalFormatted}

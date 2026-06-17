@@ -18,56 +18,39 @@
 <jsp:include page="common/header.jsp"></jsp:include>
 
 <main class="main-content">
-    <section class="promo-hero">
+    <section class="eco-hero">
         <div class="container">
-            <h1 class="section-title">
-                <i class="fa-solid fa-ticket" style="color: #007bff; margin-right: 10px;"></i> Trạm Săn Voucher
-            </h1>
-            <p class="promo-intro">
-                Nhấn lấy các mã giảm giá siêu hấp dẫn từ Bếp Thông Minh TTB để lưu ưu đãi vào ví của bạn ngay!
-            </p>
-        </div>
-    </section>
-
-    <section class="promo-list">
-        <div class="container">
-            <div class="voucher-grid">
-                <c:forEach var="v" items="${listV}">
-                    <article class="voucher-card">
-                        <div class="voucher-left">
-                            <div class="voucher-value">${v.discountFormat}</div>
-                            <div class="voucher-type">${v.discountType}</div>
-                        </div>
-                        <div class="voucher-border-line"></div>
-                        <div class="voucher-right">
-                            <div class="voucher-info">
-                                <span class="voucher-code-tag">Mã: ${v.code}</span>
-                                <h3 class="voucher-title">Giảm ngay ${v.discountFormat} </h3>
-                                <p class="voucher-desc">${v.description}</p>
-                                <p class="voucher-condition">
-                                    <i class="fa-solid fa-circle-info"></i> Đơn tối thiểu: ${v.minvalueFormat}
-                                </p>
-                            </div>
-                            <div class="voucher-action">
-                                <button class="btn-get-voucher" onclick="collectVoucher('${v.id}', this)">
-                                    Lấy mã
-                                </button>
-                                <div class="voucher-expiry">Hạn dùng: ${v.dateFormat}</div>
-                            </div>
-                        </div>
-                    </article>
-                </c:forEach>
+            <div class="eco-hero-box">
+                <h1>Hệ Sinh Thái Bếp Đồng Bộ</h1>
+                <p>Giải pháp tối ưu cho không gian bếp hiện đại, kết nối hoàn hảo giữa công năng và thẩm mỹ.</p>
             </div>
-
-            <c:if test="${not empty nextLastId && nextLastId > 0 && empty isLastPage}">
-                <div class="load-more-container">
-                    <a href="list-voucher?lastId=${nextLastId}" class="btn-load-more">
-                        Xem thêm <i class="fa-solid fa-chevron-down" style="margin-left: 5px;"></i>
-                    </a>
-                </div>
-            </c:if>
         </div>
     </section>
+
+    <section class="section-padding bg-light">
+        <div class="container">
+            <h2 class="section-title">Hệ Sinh Thái</h2>
+
+            <div class="eco-grid">
+                <c:forEach var="e" items="${listE}">
+                    <div class="eco-item">
+                        <div class="eco-image">
+                            <img src="${e.image}" alt="${e.name}">
+                        </div>
+                        <div class="eco-info">
+                            <h3>${e.name}</h3>
+                            <div class="eco-footer">
+                                <a href="detail-ecosystem?id=${e.id}" class="btn-eco">Khám phá ngay</a>
+                            </div>
+                        </div>
+                    </div> </c:forEach>
+            </div> <c:if test="${empty listE}">
+            <p style="text-align: center;">Hiện chưa có hệ sinh thái nào để hiển thị.</p>
+        </c:if>
+        </div>
+    </section>
+
+
 </main>
 
 <jsp:include page="common/footer.jsp"></jsp:include>
