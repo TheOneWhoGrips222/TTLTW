@@ -17,6 +17,8 @@ public class Order implements Serializable {
     private int voucher_id;
     private String userName;
     private String addressDetail;
+    private String receiverName;
+    private String receiverPhone;
     private String ghn_order_code;
     private String payment_status;
     private LocalDateTime payment_time;
@@ -123,6 +125,12 @@ public class Order implements Serializable {
 
     public String getAddressDetail() { return addressDetail; }
     public void setAddressDetail(String addressDetail) { this.addressDetail = addressDetail; }
+
+    public String getReceiverName() { return receiverName; }
+    public void setReceiverName(String receiverName) { this.receiverName = receiverName; }
+
+    public String getReceiverPhone() { return receiverPhone; }
+    public void setReceiverPhone(String receiverPhone) { this.receiverPhone = receiverPhone; }
 
     public String getFormattedTotal() {
         return CartItem.Format(total_amount);

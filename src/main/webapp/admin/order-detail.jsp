@@ -29,6 +29,113 @@
         }
         .info-label { color: var(--admin-text-light); }
         .info-value { font-weight: 600; color: var(--admin-text); text-align: right; }
+
+        .btn-print {
+            padding: 10px 15px;
+            background-color: #fff;
+            border: 1px solid #cbd5e1;
+            color: var(--admin-text);
+            border-radius: 5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .btn-print:hover { background-color: #f1f5f9; }
+
+        /* ====== PHIẾU IN VẬN ĐƠN ====== */
+        #print-area { display: none; }
+
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+
+            .shipping-label {
+                width: 100%;
+                max-width: 480px;
+                margin: 0 auto;
+                padding: 16px;
+                border: 2px solid #000;
+                font-family: Arial, sans-serif;
+                color: #000;
+            }
+            .shipping-label .label-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 2px dashed #000;
+                padding-bottom: 10px;
+                margin-bottom: 10px;
+            }
+            .shipping-label .label-header h2 {
+                margin: 0;
+                font-size: 18px;
+            }
+            .shipping-label .order-code {
+                font-size: 16px;
+                font-weight: bold;
+            }
+            .shipping-label .section {
+                margin-bottom: 10px;
+                padding-bottom: 8px;
+                border-bottom: 1px dashed #999;
+            }
+            .shipping-label .section:last-child { border-bottom: none; }
+            .shipping-label .section-title {
+                font-size: 11px;
+                text-transform: uppercase;
+                color: #555;
+                margin-bottom: 4px;
+                letter-spacing: 0.5px;
+            }
+            .shipping-label .name-line {
+                font-size: 16px;
+                font-weight: bold;
+            }
+            .shipping-label .phone-line {
+                font-size: 14px;
+                font-weight: bold;
+            }
+            .shipping-label .address-line {
+                font-size: 13px;
+            }
+            .shipping-label table.print-items {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 12px;
+                margin-top: 4px;
+            }
+            .shipping-label table.print-items th,
+            .shipping-label table.print-items td {
+                border: 1px solid #999;
+                padding: 4px 6px;
+                text-align: left;
+            }
+            .shipping-label table.print-items th:last-child,
+            .shipping-label table.print-items td:last-child {
+                text-align: right;
+            }
+            .shipping-label .cod-box {
+                margin-top: 10px;
+                text-align: center;
+                border: 2px solid #000;
+                padding: 8px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+            .shipping-label .note-line {
+                font-size: 12px;
+                font-style: italic;
+            }
+        }
     </style>
 </head>
 <body>
@@ -55,6 +162,10 @@
                     </c:choose>
                 </div>
             </div>
+
+            <button type="button" class="btn-print" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> In thông tin đơn hàng
+            </button>
         </header>
 
         <div class="admin-content">
@@ -221,6 +332,28 @@
                             </span>
                         </div>
                         <div class="info-row">
+                            <span class="info-label">Trạng thái thanh toán:</span>
+                            <span class="info-value">
+                                <c:choose>
+                                    <c:when test="${order.payment_status == 'PAID'}">
+                                        <span class="status completed">Đã thanh toán</span>
+                                    </c:when>
+                                    <c:when test="${order.payment_status == 'FAILED'}">
+                                        <span class="status cancelled">Thanh toán thất bại</span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="status processing">Chưa thanh toán</span>
+                                    </c:otherwise>
+                                </c:choose>
+                            </span>
+                        </div>
+                        <c:if test="${order.payment_status == 'PAID' and not empty order.payment_time}">
+                            <div class="info-row">
+                                <span class="info-label">Thời gian thanh toán:</span>
+                                <span class="info-value">${order.payment_time}</span>
+                            </div>
+                        </c:if>
+                        <div class="info-row">
                             <span class="info-label">Voucher:</span>
                             <span class="info-value" style="display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; align-items: center;">
                                 <c:choose>
@@ -257,6 +390,91 @@
                 </div>
             </div>
         </div>
+
+        <div id="print-area">
+            <div class="shipping-label">
+                <div class="label-header">
+                    <h2>PHIẾU GIAO HÀNG</h2>
+                    <div class="order-code">Đơn #${order.order_id}</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Người gửi</div>
+                    <div class="name-line">WEB THIET BI BEP</div>
+                    <div class="phone-line">SĐT: 0353334530</div>
+                    <div class="address-line">Tân Định, Quận 1, Hồ Chí Minh</div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Người nhận</div>
+                    <div class="name-line">${not empty order.receiverName ? order.receiverName : order.userName}</div>
+                    <div class="phone-line">
+                        <c:if test="${not empty order.receiverPhone}">SĐT: ${order.receiverPhone}</c:if>
+                    </div>
+                    <div class="address-line">
+                        ${not empty order.addressDetail ? order.addressDetail : 'Khách chưa nhập địa chỉ'}
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Sản phẩm</div>
+                    <table class="print-items">
+                        <thead>
+                        <tr>
+                            <th>Tên sản phẩm</th>
+                            <th>SL</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach var="item" items="${items}">
+                            <tr>
+                                <td>${item.productName}</td>
+                                <td>${item.quantity}</td>
+                                <td>
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <fmt:formatNumber value="${item.price_at_purchase * item.quantity}" type="currency"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <div class="section-title">Thanh toán</div>
+                    <div class="address-line">
+                        Phương thức:
+                        ${order.payment_method == 'COD' ? 'Thanh toán khi nhận (COD)' : 'Đã chuyển khoản'}
+                    </div>
+                    <div class="address-line">
+                        Trạng thái:
+                        <b>${order.payment_status == 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}</b>
+                    </div>
+                    <c:if test="${not empty order.ghn_order_code}">
+                        <div class="address-line">Mã vận đơn GHN: ${order.ghn_order_code}</div>
+                    </c:if>
+                    <div class="address-line">
+                        Ngày đặt: ${order.created_at.toLocalDate()}
+                    </div>
+                </div>
+
+                <c:if test="${order.payment_method == 'COD'}">
+                    <div class="cod-box">
+                        Thu tiền COD:
+                        <fmt:formatNumber value="${order.payment_status == 'PAID' ? 0 : order.total_amount}" type="currency"/>
+                    </div>
+                </c:if>
+
+                <c:if test="${not empty order.note}">
+                    <div class="section" style="margin-top: 10px;">
+                        <div class="section-title">Ghi chú</div>
+                        <div class="note-line">"${order.note}"</div>
+                    </div>
+                </c:if>
+            </div>
+        </div>
+
     </main>
 </div>
 

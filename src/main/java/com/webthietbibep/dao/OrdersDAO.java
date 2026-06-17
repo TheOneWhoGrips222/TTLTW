@@ -188,7 +188,9 @@ public class OrdersDAO extends BaseDao {
                 ua.ward,
                 ua.district,
                 ua.province
-            ) AS addressDetail
+            ) AS addressDetail,
+            ua.receiver_name AS receiverName,
+            ua.phone AS receiverPhone
 
         FROM orders o
         JOIN users u
@@ -227,7 +229,7 @@ public class OrdersDAO extends BaseDao {
                         .list()
         );
     }
-    
+
     public boolean hasUserPurchasedProduct(int userId, int productId) {
         String sql = """
             SELECT COUNT(*)
