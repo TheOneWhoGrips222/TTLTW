@@ -96,10 +96,13 @@ public class GhnOrderService {
                 address.getDistrict_id()
         );
 
-        body.addProperty(
-                "cod_amount",
-                (int) order.getTotal_amount()
-        );
+        int codAmount = 0;
+
+        if ("COD".equalsIgnoreCase(order.getPayment_method())) {
+            codAmount = (int) order.getTotal_amount();
+        }
+
+        body.addProperty("cod_amount", codAmount);
 
         body.addProperty(
                 "weight",
